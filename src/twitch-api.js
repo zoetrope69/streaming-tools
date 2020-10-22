@@ -97,16 +97,10 @@ async function syncAndEmitNewFollowersEvent(
   eventEmitter
 ) {
   const followers = await getFollowers(callTwitchAPI);
-  console.log("followers", followers);
 
   let newFollowers = false;
   followers.forEach((follower) => {
     // if they've followed after the last time we checked
-    console.log(
-      LAST_CACHED_DATETIME,
-      new Date(follower.followed_at),
-      LAST_CACHED_DATETIME < new Date(follower.followed_at)
-    );
     if (LAST_CACHED_DATETIME < new Date(follower.followed_at)) {
       newFollowers = true;
       eventEmitter.emit("follow", follower);

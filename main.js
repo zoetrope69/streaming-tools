@@ -1,7 +1,6 @@
 // get process.env from .env
 require("dotenv").config();
 
-const { exec } = require("child_process");
 const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
@@ -40,7 +39,6 @@ commandKeys.on("change", (keys) => {
 });
 
 twitchBot.on("message", (twitchChatMessage) => {
-  exec(`say "${twitchChatMessage}"`);
   io.emit("data", { twitchChatMessage });
 });
 

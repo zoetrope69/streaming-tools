@@ -1,0 +1,23 @@
+.App {
+  position: relative;
+  height: 100vh;
+}
+
+.KeyboardVisualiser {
+  position: absolute;
+  bottom: 1em;
+  left: 1em;
+  padding: 1em;
+
+  border: 1px solid white;
+  background: black;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5em;
+  border-radius: 5px;
+}
+
+.KeyboardVisualiser-hide {
+  opacity: 0;
+  transition: opacity 1s;
+}

@@ -1,6 +1,7 @@
 const { promises: fs } = require("fs");
 const fetch = require("node-fetch");
 const { stringify: stringifyQueryString } = require("qs");
+const logger = require("./helpers/logger");
 
 const { LAST_FM_API_KEY, LAST_FM_USERNAME } = process.env;
 
@@ -26,7 +27,7 @@ async function getLastFmRecentTrack() {
     !json.recenttracks.track ||
     json.recenttracks.track.length === 0
   ) {
-    console.log("No track info.");
+    logger.error("🎸 Last.FM", "No track info");
     return;
   }
 
@@ -67,7 +68,7 @@ async function saveTrackInfoStringToFile(trackInfoString) {
     filePath,
     trackInfoString
   );
-  console.log(`"${trackInfoString}" saved to file`);
+  logger.log("🎸 Last.FM", `"${trackInfoString}" saved to file`);
   return writeFilePromise;
 }
 
@@ -78,7 +79,6 @@ async function getAlbumArtImageBuffer(albumArtURL) {
     return fs.readFile(filePath);
   }
 
-  console.log(albumArtURL);
   const response = await fetch(albumArtURL);
   return response.buffer();
 }
@@ -87,11 +87,11 @@ async function saveAlbumArtToFIle(albumArtURL) {
   const imageBuffer = await getAlbumArtImageBuffer(albumArtURL);
   const filePath = `${__dirname}/../public/music-album-art.jpg`;
   const writeFilePromise = await fs.writeFile(filePath, imageBuffer);
-  console.log(`Album art saved to file`);
+  logger.log("🎸 Last.FM", `Album art saved to file`);
   return writeFilePromise;
 }
 
-function showRecentTrackOnStream() {
+function showRecentTrackOnStreamInterval() {
   getLastFmRecentTrack()
     .then(({ isNowPlaying, trackName, artistName, albumArtURL }) => {
       saveAlbumArtToFIle(albumArtURL).then(() => {
@@ -103,7 +103,15 @@ function showRecentTrackOnStream() {
         saveTrackInfoStringToFile(trackInfoString);
       });
     })
-    .catch(console.error);
+    .catch((err) => logger.error("🎸 Last.FM", err));
+}
+
+function showRecentTrackOnStream() {
+  logger.info("🎸 Last.FM", "Syncing to local files...");
+  // run as soon as we launch script
+  // run every 10 seconds after that
+  showRecentTrackOnStreamInterval();
+  setInterval(showRecentTrackOnStreamInterval, 1000 * 10);
 }
 
 module.exports = showRecentTrackOnStream;

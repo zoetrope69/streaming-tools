@@ -1,6 +1,6 @@
 const events = require("events");
-
 const TwitchBot = require("twitch-bot");
+const logger = require("./helpers/logger");
 
 const eventEmitter = new events.EventEmitter();
 
@@ -16,29 +16,31 @@ const Bot = new TwitchBot({
   channels: [TWITCH_BROADCASTER_NAME],
 });
 
-console.log("Starting bot...");
+logger.info("🤖 Twitch Bot", "Starting...");
 
 Bot.on("part", (channel) => {
-  console.log(`Bot left ${channel}`);
+  logger.info("🤖 Twitch Bot", `Left: ${channel}`);
 });
 
 Bot.on("connected", () => {
-  console.log("Connected to channel");
+  logger.info(
+    "🤖 Twitch Bot",
+    `Connected to: ${TWITCH_BROADCASTER_NAME}`
+  );
 });
 
 Bot.on("join", (channel) => {
-  console.log(`Joined channel: ${channel}`);
+  logger.info("🤖 Twitch Bot", `Joined channel: ${channel}`);
 });
 
 Bot.on("error", (err) => {
-  console.log(err);
+  logger.error("🤖 Twitch Bot", err);
 });
 
 Bot.on("message", (chatter) => {
-  console.log("chatter", chatter);
-
   if (chatter.username === TWITCH_BROADCASTER_NAME) {
     if (chatter.message === "!stopBot") {
+      logger.info("🤖 Twitch Bot", "Turning off bot...");
       Bot.say("Turning off...");
       Bot.part(TWITCH_BROADCASTER_NAME);
       Bot.close();
@@ -46,11 +48,15 @@ Bot.on("message", (chatter) => {
     }
   }
 
+  logger.log(
+    "🤖 Twitch Bot",
+    `Message from chat: ${chatter.message}`
+  );
   eventEmitter.emit("message", chatter.message);
 });
 
 Bot.on("close", () => {
-  console.log("Closed bot IRC connection");
+  logger.info("🤖 Twitch Bot", "Closed bot IRC connection");
 });
 
 module.exports = () => eventEmitter;

@@ -75,7 +75,7 @@ const CommandKeys = () => {
     if (keysHeld.length > 0) {
       eventEmitter.emit("change", {
         keysHeld,
-        key: KEYS[key] || key,
+        key: KEYS[key] || key.toUpperCase(),
       });
     }
   });

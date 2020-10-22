@@ -1,0 +1,34 @@
+.Alert {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  overflow: hidden;
+}
+
+.Alert > * {
+  width: 100%;
+}
+
+.Alert__image {
+  display: block;
+}
+
+.Alert__message {
+  padding: 0.5em;
+  padding-top: 0.25em;
+  width: 100%;
+  line-height: 1.25;
+  font-size: 2.5rem;
+}
+
+.Alert__message strong {
+  color: yellow;
+  display: block;
+  overflow-wrap: break-word;
+  max-width: 20ex;
+  font-size: 0.85em;
+}

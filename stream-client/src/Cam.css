@@ -1,0 +1,15 @@
+.Cam {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  display: block;
+  width: 172px;
+  height: 150px;
+
+  border: 3px solid white;
+  border-bottom: none;
+  border-left: none;
+  border-top-right-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}

@@ -66,7 +66,7 @@ async function emitNowPlayingTrack(eventEmitter) {
     const track = await getLastFmRecentTrack();
 
     // check if we're already have this track in cache
-    if (CURRENT_NOW_PLAYING_TRACK.id === track.id) {
+    if (track && CURRENT_NOW_PLAYING_TRACK.id === track.id) {
       return;
     }
 

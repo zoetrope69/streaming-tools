@@ -37,6 +37,7 @@ function App() {
     };
 
     const socketIOHandler = (data) => {
+      console.log("data", data);
       const { keys, twitchChatMessage, alert, track } = data;
 
       if (keys) {

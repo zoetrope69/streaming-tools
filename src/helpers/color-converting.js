@@ -1,3 +1,40 @@
+const namedColors = require("color-name-list");
+
+function colorNameToHex(name) {
+  if (!name) {
+    return;
+  }
+
+  const namedColor = namedColors.find(
+    (color) => color.name.toLowerCase() === name.trim().toLowerCase()
+  );
+
+  if (!namedColor) {
+    return;
+  }
+
+  return namedColor.hex;
+}
+
+const RGB_HEX = /^#?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/i;
+
+function hexToRgb(str) {
+  if (!str) {
+    return;
+  }
+
+  const [, short, long] = String(str).match(RGB_HEX) || [];
+
+  if (long) {
+    const value = Number.parseInt(long, 16);
+    return [value >> 16, (value >> 8) & 0xff, value & 0xff];
+  } else if (short) {
+    return Array.from(short, (s) => Number.parseInt(s, 16)).map(
+      (n) => (n << 4) | n
+    );
+  }
+}
+
 /**
  * based on from: https://gist.github.com/mjackson/5311256
  *
@@ -62,6 +99,10 @@ function hslToRgb(hslArray) {
  * + blue: 0.167, 0.04
  */
 function rgbToXY(rgbArray) {
+  if (!rgbArray) {
+    return;
+  }
+
   const normalisedRGBArray = rgbArray.map((value) => value / 255);
   const [redValue, greenValue, blueValue] = normalisedRGBArray;
 
@@ -109,9 +150,20 @@ function rgbToXY(rgbArray) {
 }
 
 function hslToXY(hslArray) {
-  const rgbArray = hslToRgb(hslArray);
-  console.log("rgbArray", rgbArray);
-  return rgbToXY(rgbArray);
+  const rgb = hslToRgb(hslArray);
+  return rgbToXY(rgb);
 }
 
-module.exports = { hslToXY, hslToRgb, rgbToXY };
+function colorNameToXY(name) {
+  const hex = colorNameToHex(name);
+  const rgb = hexToRgb(hex);
+  return rgbToXY(rgb);
+}
+
+module.exports = {
+  colorNameToXY,
+  hexToRgb,
+  hslToXY,
+  hslToRgb,
+  rgbToXY,
+};

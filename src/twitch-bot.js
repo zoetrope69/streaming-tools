@@ -39,7 +39,7 @@ Bot.on("error", (err) => {
 
 Bot.on("message", (chatter) => {
   if (chatter.username === TWITCH_BROADCASTER_NAME) {
-    if (chatter.message === "!stopBot") {
+    if (chatter.message.trim() === "!stopBot") {
       logger.info("🤖 Twitch Bot", "Turning off bot...");
       Bot.say("Turning off...");
       Bot.part(TWITCH_BROADCASTER_NAME);
@@ -52,11 +52,14 @@ Bot.on("message", (chatter) => {
     "🤖 Twitch Bot",
     `Message from chat: ${chatter.message}`
   );
-  eventEmitter.emit("message", chatter.message);
+  eventEmitter.emit("message", chatter.message.trim());
 });
 
 Bot.on("close", () => {
   logger.info("🤖 Twitch Bot", "Closed bot IRC connection");
 });
+
+// gross need to improve this
+eventEmitter.say = (message) => Bot.say(message);
 
 module.exports = () => eventEmitter;

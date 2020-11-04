@@ -4,7 +4,6 @@ require("dotenv").config();
 const events = require("events");
 const fetch = require("node-fetch");
 const { stringify: queryStringStringify } = require("qs");
-const { v4: randomID } = require("uuid");
 
 const logger = require("./helpers/logger");
 

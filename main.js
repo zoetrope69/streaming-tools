@@ -6,7 +6,7 @@ const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
 const CommandKeys = require("./src/command-keys");
-const showRecentTrackOnStream = require("./src/last-fm-show-recent-track-on-stream");
+const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
 const logger = require("./src/helpers/logger");
@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const io = socketIO(server);
 const commandKeys = CommandKeys();
 const twitchBot = TwitchBot();
-showRecentTrackOnStream();
+const lastFM = LastFM();
 
 const PORT = 4000;
 
@@ -39,7 +39,23 @@ commandKeys.on("change", (keys) => {
 });
 
 twitchBot.on("message", (twitchChatMessage) => {
+  console.log("twitchChatMessage", twitchChatMessage);
+  if (twitchChatMessage === "!song") {
+    const {
+      artistName,
+      trackName,
+      albumName,
+    } = lastFM.getCurrentTrack();
+    twitchBot.say(
+      `SingsNote ${trackName} — ${artistName} — ${albumName}`
+    );
+  }
+
   io.emit("data", { twitchChatMessage });
+});
+
+lastFM.on("track", (track) => {
+  io.emit("data", { track });
 });
 
 io.on("connection", (socket) => {

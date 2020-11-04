@@ -5,7 +5,7 @@ import "./KeyboardVisualiser.css";
 
 const KeyboardVisualiser = ({ keys }) => {
   const [text, setText] = useState("");
-  const [isHidden, setIsHidden] = useState(false);
+  const [isHidden, setIsHidden] = useState(true);
   const { keysHeld = [], key } = keys;
 
   useEffect(() => {

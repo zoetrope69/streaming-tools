@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import openSocket from "socket.io-client";
 import KeyboardVisualiser from "./KeyboardVisualiser";
+import LastFMVisualiser from "./LastFMVisualiser";
 import Alert from "./Alert";
 import Cam from "./Cam";
 
@@ -11,6 +12,7 @@ const socket = openSocket("http://localhost:4000");
 function App() {
   const [keys, setKeys] = useState({});
   const [alertQueue, setAlertQueue] = useState([]);
+  const [currentTrack, setCurrentTrack] = useState({});
   const [currentAlert] = alertQueue;
   // TEST variables
   // const currentAlert = {
@@ -35,13 +37,18 @@ function App() {
     };
 
     const socketIOHandler = (data) => {
-      const { keys, twitchChatMessage, alert } = data;
+      const { keys, twitchChatMessage, alert, track } = data;
+
       if (keys) {
         setKeys(keys);
       }
 
       if (alert) {
         addToAlertQueue(alert);
+      }
+
+      if (track?.id !== currentTrack?.id) {
+        setCurrentTrack(track);
       }
 
       if (twitchChatMessage) {
@@ -54,12 +61,14 @@ function App() {
     return () => {
       socket.off("data", socketIOHandler);
     };
-  }, [alertQueue]);
+  }, [alertQueue, currentTrack]);
 
   return (
     <div className="App">
       <Cam />
       <KeyboardVisualiser keys={keys} />
+      <LastFMVisualiser currentTrack={currentTrack} />
+
       {currentAlert && (
         <Alert
           alert={currentAlert}

@@ -1,4 +1,5 @@
 .KeyboardVisualiser {
+  z-index: 9999;
   position: absolute;
   bottom: 1em;
   left: 1em;

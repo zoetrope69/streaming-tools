@@ -32,8 +32,7 @@ async function getLastFmRecentTrack() {
     !json.recenttracks.track ||
     json.recenttracks.track.length === 0
   ) {
-    logger.error("🎸 Last.FM", "No track info");
-    return;
+    throw new Error("No track info");
   }
 
   const [track] = json.recenttracks.track;

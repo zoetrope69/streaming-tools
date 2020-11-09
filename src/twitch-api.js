@@ -1,6 +1,3 @@
-// get process.env from .env
-require("dotenv").config();
-
 const events = require("events");
 const fetch = require("node-fetch");
 const { stringify: queryStringStringify } = require("qs");
@@ -44,13 +41,22 @@ function callTwitchAPIBuilder(oAuthToken) {
     const queryString = queryStringStringify(options);
     const url = `https://api.twitch.tv/helix/${endpoint}?${queryString}`;
 
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/vnd.twitchtv.v5+json",
-        Authorization: `Bearer ${oAuthToken}`,
-        "Client-Id": TWITCH_CLIENT_ID,
-      },
-    });
+    let response;
+    try {
+      response = await fetch(url, {
+        headers: {
+          Accept: "application/vnd.twitchtv.v5+json",
+          Authorization: `Bearer ${oAuthToken}`,
+          "Client-Id": TWITCH_CLIENT_ID,
+        },
+      });
+    } catch(e) {
+      logger.error("💩 Twitch API", e)
+    }
+
+    if (!response) {
+      return;
+    }
 
     const rateLimit = response.headers.get("ratelimit-limit");
     const rateLimitRemaining = response.headers.get(

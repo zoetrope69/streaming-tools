@@ -5,7 +5,6 @@ const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
-const CommandKeys = require("./src/command-keys");
 const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
@@ -15,7 +14,6 @@ const logger = require("./src/helpers/logger");
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-const commandKeys = CommandKeys();
 const twitchBot = TwitchBot();
 const lastFM = LastFM();
 
@@ -33,10 +31,6 @@ TwitchAPI().then((twitchApi) => {
     };
     io.emit("data", { alert });
   });
-});
-
-commandKeys.on("change", (keys) => {
-  io.emit("data", { keys });
 });
 
 twitchBot.on("message", (twitchChatMessage) => {

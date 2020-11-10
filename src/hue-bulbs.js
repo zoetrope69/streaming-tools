@@ -2,7 +2,10 @@
 require("dotenv").config();
 
 const fetch = require("node-fetch");
-const { colorNameToXY } = require("./helpers/color-converting");
+const {
+  colorNameToXY,
+  hexToXY,
+} = require("./helpers/color-converting");
 
 const { HUE_BULB_USERNAME } = process.env;
 
@@ -20,7 +23,8 @@ async function getHueBulbIPAddress() {
 
   if (
     ipAddressJSON.length === 0 ||
-    typeof ipAddressJSON[0].internalipaddress === "undefined"
+    typeof ipAddressJSON[0].internalipaddress ===
+      "undefined"
   ) {
     throw new Error("Missing IP address");
   }
@@ -40,16 +44,34 @@ function callHueBulbAPIBuilder(hueBulbIpAddress) {
   };
 }
 
-async function setLightsColor(colorName) {
+function getColor(colorInput) {
+  if (colorInput === "reset") {
+    return [0.4575, 0.4099];
+  }
+
+  if (colorInput.startsWith("#")) {
+    return hexToXY(colorInput);
+  }
+
+  return colorNameToXY(colorInput);
+}
+
+async function setLightsColor(colorInput) {
   const hueBulbIpAddress = await getHueBulbIPAddress();
-  const callHueBulbAPI = callHueBulbAPIBuilder(hueBulbIpAddress);
+  const callHueBulbAPI = callHueBulbAPIBuilder(
+    hueBulbIpAddress
+  );
 
   async function getLights() {
     const lights = await callHueBulbAPI("lights");
 
     return Object.keys(lights).map((lightId) => {
       const item = lights[lightId];
-      return { ...item, id: lightId, name: LIGHTS[item.uniqueid] };
+      return {
+        ...item,
+        id: lightId,
+        name: LIGHTS[item.uniqueid],
+      };
     });
   }
 
@@ -59,10 +81,7 @@ async function setLightsColor(colorName) {
     return lights.find((light) => light.name === name);
   }
 
-  const color =
-    colorName === "reset"
-      ? [0.4575, 0.4099]
-      : colorNameToXY(colorName);
+  const color = getColor(colorInput);
 
   if (!color) {
     return;

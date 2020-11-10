@@ -1,0 +1,145 @@
+.PrideBanner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: background-image 1s ease-in;
+}
+
+.PrideBanner--pride {
+  background-image: linear-gradient(
+    to right,
+    black,
+    brown,
+    red,
+    orange,
+    yellow,
+    green,
+    blue,
+    purple
+  );
+}
+
+.PrideBanner--agender {
+  background-image: linear-gradient(
+    to right,
+    #000,
+    #bababa,
+    #fff,
+    #b9f484,
+    #fff,
+    #bababa,
+    #000
+  );
+}
+
+.PrideBanner--aromantic {
+  background-image: linear-gradient(
+    to right,
+    #3aa740,
+    #a8d47a,
+    #fff,
+    #aaabaa,
+    #000
+  );
+}
+
+.PrideBanner--asexual {
+  background-image: linear-gradient(
+    to right,
+    #000000,
+    #a4a5a4,
+    #fff,
+    #810081
+  );
+}
+
+.PrideBanner--bisexual {
+  background-image: linear-gradient(
+    to right,
+    #d70071,
+    #9c4e97,
+    #0035a9
+  );
+}
+
+.PrideBanner--genderfluid {
+  background-image: linear-gradient(
+    to right,
+    #ff76a3,
+    #fff,
+    #bf11d7,
+    #000,
+    #303cbe
+  );
+}
+
+.PrideBanner--genderqueer {
+  background-image: linear-gradient(
+    to right,
+    #b67fdd #fff,
+    #49821e
+  );
+}
+
+.PrideBanner--intersex {
+  background-image: linear-gradient(
+    to right,
+    #ffd900,
+    #7a00ab,
+    #ffd900,
+    #7a00ab,
+    #ffd900
+  );
+}
+
+.PrideBanner--lesbian {
+  background-image: linear-gradient(
+    to right,
+    #d62900,
+    #ff9b55,
+    #fff,
+    #d462a5,
+    #a50062
+  );
+}
+
+.PrideBanner--non-binary {
+  background-image: linear-gradient(
+    to right,
+    #fcf431,
+    #fff,
+    #9d59d2,
+    #282828
+  );
+}
+
+.PrideBanner--pansexual {
+  background-image: linear-gradient(
+    to right,
+    #ff1b8d,
+    #ffd900,
+    #1bb3ff
+  );
+}
+
+.PrideBanner--polysexual {
+  background-image: linear-gradient(
+    to right,
+    #f616ba,
+    #01d669,
+    #1593f6
+  );
+}
+.PrideBanner--transgender {
+  background-image: linear-gradient(
+    to right,
+    #5bcefa,
+    #f5a9b8,
+    #fff,
+    #f5a9b8,
+    #5bcefa
+  );
+}

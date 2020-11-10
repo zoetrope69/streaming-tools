@@ -2,8 +2,9 @@ const events = require("events");
 const fetch = require("node-fetch");
 const hash = require("object-hash");
 const { stringify: stringifyQueryString } = require("qs");
-const { v4: randomID } = require("uuid");
 const logger = require("./helpers/logger");
+const getColors = require("get-image-colors");
+const chroma = require("chroma-js");
 
 const { LAST_FM_API_KEY, LAST_FM_USERNAME } = process.env;
 
@@ -11,6 +12,43 @@ const BASE_URL = `http://ws.audioscrobbler.com/2.0/`;
 
 // default current track to nothing
 let CURRENT_NOW_PLAYING_TRACK = {};
+
+async function getAlbumArtColors(albumArtURL) {
+  if (!albumArtURL || albumArtURL.length === 0) {
+    return;
+  }
+
+  const [fileType] = albumArtURL.split(".").reverse();
+  const response = await fetch(albumArtURL);
+  const imageBuffer = await response.buffer();
+  const colors = await getColors(imageBuffer, `image/${fileType}`);
+
+  // sort by luminance, get contrast of top and bototm if they pass a value use them
+  // try contrast for black on brightest
+  // try white on darkest
+  const sortedColors = colors.sort((a, b) => {
+    return a.luminance() > b.luminance() ? -1 : 1;
+  });
+
+  const brightestColor = sortedColors[0].css("rgb");
+  const darkestColor = sortedColors.pop().css("rgb");
+
+  if (chroma.contrast(brightestColor, darkestColor) > 7) {
+    return { brightestColor, darkestColor };
+  }
+
+  // black text on brighest colour
+  if (chroma.contrast(brightestColor, "#111") > 7) {
+    return { brightestColor, darkestColor: "#111" };
+  }
+
+  // white text on darkest colour
+  if (chroma.contrast(darkestColor, "#fff") > 7) {
+    return { brightestColor: "#fff", darkestColor };
+  }
+
+  return;
+}
 
 async function getLastFmRecentTrack() {
   const queryString = stringifyQueryString({
@@ -45,6 +83,7 @@ async function getLastFmRecentTrack() {
   const albumName = track.album["#text"];
   const albumArt = track.image.find((i) => i.size === "large");
   const albumArtURL = albumArt ? albumArt["#text"] : null;
+  const albumArtColors = await getAlbumArtColors(albumArtURL);
 
   const data = {
     isNowPlaying,
@@ -52,6 +91,7 @@ async function getLastFmRecentTrack() {
     trackName,
     albumName,
     albumArtURL,
+    albumArtColors,
   };
 
   return {

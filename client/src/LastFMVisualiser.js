@@ -7,7 +7,12 @@ const LastFMVisualiser = ({ currentTrack }) => {
   const [track, setTrack] = useState({});
   const [isHidden, setIsHidden] = useState(true);
   const [isHiding, setIsHiding] = useState(false);
-  const { albumArtURL, trackName, artistName } = track;
+  const {
+    albumArtURL,
+    albumArtColors,
+    trackName,
+    artistName,
+  } = track;
 
   useEffect(() => {
     // if we've stopped playing the current song and a new song starts playing
@@ -43,14 +48,30 @@ const LastFMVisualiser = ({ currentTrack }) => {
     return null;
   }
 
+  console.log("albumArtColors", albumArtColors);
+
   return (
-    <div className={LastFMVisualiserClassName}>
+    <div
+      className={LastFMVisualiserClassName}
+      style={
+        albumArtColors
+          ? { background: albumArtColors.darkestColor }
+          : {}
+      }
+    >
       <img
         className="LastFMVisualiser__image"
         src={albumArtURL}
         alt=""
       />
-      <p className="LastFMVisualiser__text">
+      <p
+        className="LastFMVisualiser__text"
+        style={
+          albumArtColors
+            ? { color: albumArtColors.brightestColor }
+            : {}
+        }
+      >
         {trackName} — {artistName}
       </p>
       <span className="LastFMVisualiser__command">

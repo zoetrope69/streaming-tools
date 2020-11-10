@@ -19,8 +19,14 @@ const lastFM = LastFM();
 
 const PORT = 4000;
 
-// serve /public folder
-app.use(express.static("public"));
+const CLIENT_FILE_PATH = "client/build";
+
+// serve client files
+app.use(express.static(CLIENT_FILE_PATH));
+
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
+});
 
 TwitchAPI().then((twitchApi) => {
   twitchApi.on("follow", (user) => {

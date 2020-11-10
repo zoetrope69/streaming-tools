@@ -7,7 +7,7 @@ import Cam from "./Cam";
 
 import "./App.css";
 
-const socket = openSocket("http://localhost:4000");
+const socket = openSocket("/");
 
 function App() {
   const [keys, setKeys] = useState({});

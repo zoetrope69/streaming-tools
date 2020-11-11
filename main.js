@@ -8,7 +8,6 @@ const socketIO = require("socket.io");
 const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
-const setLightsColor = require("./src/hue-bulbs");
 const logger = require("./src/helpers/logger");
 
 const app = express();
@@ -39,7 +38,7 @@ TwitchAPI().then((twitchApi) => {
   });
 });
 
-twitchBot.on("message", (twitchChatMessage) => {
+twitchBot.on("message", async (twitchChatMessage) => {
   if (twitchChatMessage === "!song") {
     const track = lastFM.getCurrentTrack();
 
@@ -54,73 +53,13 @@ twitchBot.on("message", (twitchChatMessage) => {
     );
   }
 
-  // const PRIDE_BANNERS = {
-  //   pride: {
-  //     colors: [
-  //       "red",
-  //       "orange",
-  //       "yellow",
-  //       "green",
-  //       "blue",
-  //       "purple",
-  //     ],
-  //   },
-  //   agender: { colors: [] },
-  //   aromantic: { colors: [] },
-  //   asexual: { colors: [] },
-  //   bisexual: { colors: [] },
-  //   genderfluid: { colors: [] },
-  //   genderqueer: { colors: [] },
-  //   intersex: {
-  //     colors: [
-  //       "yellow",
-  //       "purple",
-  //       "yellow",
-  //       "purple",
-  //       "yellow",
-  //     ],
-  //   },
-  //   lesbian: { colors: [] },
-  //   "non-binary": { colors: [] },
-  //   pansexual: { colors: [] },
-  //   polysexual: { colors: [] },
-  //   transgender: {
-  //     colors: [
-  //       "light blue",
-  //       "pink",
-  //       "white",
-  //       "pink",
-  //       "light blue",
-  //     ],
-  //   },
-  // };
-
   if (twitchChatMessage.startsWith("!pride")) {
     const prideBannerName = twitchChatMessage
       .replace("!pride", "")
       .trim();
 
-    if (
-      prideBannerName &&
-      prideBannerName.length > 0
-      // &&
-      // PRIDE_BANNERS[prideBannerName]
-    ) {
-      // const { colors } = PRIDE_BANNERS[prideBannerName];
+    if (prideBannerName && prideBannerName.length > 0) {
       io.emit("data", { prideBannerName });
-
-      // const COLOR_DURATION = 1500;
-      // colors.map((color, i) => {
-      //   setTimeout(() => {
-      //     setLightsColor(color);
-      //   }, COLOR_DURATION * i);
-      // });
-
-      // // reset after all the other colours
-      // setTimeout(
-      //   () => setLightsColor("reset"),
-      //   COLOR_DURATION * colors.length
-      // );
     }
   }
 

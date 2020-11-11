@@ -4,17 +4,25 @@
   box-sizing: border-box;
 }
 
+:root {
+  --color-white: #fff;
+  --color-black: #111;
+  --border-width-amount: 6px;
+  --border-radius-amount: 24px;
+}
+
 body {
-  font-family: sans-serif;
+  font-size: 40px;
+  font-family: "Comic Code", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .Box {
-  color: white;
-  border: 3px solid white;
-  border-radius: 6px;
-  background: #111;
+  color: var(--color-white);
+  border: var(--border-width-amount) solid var(--color-white);
+  border-radius: var(--border-radius-amount);
+  background: var(--color-black);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 

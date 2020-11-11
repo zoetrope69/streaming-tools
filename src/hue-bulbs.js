@@ -23,8 +23,7 @@ async function getHueBulbIPAddress() {
 
   if (
     ipAddressJSON.length === 0 ||
-    typeof ipAddressJSON[0].internalipaddress ===
-      "undefined"
+    typeof ipAddressJSON[0].internalipaddress === "undefined"
   ) {
     throw new Error("Missing IP address");
   }
@@ -58,9 +57,7 @@ function getColor(colorInput) {
 
 async function setLightsColor(colorInput) {
   const hueBulbIpAddress = await getHueBulbIPAddress();
-  const callHueBulbAPI = callHueBulbAPIBuilder(
-    hueBulbIpAddress
-  );
+  const callHueBulbAPI = callHueBulbAPIBuilder(hueBulbIpAddress);
 
   async function getLights() {
     const lights = await callHueBulbAPI("lights");

@@ -25,9 +25,7 @@ const CLIENT_FILE_PATH = "client/build";
 app.use(express.static(CLIENT_FILE_PATH));
 
 app.get("/", function (req, res) {
-  res.sendFile(
-    __dirname + CLIENT_FILE_PATH + "/index.html"
-  );
+  res.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
 
 TwitchAPI().then((twitchApi) => {
@@ -43,56 +41,59 @@ TwitchAPI().then((twitchApi) => {
 
 twitchBot.on("message", (twitchChatMessage) => {
   if (twitchChatMessage === "!song") {
-    const {
-      artistName,
-      trackName,
-      albumName,
-    } = lastFM.getCurrentTrack();
+    const track = lastFM.getCurrentTrack();
+
+    if (!track) {
+      twitchBot.say(`SingsNote Nothing is playing...`);
+    }
+
+    const { artistName, trackName, albumName } = track;
+
     twitchBot.say(
       `SingsNote ${trackName} — ${artistName} — ${albumName}`
     );
   }
 
-  const PRIDE_BANNERS = {
-    pride: {
-      colors: [
-        "red",
-        "orange",
-        "yellow",
-        "green",
-        "blue",
-        "purple",
-      ],
-    },
-    agender: { colors: [] },
-    aromantic: { colors: [] },
-    asexual: { colors: [] },
-    bisexual: { colors: [] },
-    genderfluid: { colors: [] },
-    genderqueer: { colors: [] },
-    intersex: {
-      colors: [
-        "yellow",
-        "purple",
-        "yellow",
-        "purple",
-        "yellow",
-      ],
-    },
-    lesbian: { colors: [] },
-    "non-binary": { colors: [] },
-    pansexual: { colors: [] },
-    polysexual: { colors: [] },
-    transgender: {
-      colors: [
-        "light blue",
-        "pink",
-        "white",
-        "pink",
-        "light blue",
-      ],
-    },
-  };
+  // const PRIDE_BANNERS = {
+  //   pride: {
+  //     colors: [
+  //       "red",
+  //       "orange",
+  //       "yellow",
+  //       "green",
+  //       "blue",
+  //       "purple",
+  //     ],
+  //   },
+  //   agender: { colors: [] },
+  //   aromantic: { colors: [] },
+  //   asexual: { colors: [] },
+  //   bisexual: { colors: [] },
+  //   genderfluid: { colors: [] },
+  //   genderqueer: { colors: [] },
+  //   intersex: {
+  //     colors: [
+  //       "yellow",
+  //       "purple",
+  //       "yellow",
+  //       "purple",
+  //       "yellow",
+  //     ],
+  //   },
+  //   lesbian: { colors: [] },
+  //   "non-binary": { colors: [] },
+  //   pansexual: { colors: [] },
+  //   polysexual: { colors: [] },
+  //   transgender: {
+  //     colors: [
+  //       "light blue",
+  //       "pink",
+  //       "white",
+  //       "pink",
+  //       "light blue",
+  //     ],
+  //   },
+  // };
 
   if (twitchChatMessage.startsWith("!pride")) {
     const prideBannerName = twitchChatMessage
@@ -101,24 +102,25 @@ twitchBot.on("message", (twitchChatMessage) => {
 
     if (
       prideBannerName &&
-      prideBannerName.length > 0 &&
-      PRIDE_BANNERS[prideBannerName]
+      prideBannerName.length > 0
+      // &&
+      // PRIDE_BANNERS[prideBannerName]
     ) {
-      const { colors } = PRIDE_BANNERS[prideBannerName];
+      // const { colors } = PRIDE_BANNERS[prideBannerName];
       io.emit("data", { prideBannerName });
 
-      const COLOR_DURATION = 1500;
-      colors.map((color, i) => {
-        setTimeout(() => {
-          setLightsColor(color);
-        }, COLOR_DURATION * i);
-      });
+      // const COLOR_DURATION = 1500;
+      // colors.map((color, i) => {
+      //   setTimeout(() => {
+      //     setLightsColor(color);
+      //   }, COLOR_DURATION * i);
+      // });
 
-      // reset after all the other colours
-      setTimeout(
-        () => setLightsColor("reset"),
-        COLOR_DURATION * colors.length
-      );
+      // // reset after all the other colours
+      // setTimeout(
+      //   () => setLightsColor("reset"),
+      //   COLOR_DURATION * colors.length
+      // );
     }
   }
 

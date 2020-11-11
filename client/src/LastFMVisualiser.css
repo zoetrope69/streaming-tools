@@ -1,13 +1,13 @@
 .LastFMVisualiser {
   position: absolute;
   bottom: 0;
-  left: 172px;
+  left: 12.5vw;
   display: flex;
   align-items: center;
   overflow: hidden;
-  border-top-right-radius: 5px;
-  background: #111;
-  color: white;
+  border-top-right-radius: var(--border-radius-amount);
+  background: var(--color-black);
+  color: var(--color-white);
   animation: slideUp 500ms ease-in forwards;
 }
 
@@ -29,11 +29,11 @@
 
 .LastFMVisualiser__image {
   display: block;
-  width: 50px;
+  width: 5vw;
 }
 
 .LastFMVisualiser__text {
-  font-size: 1.5em;
+  font-size: 1em;
   padding: 0 0.5em;
 }
 
@@ -42,9 +42,10 @@
   align-items: center;
   height: 100%;
   padding: 0.5em;
-  background: white;
-  color: black;
-  font-size: 1.25em;
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: 1em;
+  font-weight: bolder;
 }
 
 .LastFMVisualiser__command img {

@@ -50,8 +50,8 @@ function callTwitchAPIBuilder(oAuthToken) {
           "Client-Id": TWITCH_CLIENT_ID,
         },
       });
-    } catch(e) {
-      logger.error("💩 Twitch API", e)
+    } catch (e) {
+      logger.error("💩 Twitch API", e);
     }
 
     if (!response) {

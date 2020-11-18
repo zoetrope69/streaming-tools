@@ -4,7 +4,6 @@ import PrideFlag from "./PrideFlag";
 import KeyboardVisualiser from "./KeyboardVisualiser";
 import LastFMVisualiser from "./LastFMVisualiser";
 import Alert from "./Alert";
-import Cam from "./Cam";
 
 import "./App.css";
 
@@ -81,7 +80,6 @@ function App() {
   return (
     <div className="App">
       <PrideFlag name={currentPrideFlagName} />
-      <Cam />
       <KeyboardVisualiser keys={keys} />
       <LastFMVisualiser currentTrack={currentTrack} />
 

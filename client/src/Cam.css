@@ -6,10 +6,4 @@
   display: block;
   width: 12.5vw;
   height: 12.5vw;
-
-  border: var(--border-width-amount) solid var(--color-white);
-  border-bottom: none;
-  border-left: none;
-  border-top-right-radius: var(--border-radius-amount);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }

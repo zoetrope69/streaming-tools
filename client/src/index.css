@@ -12,6 +12,7 @@
 }
 
 body {
+  overflow: hidden;
   font-size: 40px;
   font-family: "Comic Code", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -40,6 +41,7 @@ body {
   }
 }
 
-iframe {
+/* hide the React error overlay */
+iframe:not(.safe) {
   display: none;
 }

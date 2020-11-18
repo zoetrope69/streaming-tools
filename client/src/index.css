@@ -39,3 +39,7 @@ body {
     opacity: 1;
   }
 }
+
+iframe {
+  display: none;
+}

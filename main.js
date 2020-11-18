@@ -98,6 +98,9 @@ lastFM.on("track", (track) => {
 io.on("connection", (socket) => {
   logger.info("👽 Stream Client", "Connected");
 
+  const track = lastFM.getCurrentTrack();
+  io.emit("data", { track });
+
   socket.on("disconnect", () => {
     logger.info("👽 Stream Client", "Disconnected");
   });

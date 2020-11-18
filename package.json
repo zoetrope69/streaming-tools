@@ -9,7 +9,7 @@
     "start": "node main.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nodemon --watch src main.js",
-    "dev:client": "cd client && npm start",
+    "dev:client": "cd client && BROWSER=none npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

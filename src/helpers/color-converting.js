@@ -1,13 +1,35 @@
 const namedColors = require("color-name-list");
 
+const LIGHT_XY_COLOR_MAP = {
+  red: [0.4575, 0.4099],
+  orange: [0.5855, 0.3879],
+  yellow: [0.4953, 0.4556],
+  green: [0.1938, 0.6821],
+  "light green": [0.2762, 0.5474],
+  blue: [0.139, 0.081],
+  "light blue": [0.2042, 0.2562],
+  purple: [0.2519, 0.1238],
+  pink: [0.3362, 0.2001],
+  // other colours
+  white: [0.3129, 0.3291],
+  warm: [0.4575, 0.4099],
+};
+
+function getDefinedXYFromColorName(name) {
+  if (!name) {
+    return;
+  }
+
+  return LIGHT_XY_COLOR_MAP[name];
+}
+
 function colorNameToHex(name) {
   if (!name) {
     return;
   }
 
   const namedColor = namedColors.find(
-    (color) =>
-      color.name.toLowerCase() === name.trim().toLowerCase()
+    (color) => color.name.toLowerCase() === name.trim().toLowerCase()
   );
 
   if (!namedColor) {
@@ -30,9 +52,9 @@ function hexToRgb(str) {
     const value = Number.parseInt(long, 16);
     return [value >> 16, (value >> 8) & 0xff, value & 0xff];
   } else if (short) {
-    return Array.from(short, (s) =>
-      Number.parseInt(s, 16)
-    ).map((n) => (n << 4) | n);
+    return Array.from(short, (s) => Number.parseInt(s, 16)).map(
+      (n) => (n << 4) | n
+    );
   }
 }
 
@@ -104,14 +126,8 @@ function rgbToXY(rgbArray) {
     return;
   }
 
-  const normalisedRGBArray = rgbArray.map(
-    (value) => value / 255
-  );
-  const [
-    redValue,
-    greenValue,
-    blueValue,
-  ] = normalisedRGBArray;
+  const normalisedRGBArray = rgbArray.map((value) => value / 255);
+  const [redValue, greenValue, blueValue] = normalisedRGBArray;
 
   let red;
   let green;
@@ -126,28 +142,20 @@ function rgbToXY(rgbArray) {
 
   // Make green more vivid
   if (greenValue > 0.04045) {
-    green = Math.pow(
-      (greenValue + 0.055) / (1.0 + 0.055),
-      2.4
-    );
+    green = Math.pow((greenValue + 0.055) / (1.0 + 0.055), 2.4);
   } else {
     green = greenValue / 12.92;
   }
 
   // Make blue more vivid
   if (blueValue > 0.04045) {
-    blue = Math.pow(
-      (blueValue + 0.055) / (1.0 + 0.055),
-      2.4
-    );
+    blue = Math.pow((blueValue + 0.055) / (1.0 + 0.055), 2.4);
   } else {
     blue = blueValue / 12.92;
   }
 
-  const X =
-    red * 0.649926 + green * 0.103455 + blue * 0.197109;
-  const Y =
-    red * 0.234327 + green * 0.743075 + blue * 0.022598;
+  const X = red * 0.649926 + green * 0.103455 + blue * 0.197109;
+  const Y = red * 0.234327 + green * 0.743075 + blue * 0.022598;
   const Z = red * 0.0 + green * 0.053077 + blue * 1.035763;
 
   if (X === 0 && Y === 0 && Z === 0) {
@@ -161,10 +169,7 @@ function rgbToXY(rgbArray) {
     return Math.round(value * 10000) / 10000;
   }
 
-  return [
-    roundTo4DecimalPlaces(x),
-    roundTo4DecimalPlaces(y),
-  ];
+  return [roundTo4DecimalPlaces(x), roundTo4DecimalPlaces(y)];
 }
 
 function hslToXY(hsl) {
@@ -173,6 +178,15 @@ function hslToXY(hsl) {
 }
 
 function colorNameToXY(name) {
+  if (!name) {
+    return;
+  }
+
+  const definedXY = getDefinedXYFromColorName(name);
+  if (definedXY) {
+    return definedXY;
+  }
+
   const hex = colorNameToHex(name);
   const rgb = hexToRgb(hex);
   return rgbToXY(rgb);

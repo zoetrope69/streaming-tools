@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import openSocket from "socket.io-client";
-import PrideBanner from "./PrideBanner";
+import PrideFlag from "./PrideFlag";
 import KeyboardVisualiser from "./KeyboardVisualiser";
 import LastFMVisualiser from "./LastFMVisualiser";
 import Alert from "./Alert";
@@ -14,10 +14,9 @@ function App() {
   const [keys, setKeys] = useState({});
   const [alertQueue, setAlertQueue] = useState([]);
   const [currentTrack, setCurrentTrack] = useState({});
-  const [
-    currentPrideBannerName,
-    setCurrentPrideBannerName,
-  ] = useState("pride");
+  const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
+    "rainbow"
+  );
   const [currentAlert] = alertQueue;
   // TEST variables
   // const currentAlert = {
@@ -48,7 +47,7 @@ function App() {
         twitchChatMessage,
         alert,
         track,
-        prideBannerName,
+        prideFlagName,
       } = data;
 
       if (keys) {
@@ -63,8 +62,8 @@ function App() {
         setCurrentTrack(track);
       }
 
-      if (prideBannerName) {
-        setCurrentPrideBannerName(prideBannerName);
+      if (prideFlagName) {
+        setCurrentPrideFlagName(prideFlagName);
       }
 
       if (twitchChatMessage) {
@@ -81,7 +80,7 @@ function App() {
 
   return (
     <div className="App">
-      <PrideBanner name={currentPrideBannerName} />
+      <PrideFlag name={currentPrideFlagName} />
       <Cam />
       <KeyboardVisualiser keys={keys} />
       <LastFMVisualiser currentTrack={currentTrack} />

@@ -52,16 +52,22 @@ async function initialiseHueBulbs() {
   callHueBulbAPI = await callHueBulbAPIBuilder();
 }
 
-function getColor(colorInput) {
-  if (colorInput === "reset") {
-    return [0.4575, 0.4099];
+function getColorState(colorInput) {
+  if (colorInput === "black") {
+    // turn light off
+    return { on: false };
+  }
+
+  if (colorInput === "grey" || colorInput === "gray") {
+    // turn light low brightness for grey
+    return { xy: colorNameToXY("white"), bri: 50 };
   }
 
   if (colorInput.startsWith("#")) {
-    return hexToXY(colorInput);
+    return { xy: hexToXY(colorInput) };
   }
 
-  return colorNameToXY(colorInput);
+  return { xy: colorNameToXY(colorInput) };
 }
 
 async function getLights() {
@@ -87,9 +93,9 @@ async function getLightByName(name) {
 }
 
 async function setLightsColor(colorInput) {
-  const color = getColor(colorInput);
+  const colorState = getColorState(colorInput);
 
-  if (!color) {
+  if (!colorState) {
     return;
   }
 
@@ -99,7 +105,7 @@ async function setLightsColor(colorInput) {
     if (light) {
       callHueBulbAPI(`lights/${light.id}/state`, {
         method: "PUT",
-        body: { on: true, xy: color },
+        body: { on: true, bri: 254, ...colorState },
       });
     }
   });
@@ -120,7 +126,7 @@ async function setFairyLights(value) {
 
 async function resetLights() {
   await setFairyLights({ on: true });
-  await setLightsColor("reset");
+  await setLightsColor("warm");
   return;
 }
 

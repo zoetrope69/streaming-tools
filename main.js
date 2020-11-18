@@ -9,6 +9,11 @@ const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
 const logger = require("./src/helpers/logger");
+const {
+  getPrideFlag,
+  getRandomPrideFlag,
+  setLightsToPrideFlag,
+} = require("./src/pride-flags");
 
 const app = express();
 const server = http.createServer(app);
@@ -54,12 +59,25 @@ twitchBot.on("message", async (twitchChatMessage) => {
   }
 
   if (twitchChatMessage.startsWith("!pride")) {
-    const prideBannerName = twitchChatMessage
+    const inputPrideFlagName = twitchChatMessage
       .replace("!pride", "")
       .trim();
 
-    if (prideBannerName && prideBannerName.length > 0) {
-      io.emit("data", { prideBannerName });
+    const prideFlag = getPrideFlag(inputPrideFlagName);
+
+    if (prideFlag) {
+      setLightsToPrideFlag(prideFlag.name);
+      io.emit("data", { prideFlagName: prideFlag.name });
+    } else {
+      const randomPrideFlagName = getRandomPrideFlag().name;
+      twitchBot.say(
+        [
+          inputPrideFlagName.length > 0
+            ? `Didn't anything for "${inputPrideFlagName}". :-(`
+            : "",
+          `Try something like '!pride ${randomPrideFlagName}`,
+        ].join(" ")
+      );
     }
   }
 

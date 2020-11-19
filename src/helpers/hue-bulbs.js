@@ -125,7 +125,6 @@ async function setFairyLights(value) {
 }
 
 async function resetLights() {
-  await setFairyLights({ on: true });
   await setLightsColor("warm");
   return;
 }

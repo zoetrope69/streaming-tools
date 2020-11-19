@@ -114,7 +114,6 @@ function getRandomPrideFlag() {
 
 async function goThroughColors(colors) {
   return new Promise(async (resolve) => {
-    await setFairyLights({ on: false });
     // wait for fairy lights to turn off
     setTimeout(() => {
       const COLOR_DURATION = 2000;

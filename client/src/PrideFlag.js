@@ -37,7 +37,7 @@ const PrideFlag = ({ name }) => {
         }, FADE_DURATION_MILLISECONDS);
       }
     }
-  }, [name]);
+  }, [name, currentName]);
 
   const PrideFlagClassName = classNames("PrideFlag", {
     [`PrideFlag--${currentName}`]: true,

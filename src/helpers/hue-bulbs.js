@@ -4,7 +4,7 @@ require("dotenv").config();
 const fetch = require("node-fetch");
 const { colorNameToXY, hexToXY } = require("./color-converting");
 
-const { HUE_BULB_USERNAME } = process.env;
+const { HUE_BULB_USERNAME, HUE_BULB_HUB_IP_ADDRESS } = process.env;
 
 const LIGHTS = {
   "00:17:88:01:04:6e:b3:85-0b": "ceiling",
@@ -12,25 +12,8 @@ const LIGHTS = {
   "00:17:88:01:08:d8:72:cc-0b": "fairy-lights",
 };
 
-async function getHueBulbIPAddress() {
-  const ipAddressResponse = await fetch(
-    "https://discovery.meethue.com/"
-  );
-  const ipAddressJSON = await ipAddressResponse.json();
-
-  if (
-    ipAddressJSON.length === 0 ||
-    typeof ipAddressJSON[0].internalipaddress === "undefined"
-  ) {
-    throw new Error("Missing IP address");
-  }
-
-  return ipAddressJSON[0].internalipaddress;
-}
-
 async function callHueBulbAPIBuilder() {
-  const hueBulbIpAddress = await getHueBulbIPAddress();
-  const BASE_URI = `http://${hueBulbIpAddress}/api/${HUE_BULB_USERNAME}/`;
+  const BASE_URI = `http://${HUE_BULB_HUB_IP_ADDRESS}/api/${HUE_BULB_USERNAME}/`;
   return async function (uri, { method, body } = {}) {
     const response = await fetch(`${BASE_URI}${uri}`, {
       method,

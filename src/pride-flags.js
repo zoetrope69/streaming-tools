@@ -2,12 +2,12 @@ const {
   initialiseHueBulbs,
   setLightsColor,
   resetLights,
-  setFairyLights,
 } = require("./helpers/hue-bulbs");
 
-const PRIDE_FLAGS = {
-  rainbow: {
+const PRIDE_FLAGS = [
+  {
     name: "rainbow",
+    twitchEmote: "GayPride",
     lightColors: [
       "black",
       "red",
@@ -18,7 +18,7 @@ const PRIDE_FLAGS = {
       "purple",
     ],
   },
-  agender: {
+  {
     name: "agender",
     lightColors: [
       "black",
@@ -30,48 +30,56 @@ const PRIDE_FLAGS = {
       "black",
     ],
   },
-  aromantic: {
+  {
     name: "aromantic",
     lightColors: ["green", "light green", "white", "grey", "black"],
   },
-  asexual: {
+  {
     name: "asexual",
+    twitchEmote: "AsexualPride",
     lightColors: ["black", "grey", "white", "purple"],
   },
-  bisexual: {
+  {
     name: "bisexual",
+    twitchEmote: "BisexualPride",
     lightColors: ["pink", "purple", "blue"],
   },
-  genderfluid: {
+  {
     name: "genderfluid",
+    twitchEmote: "GenderFluidPride",
     lightColors: ["pink", "white", "purple", "black", "blue"],
   },
-  genderqueer: {
+  {
     name: "genderqueer",
     lightColors: ["purple", "white", "green"],
   },
-  intersex: {
+  {
     name: "intersex",
+    twitchEmote: "IntersexPride",
     lightColors: ["yellow", "purple", "yellow", "purple", "yellow"],
   },
-  lesbian: {
+  {
     name: "lesbian",
+    twitchEmote: "LesbianPride",
     lightColors: ["red", "orange", "white", "pink", "purple"],
   },
-  "non-binary": {
+  {
     name: "non-binary",
+    twitchEmote: "NonBinaryPride",
     lightColors: ["yellow", "white", "purple", "black"],
   },
-  pansexual: {
+  {
     name: "pansexual",
+    twitchEmote: "PansexualPride",
     lightColors: ["pink", "yellow", "light blue"],
   },
-  polysexual: {
+  {
     name: "polysexual",
     lightColors: ["pink", "green", "light blue"],
   },
-  transgender: {
+  {
     name: "transgender",
+    twitchEmote: "TransgenderPride",
     lightColors: [
       "light blue",
       "pink",
@@ -80,7 +88,7 @@ const PRIDE_FLAGS = {
       "light blue",
     ],
   },
-};
+];
 
 const PRIDE_FLAGS_ALIAS_MAP = {
   trans: "transgender",
@@ -98,11 +106,15 @@ function getPrideFlag(name) {
     return getPrideFlag(PRIDE_FLAGS_ALIAS_MAP[name]);
   }
 
-  if (!PRIDE_FLAGS[name]) {
+  const flag = PRIDE_FLAGS.find(
+    (flag) => flag.name === name || flag.twitchEmote === name
+  );
+
+  if (!flag) {
     return;
   }
 
-  return PRIDE_FLAGS[name];
+  return flag;
 }
 
 function getRandomPrideFlag() {
@@ -113,22 +125,18 @@ function getRandomPrideFlag() {
 }
 
 async function goThroughColors(colors) {
-  return new Promise(async (resolve) => {
-    // wait for fairy lights to turn off
-    setTimeout(() => {
-      const COLOR_DURATION = 2000;
-      colors.map((color, i) => {
-        setTimeout(() => {
-          setLightsColor(color);
-        }, COLOR_DURATION * i);
-      });
+  return new Promise((resolve) => {
+    const COLOR_DURATION = 2000;
+    colors.map((color, i) => {
+      setTimeout(() => {
+        setLightsColor(color);
+      }, COLOR_DURATION * i);
+    });
 
-      // reset after all the other colours
-      setTimeout(async () => {
-        await resetLights();
-        resolve();
-      }, COLOR_DURATION * colors.length);
-    }, 500);
+    setTimeout(async () => {
+      await resetLights();
+      resolve();
+    }, COLOR_DURATION * colors.length);
   });
 }
 

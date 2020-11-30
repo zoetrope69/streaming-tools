@@ -1,10 +1,12 @@
 // get process.env from .env
 require("dotenv").config();
+const { PORT } = process.env;
 
 const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
+
 const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
@@ -14,14 +16,13 @@ const {
   getRandomPrideFlag,
   setLightsToPrideFlag,
 } = require("./src/pride-flags");
+const obs = require("./src/obs");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const twitchBot = TwitchBot();
 const lastFM = LastFM();
-
-const PORT = 4000;
 
 const CLIENT_FILE_PATH = "client/build";
 
@@ -31,6 +32,9 @@ app.use(express.static(CLIENT_FILE_PATH));
 app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
+
+// initialise obs connection
+obs.initialise();
 
 TwitchAPI().then((twitchApi) => {
   twitchApi.on("follow", (user) => {
@@ -44,14 +48,19 @@ TwitchAPI().then((twitchApi) => {
 });
 
 twitchBot.on("message", async (twitchChatMessage) => {
+  twitchChatMessage = twitchChatMessage.toLowerCase();
+
   if (twitchChatMessage === "!song") {
-    const track = lastFM.getCurrentTrack();
+    const {
+      artistName,
+      trackName,
+      albumName,
+    } = lastFM.getCurrentTrack();
 
-    if (!track) {
+    if (!artistName || !trackName || !albumName) {
       twitchBot.say(`SingsNote Nothing is playing...`);
+      return;
     }
-
-    const { artistName, trackName, albumName } = track;
 
     twitchBot.say(
       `SingsNote ${trackName} — ${artistName} — ${albumName}`
@@ -68,24 +77,36 @@ twitchBot.on("message", async (twitchChatMessage) => {
     if (prideFlag) {
       setLightsToPrideFlag(prideFlag.name);
       io.emit("data", { prideFlagName: prideFlag.name });
+      if (prideFlag.twitchEmote) {
+        twitchBot.say(`${prideFlag.twitchEmote} `.repeat(5));
+      }
     } else {
       const randomPrideFlagName = getRandomPrideFlag().name;
       twitchBot.say(
         [
           inputPrideFlagName.length > 0
-            ? `Didn't anything for "${inputPrideFlagName}". :-(`
+            ? `Didn't find anything for "${inputPrideFlagName}". :-(`
             : "",
-          `Try something like '!pride ${randomPrideFlagName}`,
+          `Try something like: !pride ${randomPrideFlagName}`,
         ].join(" ")
       );
     }
   }
 
+  obs.handleTriggers(twitchChatMessage);
+
   if (twitchChatMessage.startsWith("!help")) {
-    [
-      "!color [colorname]: sets my lights to a color",
+    const triggerHelpMessages = obs.TRIGGER_SOURCES.map(
+      ({ name, description }) => `!${name}: ${description}`
+    );
+
+    const helpMessages = [
       "!song: gets the current playing song",
-    ].forEach(twitchBot.say);
+      "!pride: sets the flag at the top to a pride flag",
+      ...triggerHelpMessages,
+    ];
+
+    helpMessages.forEach(twitchBot.say);
   }
 
   io.emit("data", { twitchChatMessage });

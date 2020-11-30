@@ -13,8 +13,10 @@
     "react-scripts": "3.4.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dev:client": "npm start",
+    "dev": "npm run dev:client",
+    "start": "SKIP_PREFLIGHT_CHECK=true BROWSER=none react-scripts start",
+    "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

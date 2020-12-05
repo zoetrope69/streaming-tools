@@ -6,7 +6,7 @@ const {
 
 const PRIDE_FLAGS = [
   {
-    name: "rainbow",
+    name: "gay",
     twitchEmote: "GayPride",
     lightColors: [
       "black",
@@ -95,6 +95,8 @@ const PRIDE_FLAGS_ALIAS_MAP = {
   nonbinary: "non-binary",
   ace: "asexual",
   bi: "bisexual",
+  rainbow: "gay",
+  homosexual: "gay",
 };
 
 function getPrideFlag(name) {

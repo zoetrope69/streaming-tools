@@ -6,11 +6,11 @@ import "./PrideFlag.css";
 const FADE_DURATION_MILLISECONDS = 1000;
 
 const PRIDE_FLAGS = [
-  "pride",
   "agender",
   "aromantic",
   "asexual",
   "bisexual",
+  "gay",
   "genderfluid",
   "genderqueer",
   "intersex",
@@ -24,7 +24,7 @@ const PRIDE_FLAGS = [
 const PrideFlag = ({ name }) => {
   const [isNewFlagShown, setIsNewFlagShown] = useState(false);
   const [newFlagName, setNewFlagName] = useState("");
-  const [currentName, setCurrentName] = useState("rainbow");
+  const [currentName, setCurrentName] = useState("gay");
 
   useEffect(() => {
     if (PRIDE_FLAGS.includes(name)) {

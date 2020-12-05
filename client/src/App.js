@@ -14,7 +14,7 @@ function App() {
   const [alertQueue, setAlertQueue] = useState([]);
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
-    "rainbow"
+    "gay"
   );
   const [currentAlert] = alertQueue;
 

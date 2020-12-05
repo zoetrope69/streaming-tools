@@ -17,14 +17,6 @@ function App() {
     "rainbow"
   );
   const [currentAlert] = alertQueue;
-  // TEST variables
-  // const currentAlert = {
-  //   id: "123",
-  //   type: "follow",
-  //   user: {
-  //     username: "zaccolley",
-  //   },
-  // };
 
   const removeAlertFromQueue = (alertId) => {
     const newAlertQueue = alertQueue.filter(

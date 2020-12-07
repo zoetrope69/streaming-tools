@@ -2,16 +2,17 @@ const events = require("events");
 const fetch = require("node-fetch");
 const hash = require("object-hash");
 const { stringify: stringifyQueryString } = require("qs");
-const logger = require("./helpers/logger");
 const getColors = require("get-image-colors");
 const chroma = require("chroma-js");
+const cache = require("memory-cache");
+const logger = require("./helpers/logger");
 
 const { LAST_FM_API_KEY, LAST_FM_USERNAME } = process.env;
 
 const BASE_URL = `http://ws.audioscrobbler.com/2.0/`;
 
-// default current track to nothing
-let CURRENT_NOW_PLAYING_TRACK = {};
+const CACHE_KEY = "NOW_PLAYING_TRACK";
+const CACHE_TIMEOUT_MS = 10000; // 10 secs
 
 async function getAlbumArtColors(albumArtURL) {
   if (!albumArtURL || albumArtURL.length === 0) {
@@ -104,14 +105,20 @@ async function emitNowPlayingTrack(eventEmitter) {
   try {
     const track = await getLastFmRecentTrack();
 
+    const CACHED_NOW_PLAYING_TRACK = cache.get(CACHE_KEY);
+
     // check if we're already have this track in cache
-    if (track && CURRENT_NOW_PLAYING_TRACK.id === track.id) {
+    if (
+      track &&
+      CACHED_NOW_PLAYING_TRACK &&
+      CACHED_NOW_PLAYING_TRACK.id === track.id
+    ) {
       return;
     }
 
     // store in our in memory cache if its now playing
     if (track.isNowPlaying) {
-      CURRENT_NOW_PLAYING_TRACK = track;
+      cache.put(CACHE_KEY, track, CACHE_TIMEOUT_MS);
     }
 
     eventEmitter.emit("track", track);
@@ -132,7 +139,7 @@ function lastFm() {
   }, 1000 * 10);
 
   // again gross, should be returning a class or something
-  eventEmitter.getCurrentTrack = () => CURRENT_NOW_PLAYING_TRACK;
+  eventEmitter.getCurrentTrack = () => cache.get(CACHE_KEY);
 
   return eventEmitter;
 }

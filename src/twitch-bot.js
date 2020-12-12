@@ -27,6 +27,7 @@ Bot.on("connected", () => {
     "🤖 Twitch Bot",
     `Connected to: ${TWITCH_BROADCASTER_NAME}`
   );
+  eventEmitter.emit("ready");
 });
 
 Bot.on("join", (channel) => {

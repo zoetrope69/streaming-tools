@@ -7,9 +7,12 @@ const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
 
+const { schedule } = require("./src/helpers/schedule");
+
 const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
+const twitchCommands = require("./src/twitch-commands");
 const logger = require("./src/helpers/logger");
 const {
   getPrideFlag,
@@ -33,8 +36,9 @@ app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
 
-// initialise obs connection
+// initialise various things
 obs.initialise();
+twitchCommands.initialise();
 
 TwitchAPI().then((twitchApi) => {
   twitchApi.on("follow", (user) => {
@@ -44,6 +48,19 @@ TwitchAPI().then((twitchApi) => {
       user,
     };
     io.emit("data", { alert });
+  });
+});
+
+twitchBot.on("ready", async () => {
+  const scheduledCommands = await twitchCommands.getScheduledCommands();
+
+  scheduledCommands.forEach((scheduledCommand) => {
+    console.log(
+      `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
+    );
+    schedule(scheduledCommand.schedule, () => {
+      twitchBot.say(scheduledCommand.value);
+    });
   });
 });
 

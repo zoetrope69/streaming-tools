@@ -35,11 +35,12 @@ async function getCachedCommands() {
     return cachedCommands;
   }
 
-  return getCommands();
+  return await getCommands();
 }
 
 async function getScheduledCommands() {
-  const scheduledCommands = await getCachedCommands.filter(
+  const commands = await getCachedCommands();
+  const scheduledCommands = commands.filter(
     (command) => command.schedule
   );
 

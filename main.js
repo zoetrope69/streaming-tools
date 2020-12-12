@@ -40,14 +40,17 @@ app.get("/", (_request, response) => {
 obs.initialise();
 twitchCommands.initialise();
 
+function sendAlertToClient(options) {
+  const alert = {
+    id: randomID(),
+    ...options,
+  };
+  io.emit("data", { alert });
+}
+
 TwitchAPI().then((twitchApi) => {
   twitchApi.on("follow", (user) => {
-    const alert = {
-      id: randomID(),
-      type: "follow",
-      user,
-    };
-    io.emit("data", { alert });
+    sendAlertToClient({ type: "follow", user });
   });
 });
 
@@ -55,7 +58,8 @@ twitchBot.on("ready", async () => {
   const scheduledCommands = await twitchCommands.getScheduledCommands();
 
   scheduledCommands.forEach((scheduledCommand) => {
-    console.log(
+    logger.info(
+      "🤖 Twitch Bot",
       `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
     );
     schedule(scheduledCommand.schedule, () => {
@@ -68,6 +72,13 @@ twitchBot.on("message", async (twitchChatMessage) => {
   twitchChatMessage = twitchChatMessage.toLowerCase();
 
   if (twitchChatMessage === "!song") {
+    const currentTrack = lastFM.getCurrentTrack();
+
+    if (!currentTrack) {
+      twitchBot.say(`SingsNote Nothing is playing...`);
+      return;
+    }
+
     const {
       artistName,
       trackName,
@@ -112,18 +123,16 @@ twitchBot.on("message", async (twitchChatMessage) => {
 
   obs.handleTriggers(twitchChatMessage);
 
-  if (twitchChatMessage.startsWith("!help")) {
-    const triggerHelpMessages = obs.TRIGGER_SOURCES.map(
-      ({ name, description }) => `!${name}: ${description}`
-    );
+  if (twitchChatMessage.startsWith("!bigdata")) {
+    sendAlertToClient({ type: "bigdata" });
+  }
 
-    const helpMessages = [
-      "!song: gets the current playing song",
-      "!pride: sets the flag at the top to a pride flag",
-      ...triggerHelpMessages,
-    ];
-
-    helpMessages.forEach(twitchBot.say);
+  const commands = await twitchCommands.getCommands();
+  const chatCommand = commands.find((command) =>
+    twitchChatMessage.startsWith(`!${command.name}`)
+  );
+  if (chatCommand) {
+    twitchBot.say(chatCommand.value);
   }
 
   io.emit("data", { twitchChatMessage });

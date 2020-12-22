@@ -3,7 +3,7 @@ const cache = require("memory-cache");
 const { getSpreadsheetRows } = require("./helpers/google-sheets");
 
 const CACHE_KEY = "COMMANDS";
-const CACHE_TIMEOUT_MS = 60 * 60 * 1000; // 1 minute
+const CACHE_TIMEOUT_MS = 10 * 1000; // 10 seconds
 
 async function getCommands() {
   const rows = await getSpreadsheetRows({

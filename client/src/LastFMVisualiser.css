@@ -1,13 +1,14 @@
 .LastFMVisualiser {
   position: absolute;
   bottom: 0;
-  right: 0;
+  right: 1em;
+  padding-left: 1em;
   display: flex;
   align-items: center;
   overflow: hidden;
-  border-top-left-radius: var(--border-radius-amount);
   background: var(--color-black);
   color: var(--color-white);
+  clip-path: url(#LastFMVisualiser-clip);
   animation: slideUp 500ms ease-in forwards;
 }
 
@@ -29,26 +30,24 @@
 
 .LastFMVisualiser__image {
   display: block;
-  width: 5vw;
+  width: 3em;
 }
 
 .LastFMVisualiser__text {
   font-size: 1em;
   padding: 0 0.5em;
+  transform: translateY(5px) rotate(-1deg);
 }
 
 .LastFMVisualiser__command {
   display: flex;
   align-items: center;
-  height: 100%;
+  height: 3em;
   padding: 0.5em;
+  padding-right: 1em;
   background: var(--color-white);
   color: var(--color-black);
   font-size: 1em;
-  font-weight: bolder;
-}
-
-.LastFMVisualiser__command img {
-  margin-left: 0.25em;
-  width: 32px;
+  font-family: "Fredoka One", sans-serif;
+  font-weight: 400;
 }

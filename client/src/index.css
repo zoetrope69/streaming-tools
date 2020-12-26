@@ -5,8 +5,8 @@
 }
 
 :root {
-  --color-white: #fff;
-  --color-black: #111;
+  --color-white: #f5f5f5;
+  --color-black: #222;
   --border-width-amount: 6px;
   --border-radius-amount: 24px;
 }
@@ -14,14 +14,13 @@
 body {
   overflow: hidden;
   font-size: 40px;
-  font-family: "Comic Code", sans-serif;
+  font-family: "Comfortaa", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .Box {
   color: var(--color-white);
-  border: var(--border-width-amount) solid var(--color-white);
   border-radius: var(--border-radius-amount);
   background: var(--color-black);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);

@@ -1,6 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import classNames from "classnames";
 
+import SVGClipPath from "./SVGClipPath";
+
 import "./PrideFlag.css";
 
 const FADE_DURATION_MILLISECONDS = 1000;
@@ -56,6 +58,13 @@ const PrideFlag = ({ name }) => {
 
   return (
     <Fragment>
+      <SVGClipPath
+        componentName="PrideFlag"
+        width="1920"
+        height="50"
+        path="M0 0h1920v33.287c-753.833 48.539-1408.825-26.81-1920 0z"
+      />
+
       <div className={PrideFlagClassName} />
       {isNewFlagShown && (
         <div

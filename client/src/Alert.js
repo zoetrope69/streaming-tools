@@ -12,8 +12,6 @@ const ALERT_TYPES = {
         <strong>{children}</strong> just followed!
       </span>
     ),
-    image: "yesyesseysey.gif",
-    audio: "yesyesseysey.mp3",
     duration: 9000,
   },
   bigdata: {
@@ -32,10 +30,14 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
       return;
     }
 
+    if (type === "follow" && window.sayAnimalese) {
+      window.sayAnimalese(`${user.username} just followed!`);
+    }
+
     setTimeout(() => {
       removeAlertFromQueue(id);
     }, duration || DEFAULT_DURATION);
-  }, [alertType, id, duration, removeAlertFromQueue]);
+  }, [user, type, alertType, id, duration, removeAlertFromQueue]);
 
   if (!alertType) {
     return null;
@@ -55,7 +57,7 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
       {audio && <audio src={audio} autoPlay />}
       {image && <img className="Alert__image" src={image} alt="" />}
       {user && (
-        <span class="Alert__message">
+        <span className="Alert__message">
           <Text>{user.username}</Text>
         </span>
       )}

@@ -5,6 +5,14 @@ import SVGClipPath from "./SVGClipPath";
 
 import "./LastFMVisualiser.css";
 
+function truncate(text, amount = 100) {
+  if (text.length < amount) {
+    return text;
+  }
+
+  return text.substring(0, amount) + "...";
+}
+
 const LastFMVisualiser = ({ currentTrack }) => {
   const [track, setTrack] = useState({});
   const [isHidden, setIsHidden] = useState(true);
@@ -50,8 +58,6 @@ const LastFMVisualiser = ({ currentTrack }) => {
     return null;
   }
 
-  console.log("albumArtColors", albumArtColors);
-
   return (
     <Fragment>
       <SVGClipPath
@@ -77,7 +83,10 @@ const LastFMVisualiser = ({ currentTrack }) => {
               : {}
           }
         >
-          {trackName} — {artistName}
+          {truncate(trackName, 20)}
+          <span className="LastFMVisualiser__text__second-line">
+            {truncate(artistName, 40)}
+          </span>
         </p>
         <img
           className="LastFMVisualiser__image"

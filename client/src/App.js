@@ -11,7 +11,6 @@ const socket = openSocket("/");
 
 function App() {
   const [currentFollowTotal, setCurrentFollowTotal] = useState();
-  const [keys, setKeys] = useState({});
   const [alertQueue, setAlertQueue] = useState([]);
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
@@ -36,7 +35,6 @@ function App() {
       console.log("data", data);
 
       const {
-        keys,
         twitchChatMessage,
         alert,
         track,

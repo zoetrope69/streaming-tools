@@ -44,12 +44,15 @@ function App() {
         followTotal,
       } = data;
 
-      if (keys) {
-        setKeys(keys);
-      }
-
       if (alert) {
-        addToAlertQueue(alert);
+        if (!alert.loadImage) {
+        } else {
+          const alertImage = new Image();
+          alertImage.addEventListener("load", () => {
+            addToAlertQueue(alert);
+          });
+          alertImage.src = alert.loadImage;
+        }
       }
 
       if (track?.id !== currentTrack?.id) {

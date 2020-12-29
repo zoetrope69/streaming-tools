@@ -87,3 +87,23 @@
   transform: rotate(-7deg);
   padding: 1.5em;
 }
+
+.Axolotl__speech-bubble__text img {
+  clip-path: url(#Axolotl__speech-bubble__text__image-clip);
+  width: 200px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translate(150%, 75%) rotate(10deg);
+  animation: speachBubbleJiggleImage 1s infinite alternate;
+}
+
+@keyframes speachBubbleJiggleImage {
+  0% {
+    transform: translate(150%, 75%) rotate(10deg);
+  }
+
+  100% {
+    transform: translate(150%, 72%) rotate(10deg);
+  }
+}

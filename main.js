@@ -73,75 +73,125 @@ async function main() {
     });
   });
 
-  twitchBot.on("message", async (twitchChatMessage) => {
-    twitchChatMessage = twitchChatMessage.toLowerCase();
+  twitchBot.on(
+    "message",
+    async ({ isMod, isBroadcaster, message: twitchChatMessage }) => {
+      twitchChatMessage = twitchChatMessage.toLowerCase();
 
-    if (twitchChatMessage === "!song") {
-      const currentTrack = lastFM.getCurrentTrack();
+      if (twitchChatMessage === "!song") {
+        const currentTrack = lastFM.getCurrentTrack();
 
-      if (!currentTrack) {
-        twitchBot.say(`SingsNote Nothing is playing...`);
-        return;
-      }
-
-      const {
-        artistName,
-        trackName,
-        albumName,
-      } = lastFM.getCurrentTrack();
-
-      if (!artistName || !trackName || !albumName) {
-        twitchBot.say(`SingsNote Nothing is playing...`);
-        return;
-      }
-
-      twitchBot.say(
-        `SingsNote ${trackName} — ${artistName} — ${albumName}`
-      );
-    }
-
-    if (twitchChatMessage.startsWith("!pride")) {
-      const inputPrideFlagName = twitchChatMessage
-        .replace("!pride", "")
-        .trim();
-
-      const prideFlag = getPrideFlag(inputPrideFlagName);
-
-      if (prideFlag) {
-        setLightsToPrideFlag(prideFlag.name);
-        io.emit("data", { prideFlagName: prideFlag.name });
-        if (prideFlag.twitchEmote) {
-          twitchBot.say(`${prideFlag.twitchEmote} `.repeat(5));
+        if (!currentTrack) {
+          twitchBot.say(`SingsNote Nothing is playing...`);
+          return;
         }
-      } else {
-        const randomPrideFlagName = getRandomPrideFlag().name;
+
+        const {
+          artistName,
+          trackName,
+          albumName,
+        } = lastFM.getCurrentTrack();
+
+        if (!artistName || !trackName || !albumName) {
+          twitchBot.say(`SingsNote Nothing is playing...`);
+          return;
+        }
+
         twitchBot.say(
-          [
-            inputPrideFlagName.length > 0
-              ? `Didn't find anything for "${inputPrideFlagName}". :-(`
-              : "",
-            `Try something like: !pride ${randomPrideFlagName}`,
-          ].join(" ")
+          `SingsNote ${trackName} — ${artistName} — ${albumName}`
         );
       }
+
+      if (twitchChatMessage.startsWith("!pride")) {
+        const inputPrideFlagName = twitchChatMessage
+          .replace("!pride", "")
+          .trim();
+
+        const prideFlag = getPrideFlag(inputPrideFlagName);
+
+        if (prideFlag) {
+          setLightsToPrideFlag(prideFlag.name);
+          io.emit("data", { prideFlagName: prideFlag.name });
+          if (prideFlag.twitchEmote) {
+            twitchBot.say(`${prideFlag.twitchEmote} `.repeat(5));
+          }
+        } else {
+          const randomPrideFlagName = getRandomPrideFlag().name;
+          twitchBot.say(
+            [
+              inputPrideFlagName.length > 0
+                ? `Didn't find anything for "${inputPrideFlagName}". :-(`
+                : "",
+              `Try something like: !pride ${randomPrideFlagName}`,
+            ].join(" ")
+          );
+        }
+      }
+
+      obs.handleTriggers(twitchChatMessage);
+
+      if (twitchChatMessage.startsWith("!bigdata")) {
+        sendAlertToClient({ type: "bigdata" });
+      }
+
+      // function shoutout(twitchUsername, message) {
+      //   getProfileImageURL(
+      //     twitchUsername,
+      //     function (username, imageURL) {
+      //       shoutouts.push({
+      //         username: username,
+      //         imageURL: imageURL,
+      //         message: message,
+      //         chatCallback: say,
+      //       });
+      //     }
+      //   );
+      // }
+
+      // the mod/broadcaster zooone
+      if (isMod || isBroadcaster) {
+        if (twitchChatMessage.startsWith("!so")) {
+          let shoutOutUsername = twitchChatMessage.split(" ")[1];
+
+          if (shoutOutUsername.startsWith("@")) {
+            shoutOutUsername = shoutOutUsername.substring(1);
+          }
+
+          if (!shoutOutUsername || shoutOutUsername.length === 0) {
+            return;
+          }
+
+          const shoutOutUser = await twitchApi.getUser(
+            shoutOutUsername
+          );
+
+          if (!shoutOutUser) {
+            return;
+          }
+
+          sendAlertToClient({
+            type: "shout-out",
+            user: shoutOutUser,
+            loadImage: shoutOutUser.image,
+          });
+
+          twitchBot.say(
+            `shout out to twitch.tv/${shoutOutUser.username} Squid1 Squid3 Squid4`
+          );
+        }
+      }
+
+      const commands = await twitchCommands.getCommands();
+      const chatCommand = commands.find((command) =>
+        twitchChatMessage.startsWith(`!${command.name}`)
+      );
+      if (chatCommand) {
+        twitchBot.say(chatCommand.value);
+      }
+
+      io.emit("data", { twitchChatMessage });
     }
-
-    obs.handleTriggers(twitchChatMessage);
-
-    if (twitchChatMessage.startsWith("!bigdata")) {
-      sendAlertToClient({ type: "bigdata" });
-    }
-
-    const commands = await twitchCommands.getCommands();
-    const chatCommand = commands.find((command) =>
-      twitchChatMessage.startsWith(`!${command.name}`)
-    );
-    if (chatCommand) {
-      twitchBot.say(chatCommand.value);
-    }
-
-    io.emit("data", { twitchChatMessage });
-  });
+  );
 
   lastFM.on("track", (track) => {
     io.emit("data", { track });

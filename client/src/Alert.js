@@ -5,6 +5,9 @@ import BigData from "./Alerts/BigData";
 const DEFAULT_DURATION = 1000;
 
 const ALERT_TYPES = {
+  "shout-out": {
+    duration: 5000,
+  },
   follow: {
     duration: 5000,
   },
@@ -47,6 +50,15 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
       <Axolotl duration={duration}>
         hi <strong>{user.username}</strong> <br />
         thanks for following!
+      </Axolotl>
+    );
+  }
+
+  if (type === "shout-out") {
+    return (
+      <Axolotl duration={duration}>
+        shout to <br /> <strong>{user.username}</strong>!
+        <img src={user.image} alt="" />
       </Axolotl>
     );
   }

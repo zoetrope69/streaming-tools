@@ -81,6 +81,25 @@ function callTwitchAPIBuilder(oAuthToken) {
   };
 }
 
+async function getUser(callTwitchAPI, username) {
+  const response = await callTwitchAPI("users", {
+    login: username,
+  });
+
+  if (!response || !response.data || response.data.length === 0) {
+    return null;
+  }
+
+  const [userData] = response.data;
+  const { description, display_name, profile_image_url } = userData;
+
+  return {
+    username: display_name,
+    description,
+    image: profile_image_url,
+  };
+}
+
 async function getFollowers(callTwitchAPI) {
   const response = await callTwitchAPI("users/follows", {
     to_id: TWITCH_BROADCASTER_ID,
@@ -143,6 +162,10 @@ async function TwitchAPI() {
   }, 1000); // every 0.5 seconds
   // rate limit is 800 per minute, per user
   // https://dev.twitch.tv/docs/api/guide#rate-limits
+
+  eventEmitter.getUser = async (username) => {
+    return getUser(callTwitchAPI, username);
+  };
 
   eventEmitter.getFollowTotal = async () => {
     const { total } = await getFollowers(callTwitchAPI);

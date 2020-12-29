@@ -38,9 +38,13 @@ Bot.on("error", (err) => {
   logger.error("🤖 Twitch Bot", err);
 });
 
-Bot.on("message", (chatter) => {
-  if (chatter.username === TWITCH_BROADCASTER_NAME) {
-    if (chatter.message.trim() === "!stopBot") {
+Bot.on("message", (data) => {
+  const { badges, mod: isMod, username, message, color } = data;
+  const isBroadcaster =
+    username === TWITCH_BROADCASTER_NAME || badges?.broadcaster === 1;
+
+  if (isBroadcaster) {
+    if (message.trim().startsWith("!stopBot")) {
       logger.info("🤖 Twitch Bot", "Turning off bot...");
       Bot.say("Turning off...");
       Bot.part(TWITCH_BROADCASTER_NAME);
@@ -49,11 +53,17 @@ Bot.on("message", (chatter) => {
     }
   }
 
-  logger.log(
-    "🤖 Twitch Bot",
-    `Message from chat: ${chatter.message}`
-  );
-  eventEmitter.emit("message", chatter.message.trim());
+  logger.log("🤖 Twitch Bot", `Message from chat: ${message.trim()}`);
+
+  eventEmitter.emit("message", {
+    isMod,
+    isBroadcaster,
+    message: message.trim(),
+    user: {
+      username,
+      color,
+    },
+  });
 });
 
 Bot.on("close", () => {

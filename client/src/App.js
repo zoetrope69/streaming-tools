@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import openSocket from "socket.io-client";
 import PrideFlag from "./PrideFlag";
-import KeyboardVisualiser from "./KeyboardVisualiser";
 import LastFMVisualiser from "./LastFMVisualiser";
 import FiftyCentFollowerCount from "./FiftyCentFollowerCount";
 import Alert from "./Alert";
@@ -80,7 +79,6 @@ function App() {
   return (
     <div className="App">
       <PrideFlag name={currentPrideFlagName} />
-      <KeyboardVisualiser keys={keys} />
       <LastFMVisualiser currentTrack={currentTrack} />
       <FiftyCentFollowerCount followTotal={currentFollowTotal} />
 

@@ -31,14 +31,14 @@ const Axolotl = ({ children, duration }) => {
       const text = getTextFromChildren(children);
       window.sayAnimalese(text);
     }
-  }, []); // eslint-ignore react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Fragment>
       <SVGClipPath
         componentName="Axolotl__speech-bubble__text__image"
-        width="300"
-        height="300"
+        width={300}
+        height={300}
         path="M18.087 13.3c27.116-25.984 78.856.575 116.806-1.612 91.305-5.264 130.047-28.34 148.73 10.019 19.846 40.747 17.272 96.356 14.47 148.301-2.308 42.76-1.013 82.728-20.054 112.564-29.823 35.05-83.214 5.99-114.268 8.37-43.061 1.902-127.86 21.61-149.168-9.658C-8.09 245.724 2 209.946 3.69 153.796 5.14 105.602-5.414 35.82 18.087 13.3z"
       />
 

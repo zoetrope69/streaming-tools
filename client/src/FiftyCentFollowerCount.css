@@ -28,10 +28,13 @@
 }
 
 .FiftyCentFollowerCount__progress__bar img {
-  filter: grayscale(1);
   display: block;
   width: 200px;
   height: 550px;
+}
+
+.FiftyCentFollowerCount__progress__background {
+  filter: grayscale(1);
 }
 
 .FiftyCentFollowerCount__target {

@@ -60,9 +60,9 @@ const PrideFlag = ({ name }) => {
     <Fragment>
       <SVGClipPath
         componentName="PrideFlag"
-        width="1920"
-        height="50"
-        path="M0 0h1920v33.287c-753.833 48.539-1408.825-26.81-1920 0z"
+        width={10.054}
+        height={232.833}
+        path="M0 0h10.054v232.833H0c3.597-26.789.54-53.866.771-80.776C-.147 118.36 3.914 84.764 2.612 51.07 2.217 34.026 1.232 17.002 0 0z"
       />
 
       <div className={PrideFlagClassName} />

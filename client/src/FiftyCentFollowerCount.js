@@ -4,7 +4,7 @@ import "./FiftyCentFollowerCount.css";
 
 const FiftyCentFollowerCount = ({ followTotal }) => (
   <div className="FiftyCentFollowerCount">
-    <div class="FiftyCentFollowerCount__progress">
+    <div className="FiftyCentFollowerCount__progress">
       <img
         className="FiftyCentFollowerCount__progress__background"
         src="50cent.png"

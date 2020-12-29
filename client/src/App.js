@@ -44,6 +44,7 @@ function App() {
 
       if (alert) {
         if (!alert.loadImage) {
+          addToAlertQueue(alert);
         } else {
           const alertImage = new Image();
           alertImage.addEventListener("load", () => {

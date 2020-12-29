@@ -134,22 +134,16 @@ async function main() {
         sendAlertToClient({ type: "bigdata" });
       }
 
-      // function shoutout(twitchUsername, message) {
-      //   getProfileImageURL(
-      //     twitchUsername,
-      //     function (username, imageURL) {
-      //       shoutouts.push({
-      //         username: username,
-      //         imageURL: imageURL,
-      //         message: message,
-      //         chatCallback: say,
-      //       });
-      //     }
-      //   );
-      // }
-
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
+        if (twitchChatMessage.startsWith("!test-follow")) {
+          console.log("hi");
+          sendAlertToClient({
+            type: "follow",
+            user: { username: "ninja" },
+          });
+        }
+
         if (twitchChatMessage.startsWith("!so")) {
           let shoutOutUsername = twitchChatMessage.split(" ")[1];
 

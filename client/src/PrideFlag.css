@@ -2,8 +2,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  left: 0;
-  height: 50px;
+  bottom: 0;
+  width: 50px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   clip-path: url(#PrideFlag-clip);
 }
@@ -23,7 +23,7 @@
 
 .PrideFlag--gay {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     black,
     brown,
     red,
@@ -37,7 +37,7 @@
 
 .PrideFlag--agender {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #000,
     #bababa,
     #fff,
@@ -50,7 +50,7 @@
 
 .PrideFlag--aromantic {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #3aa740,
     #a8d47a,
     #fff,
@@ -61,7 +61,7 @@
 
 .PrideFlag--asexual {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #000000,
     #a4a5a4,
     #fff,
@@ -71,7 +71,7 @@
 
 .PrideFlag--bisexual {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #d70071,
     #9c4e97,
     #0035a9
@@ -80,7 +80,7 @@
 
 .PrideFlag--genderfluid {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #ff76a3,
     #fff,
     #bf11d7,
@@ -90,12 +90,17 @@
 }
 
 .PrideFlag--genderqueer {
-  background-image: linear-gradient(to right, #b67fdd, #fff, #49821e);
+  background-image: linear-gradient(
+    to bottom,
+    #b67fdd,
+    #fff,
+    #49821e
+  );
 }
 
 .PrideFlag--intersex {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #ffd900,
     #7a00ab,
     #ffd900,
@@ -106,7 +111,7 @@
 
 .PrideFlag--lesbian {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #d62900,
     #ff9b55,
     #fff,
@@ -117,7 +122,7 @@
 
 .PrideFlag--non-binary {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #fcf431,
     #fff,
     #9d59d2,
@@ -127,7 +132,7 @@
 
 .PrideFlag--pansexual {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #ff1b8d,
     #ffd900,
     #1bb3ff
@@ -136,7 +141,7 @@
 
 .PrideFlag--polysexual {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #f616ba,
     #01d669,
     #1593f6
@@ -144,7 +149,7 @@
 }
 .PrideFlag--transgender {
   background-image: linear-gradient(
-    to right,
+    to bottom,
     #5bcefa,
     #f5a9b8,
     #fff,

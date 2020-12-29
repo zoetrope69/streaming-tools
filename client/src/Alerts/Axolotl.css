@@ -1,0 +1,89 @@
+.Axolotl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  animation: showAxolotl forwards ease-in-out;
+}
+
+@keyframes showAxolotl {
+  0% {
+    opacity: 0;
+    transform: translate(-10%, 50%);
+  }
+
+  20%,
+  80% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-10%, 50%);
+  }
+}
+
+.Axolotl__image {
+  width: 15%;
+  transform: translateY(30%);
+  filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
+  animation: bobUpAndDown 0.33s infinite alternate;
+}
+
+@keyframes bobUpAndDown {
+  0% {
+    transform: translateY(30%) rotate(1deg);
+  }
+
+  100% {
+    transform: translateY(27%) rotate(-1deg);
+  }
+}
+
+.Axolotl__speech-bubble {
+  position: absolute;
+  top: 0;
+  left: 13%;
+  width: 30%;
+  animation: showSpeechBubble forwards ease-in-out;
+}
+
+@keyframes showSpeechBubble {
+  0% {
+    opacity: 0;
+  }
+
+  40%,
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.Axolotl__speech-bubble::before {
+  content: "";
+  position: absolute;
+  top: 7vh;
+  left: -1.5vw;
+  width: 3vw;
+  height: 3vw;
+  border-bottom: 50px solid #f9f9f9ff;
+  border-left: 50px solid transparent;
+  border-radius: 25px;
+  transform: rotate(-10deg);
+}
+
+.Axolotl__speech-bubble__image {
+  position: absolute;
+  width: 100%;
+}
+
+.Axolotl__speech-bubble__text {
+  position: absolute;
+  transform: rotate(-7deg);
+  padding: 1.5em;
+}

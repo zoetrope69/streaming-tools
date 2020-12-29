@@ -1,18 +1,12 @@
 import React, { Fragment, useEffect } from "react";
+import Axolotl from "./Alerts/Axolotl";
 import BigData from "./Alerts/BigData";
-
-import "./Alert.css";
 
 const DEFAULT_DURATION = 1000;
 
 const ALERT_TYPES = {
   follow: {
-    Text: ({ children }) => (
-      <span>
-        <strong>{children}</strong> just followed!
-      </span>
-    ),
-    duration: 9000,
+    duration: 5000,
   },
   bigdata: {
     audio: "bigdata.mp3",
@@ -23,15 +17,11 @@ const ALERT_TYPES = {
 const Alert = ({ alert, removeAlertFromQueue }) => {
   const { id, type, user } = alert;
   const alertType = ALERT_TYPES[type];
-  const { image, audio, duration, Text } = alertType;
+  const { audio, duration } = alertType;
 
   useEffect(() => {
     if (!alertType) {
       return;
-    }
-
-    if (type === "follow" && window.sayAnimalese) {
-      window.sayAnimalese(`${user.username} just followed!`);
     }
 
     setTimeout(() => {
@@ -52,17 +42,16 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
     );
   }
 
-  return (
-    <div className="Box FadeIn Alert">
-      {audio && <audio src={audio} autoPlay />}
-      {image && <img className="Alert__image" src={image} alt="" />}
-      {user && (
-        <span className="Alert__message">
-          <Text>{user.username}</Text>
-        </span>
-      )}
-    </div>
-  );
+  if (type === "follow") {
+    return (
+      <Axolotl duration={duration}>
+        hi <strong>{user.username}</strong> <br />
+        thanks for following!
+      </Axolotl>
+    );
+  }
+
+  return null;
 };
 
 export default Alert;

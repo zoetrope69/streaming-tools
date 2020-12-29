@@ -72,12 +72,12 @@ function callTwitchAPIBuilder(oAuthToken) {
 
     const json = await response.json();
 
-    if (!json.data || json.data.length === 0) {
+    if (!json) {
       logger.error("💩 Twitch API", `No data for: ${url}`);
       return;
     }
 
-    return json.data;
+    return json;
   };
 }
 
@@ -86,22 +86,31 @@ async function getFollowers(callTwitchAPI) {
     to_id: TWITCH_BROADCASTER_ID,
   });
 
-  if (!response || response.length === 0) {
-    return [];
+  const { data, total } = response;
+
+  if (!data || data.length === 0) {
+    return { total: null, followers: [] };
   }
 
-  return response.map(({ from_id, from_name, followed_at }) => ({
-    id: from_id,
-    username: from_name,
-    followed_at,
-  }));
+  const followers = data.map(
+    ({ from_id, from_name, followed_at }) => ({
+      id: from_id,
+      username: from_name,
+      followed_at,
+    })
+  );
+
+  return {
+    total,
+    followers,
+  };
 }
 
 async function syncAndEmitNewFollowersEvent(
   callTwitchAPI,
   eventEmitter
 ) {
-  const followers = await getFollowers(callTwitchAPI);
+  const { total, followers } = await getFollowers(callTwitchAPI);
 
   let newFollowers = false;
   followers.forEach((follower) => {
@@ -109,6 +118,7 @@ async function syncAndEmitNewFollowersEvent(
     if (LAST_CACHED_DATETIME < new Date(follower.followed_at)) {
       newFollowers = true;
       eventEmitter.emit("follow", follower);
+      eventEmitter.emit("followTotal", total);
     }
   });
 
@@ -133,6 +143,11 @@ async function TwitchAPI() {
   }, 1000); // every 0.5 seconds
   // rate limit is 800 per minute, per user
   // https://dev.twitch.tv/docs/api/guide#rate-limits
+
+  eventEmitter.getFollowTotal = async () => {
+    const { total } = await getFollowers(callTwitchAPI);
+    return total;
+  };
 
   return eventEmitter;
 }

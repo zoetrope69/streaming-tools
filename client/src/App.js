@@ -3,6 +3,7 @@ import openSocket from "socket.io-client";
 import PrideFlag from "./PrideFlag";
 import KeyboardVisualiser from "./KeyboardVisualiser";
 import LastFMVisualiser from "./LastFMVisualiser";
+import FiftyCentFollowerCount from "./FiftyCentFollowerCount";
 import Alert from "./Alert";
 
 import "./App.css";
@@ -10,6 +11,7 @@ import "./App.css";
 const socket = openSocket("/");
 
 function App() {
+  const [currentFollowTotal, setCurrentFollowTotal] = useState();
   const [keys, setKeys] = useState({});
   const [alertQueue, setAlertQueue] = useState([]);
   const [currentTrack, setCurrentTrack] = useState({});
@@ -33,12 +35,14 @@ function App() {
 
     const socketIOHandler = (data) => {
       console.log("data", data);
+
       const {
         keys,
         twitchChatMessage,
         alert,
         track,
         prideFlagName,
+        followTotal,
       } = data;
 
       if (keys) {
@@ -60,6 +64,10 @@ function App() {
       if (twitchChatMessage) {
         console.log("twitchChatMessage", twitchChatMessage);
       }
+
+      if (followTotal) {
+        setCurrentFollowTotal(followTotal);
+      }
     };
 
     socket.on("data", socketIOHandler);
@@ -74,6 +82,7 @@ function App() {
       <PrideFlag name={currentPrideFlagName} />
       <KeyboardVisualiser keys={keys} />
       <LastFMVisualiser currentTrack={currentTrack} />
+      <FiftyCentFollowerCount followTotal={currentFollowTotal} />
 
       {currentAlert && (
         <Alert

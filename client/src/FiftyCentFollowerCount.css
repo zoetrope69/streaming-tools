@@ -1,0 +1,50 @@
+.FiftyCentFollowerCount {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 98px;
+  height: 426px;
+  transform: rotate(90deg) translateX(-380%);
+  transform-origin: bottom left;
+}
+
+.FiftyCentFollowerCount__target {
+  position: absolute;
+  bottom: 161px;
+  right: -123px;
+  padding: 0.25em 0.5em;
+  padding-left: 0.5em;
+  padding-left: 0.5em;
+  padding-left: 2em;
+  transform: rotate(-92deg);
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #ffffffad;
+  background: #111;
+  border-radius: 19px;
+  width: 500px;
+  transform-origin: top;
+}
+
+.FiftyCentFollowerCount__bar,
+.FiftyCentFollowerCount__background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.FiftyCentFollowerCount__bar {
+  height: 100%;
+  overflow: hidden;
+}
+
+.FiftyCentFollowerCount__bar img {
+  filter: grayscale(1);
+  display: block;
+  width: 98px;
+  height: 426px;
+}

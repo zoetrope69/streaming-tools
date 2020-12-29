@@ -12,6 +12,7 @@
 }
 
 body {
+  background: black;
   overflow: hidden;
   font-size: 40px;
   font-family: "Comfortaa", sans-serif;

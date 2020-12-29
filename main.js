@@ -24,8 +24,6 @@ const obs = require("./src/obs");
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-const twitchBot = TwitchBot();
-const lastFM = LastFM();
 
 const CLIENT_FILE_PATH = "client/build";
 
@@ -36,10 +34,6 @@ app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
 
-// initialise various things
-obs.initialise();
-twitchCommands.initialise();
-
 function sendAlertToClient(options) {
   const alert = {
     id: randomID(),
@@ -48,110 +42,125 @@ function sendAlertToClient(options) {
   io.emit("data", { alert });
 }
 
-TwitchAPI().then((twitchApi) => {
-  twitchApi.on("follow", (user) => {
-    sendAlertToClient({ type: "follow", user });
+async function main() {
+  // initialise various things
+  obs.initialise();
+  twitchCommands.initialise();
+  const twitchApi = await TwitchAPI();
+  const twitchBot = TwitchBot();
+  const lastFM = LastFM();
+
+  twitchApi.on("followTotal", (followTotal) => {
+    io.emit("data", { followTotal });
   });
-});
 
-twitchBot.on("ready", async () => {
-  const scheduledCommands = await twitchCommands.getScheduledCommands();
+  twitchBot.on("ready", async () => {
+    const scheduledCommands = await twitchCommands.getScheduledCommands();
 
-  scheduledCommands.forEach((scheduledCommand) => {
-    logger.info(
-      "🤖 Twitch Bot",
-      `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
-    );
-    schedule(scheduledCommand.schedule, () => {
-      twitchBot.say(scheduledCommand.value);
+    scheduledCommands.forEach((scheduledCommand) => {
+      logger.info(
+        "🤖 Twitch Bot",
+        `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
+      );
+      schedule(scheduledCommand.schedule, () => {
+        twitchBot.say(scheduledCommand.value);
+      });
+    });
+
+    twitchApi.on("follow", (user) => {
+      sendAlertToClient({ type: "follow", user });
+      twitchBot.say(`hi @${user.username}, thanks for following!`);
     });
   });
-});
 
-twitchBot.on("message", async (twitchChatMessage) => {
-  twitchChatMessage = twitchChatMessage.toLowerCase();
+  twitchBot.on("message", async (twitchChatMessage) => {
+    twitchChatMessage = twitchChatMessage.toLowerCase();
 
-  if (twitchChatMessage === "!song") {
-    const currentTrack = lastFM.getCurrentTrack();
+    if (twitchChatMessage === "!song") {
+      const currentTrack = lastFM.getCurrentTrack();
 
-    if (!currentTrack) {
-      twitchBot.say(`SingsNote Nothing is playing...`);
-      return;
-    }
-
-    const {
-      artistName,
-      trackName,
-      albumName,
-    } = lastFM.getCurrentTrack();
-
-    if (!artistName || !trackName || !albumName) {
-      twitchBot.say(`SingsNote Nothing is playing...`);
-      return;
-    }
-
-    twitchBot.say(
-      `SingsNote ${trackName} — ${artistName} — ${albumName}`
-    );
-  }
-
-  if (twitchChatMessage.startsWith("!pride")) {
-    const inputPrideFlagName = twitchChatMessage
-      .replace("!pride", "")
-      .trim();
-
-    const prideFlag = getPrideFlag(inputPrideFlagName);
-
-    if (prideFlag) {
-      setLightsToPrideFlag(prideFlag.name);
-      io.emit("data", { prideFlagName: prideFlag.name });
-      if (prideFlag.twitchEmote) {
-        twitchBot.say(`${prideFlag.twitchEmote} `.repeat(5));
+      if (!currentTrack) {
+        twitchBot.say(`SingsNote Nothing is playing...`);
+        return;
       }
-    } else {
-      const randomPrideFlagName = getRandomPrideFlag().name;
+
+      const {
+        artistName,
+        trackName,
+        albumName,
+      } = lastFM.getCurrentTrack();
+
+      if (!artistName || !trackName || !albumName) {
+        twitchBot.say(`SingsNote Nothing is playing...`);
+        return;
+      }
+
       twitchBot.say(
-        [
-          inputPrideFlagName.length > 0
-            ? `Didn't find anything for "${inputPrideFlagName}". :-(`
-            : "",
-          `Try something like: !pride ${randomPrideFlagName}`,
-        ].join(" ")
+        `SingsNote ${trackName} — ${artistName} — ${albumName}`
       );
     }
-  }
 
-  obs.handleTriggers(twitchChatMessage);
+    if (twitchChatMessage.startsWith("!pride")) {
+      const inputPrideFlagName = twitchChatMessage
+        .replace("!pride", "")
+        .trim();
 
-  if (twitchChatMessage.startsWith("!bigdata")) {
-    sendAlertToClient({ type: "bigdata" });
-  }
+      const prideFlag = getPrideFlag(inputPrideFlagName);
 
-  const commands = await twitchCommands.getCommands();
-  const chatCommand = commands.find((command) =>
-    twitchChatMessage.startsWith(`!${command.name}`)
-  );
-  if (chatCommand) {
-    twitchBot.say(chatCommand.value);
-  }
+      if (prideFlag) {
+        setLightsToPrideFlag(prideFlag.name);
+        io.emit("data", { prideFlagName: prideFlag.name });
+        if (prideFlag.twitchEmote) {
+          twitchBot.say(`${prideFlag.twitchEmote} `.repeat(5));
+        }
+      } else {
+        const randomPrideFlagName = getRandomPrideFlag().name;
+        twitchBot.say(
+          [
+            inputPrideFlagName.length > 0
+              ? `Didn't find anything for "${inputPrideFlagName}". :-(`
+              : "",
+            `Try something like: !pride ${randomPrideFlagName}`,
+          ].join(" ")
+        );
+      }
+    }
 
-  io.emit("data", { twitchChatMessage });
-});
+    obs.handleTriggers(twitchChatMessage);
 
-lastFM.on("track", (track) => {
-  io.emit("data", { track });
-});
+    if (twitchChatMessage.startsWith("!bigdata")) {
+      sendAlertToClient({ type: "bigdata" });
+    }
 
-io.on("connection", (socket) => {
-  logger.info("👽 Stream Client", "Connected");
+    const commands = await twitchCommands.getCommands();
+    const chatCommand = commands.find((command) =>
+      twitchChatMessage.startsWith(`!${command.name}`)
+    );
+    if (chatCommand) {
+      twitchBot.say(chatCommand.value);
+    }
 
-  const track = lastFM.getCurrentTrack();
-  io.emit("data", { track });
-
-  socket.on("disconnect", () => {
-    logger.info("👽 Stream Client", "Disconnected");
+    io.emit("data", { twitchChatMessage });
   });
-});
+
+  lastFM.on("track", (track) => {
+    io.emit("data", { track });
+  });
+
+  io.on("connection", async (socket) => {
+    logger.info("👽 Stream Client", "Connected");
+
+    const followTotal = await twitchApi.getFollowTotal();
+    const track = lastFM.getCurrentTrack();
+    io.emit("data", { track, followTotal });
+
+    socket.on("disconnect", () => {
+      logger.info("👽 Stream Client", "Disconnected");
+    });
+  });
+}
+
+main();
 
 server.listen(PORT, () => {
   logger.info(

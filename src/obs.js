@@ -18,14 +18,6 @@ const TRIGGER_SOURCES = [
       keyModifiers: GLOBAL_KEY_MODIFIERS,
     },
   },
-  {
-    name: "harry",
-    description: "there he is",
-    hotKeyOptions: {
-      keyId: "OBS_KEY_H", // #
-      keyModifiers: GLOBAL_KEY_MODIFIERS,
-    },
-  },
 ];
 
 let OBS_INITIALISED = false;

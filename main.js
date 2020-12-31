@@ -1,7 +1,6 @@
 // get process.env from .env
 require("dotenv").config();
 const { PORT } = process.env;
-
 const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
@@ -80,7 +79,12 @@ async function main() {
 
   twitchBot.on(
     "message",
-    async ({ isMod, isBroadcaster, message: twitchChatMessage }) => {
+    async ({
+      isMod,
+      isBroadcaster,
+      message: twitchChatMessage,
+      user,
+    }) => {
       twitchChatMessage = twitchChatMessage.toLowerCase();
 
       if (twitchChatMessage === "!song") {
@@ -151,6 +155,10 @@ async function main() {
 
         if (twitchChatMessage.startsWith("!so")) {
           let shoutOutUsername = twitchChatMessage.split(" ")[1];
+
+          if (!shoutOutUsername) {
+            return;
+          }
 
           if (shoutOutUsername.startsWith("@")) {
             shoutOutUsername = shoutOutUsername.substring(1);

@@ -6,12 +6,14 @@ const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
+const ngrok = require("ngrok");
 
 const { schedule } = require("./src/helpers/schedule");
 
 const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
+const TwitchEventSub = require("./src/twitch-eventsub");
 const twitchCommands = require("./src/twitch-commands");
 const logger = require("./src/helpers/logger");
 const {
@@ -46,13 +48,12 @@ async function main() {
   // initialise various things
   obs.initialise();
   twitchCommands.initialise();
+
+  const ngrokUrl = await ngrok.connect(PORT);
   const twitchApi = await TwitchAPI();
+  const twitchEventSub = await TwitchEventSub(ngrokUrl, app);
   const twitchBot = TwitchBot();
   const lastFM = LastFM();
-
-  twitchApi.on("followTotal", (followTotal) => {
-    io.emit("data", { followTotal });
-  });
 
   twitchBot.on("ready", async () => {
     const scheduledCommands = await twitchCommands.getScheduledCommands();
@@ -67,9 +68,13 @@ async function main() {
       });
     });
 
-    twitchApi.on("follow", (user) => {
+    twitchEventSub.on("follow", async (user) => {
       sendAlertToClient({ type: "follow", user });
       twitchBot.say(`hi @${user.username}, thanks for following!`);
+
+      // update follow total
+      const followTotal = await twitchApi.getFollowTotal();
+      io.emit("data", { followTotal });
     });
   });
 

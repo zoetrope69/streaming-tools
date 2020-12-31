@@ -1,11 +1,7 @@
-const events = require("events");
 const fetch = require("node-fetch");
 const { stringify: queryStringStringify } = require("qs");
 
 const logger = require("./helpers/logger");
-
-let LAST_CACHED_DATETIME = new Date();
-// let LAST_CACHED_DATETIME = new Date("1970-01-01T00:00:00Z"); // test
 
 const {
   TWITCH_CLIENT_ID,
@@ -125,54 +121,22 @@ async function getFollowers(callTwitchAPI) {
   };
 }
 
-async function syncAndEmitNewFollowersEvent(
-  callTwitchAPI,
-  eventEmitter
-) {
-  const { total, followers } = await getFollowers(callTwitchAPI);
-
-  let newFollowers = false;
-  followers.forEach((follower) => {
-    // if they've followed after the last time we checked
-    if (LAST_CACHED_DATETIME < new Date(follower.followed_at)) {
-      newFollowers = true;
-      eventEmitter.emit("follow", follower);
-      eventEmitter.emit("followTotal", total);
-    }
-  });
-
-  if (newFollowers) {
-    // update cached time
-    LAST_CACHED_DATETIME = new Date();
-  }
-}
-
 async function TwitchAPI() {
-  const eventEmitter = new events.EventEmitter();
   const oAuthToken = await getOAuthToken();
   const callTwitchAPI = callTwitchAPIBuilder(oAuthToken);
 
-  logger.info(
-    "💩 Twitch API",
-    "Syncing and emitting new followers..."
-  );
-  syncAndEmitNewFollowersEvent(callTwitchAPI, eventEmitter);
-  setInterval(() => {
-    syncAndEmitNewFollowersEvent(callTwitchAPI, eventEmitter);
-  }, 1000); // every 0.5 seconds
-  // rate limit is 800 per minute, per user
-  // https://dev.twitch.tv/docs/api/guide#rate-limits
+  return {
+    getOAuthToken,
 
-  eventEmitter.getUser = async (username) => {
-    return getUser(callTwitchAPI, username);
+    getUser: async (username) => {
+      return getUser(callTwitchAPI, username);
+    },
+
+    getFollowTotal: async () => {
+      const { total } = await getFollowers(callTwitchAPI);
+      return total;
+    },
   };
-
-  eventEmitter.getFollowTotal = async () => {
-    const { total } = await getFollowers(callTwitchAPI);
-    return total;
-  };
-
-  return eventEmitter;
 }
 
 module.exports = TwitchAPI;

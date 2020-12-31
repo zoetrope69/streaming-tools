@@ -9,6 +9,8 @@ const ngrok = require("ngrok");
 
 const { schedule } = require("./src/helpers/schedule");
 
+const controlLols = require("./control-lols");
+
 const LastFM = require("./src/last-fm");
 const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
@@ -141,6 +143,20 @@ async function main() {
 
       if (twitchChatMessage.startsWith("!bigdata")) {
         sendAlertToClient({ type: "bigdata" });
+      }
+
+      if (
+        twitchChatMessage.startsWith("!fightMe") ||
+        twitchChatMessage.startsWith("!fightme") ||
+        twitchChatMessage.startsWith("!fight")
+      ) {
+        controlLols({
+          twitchApi,
+          user,
+          isMod,
+          isBroadcaster,
+          twitchChatMessage,
+        });
       }
 
       // the mod/broadcaster zooone

@@ -20,6 +20,10 @@ const ALERT_TYPES = {
     audio: new Audio("immabee.mp3"),
     duration: 4000,
   },
+  "fuck-2020": {
+    audio: new Audio("fuck-2020.mp3"),
+    duration: 3000,
+  },
 };
 
 const Alert = ({ alert, removeAlertFromQueue }) => {

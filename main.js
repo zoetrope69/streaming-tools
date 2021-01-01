@@ -163,6 +163,10 @@ async function main() {
         }
       }
 
+      if (twitchChatMessage.startsWith("!2020")) {
+        sendAlertToClient({ type: "fuck-2020" });
+      }
+
       if (
         twitchChatMessage.startsWith("!fightme") ||
         twitchChatMessage.startsWith("!fight")

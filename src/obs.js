@@ -74,11 +74,21 @@ function initialise() {
           `obs-websocket version ${versionInfo.obsWebsocketVersion}`
         );
 
+        setTimeout(() => {}, 1000);
+
         OBS_INITIALISED = true;
         return resolve();
       });
     });
   });
+}
+
+async function getWebcamImage() {
+  const webcamScreenshot = await request("TakeSourceScreenshot", {
+    sourceName: "Raw Webcam Scene",
+    embedPictureFormat: "jpg",
+  });
+  return webcamScreenshot.img;
 }
 
 async function resetTriggers() {
@@ -112,5 +122,6 @@ function handleTriggers(message) {
 module.exports = {
   TRIGGER_SOURCES,
   initialise,
+  getWebcamImage,
   handleTriggers,
 };

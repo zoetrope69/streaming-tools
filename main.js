@@ -16,6 +16,7 @@ const TwitchBot = require("./src/twitch-bot");
 const TwitchAPI = require("./src/twitch-api");
 const TwitchEventSub = require("./src/twitch-eventsub");
 const twitchCommands = require("./src/twitch-commands");
+const createBeeImage = require("./src/imma-bee/create-bee-image");
 const logger = require("./src/helpers/logger");
 const {
   getPrideFlag,
@@ -146,7 +147,23 @@ async function main() {
       }
 
       if (
-        twitchChatMessage.startsWith("!fightMe") ||
+        twitchChatMessage.startsWith("!bee") ||
+        twitchChatMessage.startsWith("!immabe") ||
+        twitchChatMessage.startsWith("!imabe")
+      ) {
+        logger.log("🐝 Imma bee", "Triggered...");
+
+        try {
+          const image = await obs.getWebcamImage();
+          await createBeeImage(image);
+          sendAlertToClient({ type: "immabee" });
+        } catch (e) {
+          logger.error("🐝 Imma bee", e);
+          twitchBot.say(`Couldn't find Zac's face...`);
+        }
+      }
+
+      if (
         twitchChatMessage.startsWith("!fightme") ||
         twitchChatMessage.startsWith("!fight")
       ) {

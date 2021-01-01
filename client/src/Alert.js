@@ -1,6 +1,7 @@
-import React, { Fragment, useEffect } from "react";
+import React, { useEffect } from "react";
 import Axolotl from "./Alerts/Axolotl";
 import BigData from "./Alerts/BigData";
+import ImmaBee from "./Alerts/ImmaBee";
 
 const DEFAULT_DURATION = 1000;
 
@@ -12,19 +13,27 @@ const ALERT_TYPES = {
     duration: 5000,
   },
   bigdata: {
-    audio: "bigdata.mp3",
+    audio: new Audio("bigdata.mp3"),
     duration: 6000,
+  },
+  immabee: {
+    audio: new Audio("immabee.mp3"),
+    duration: 4000,
   },
 };
 
 const Alert = ({ alert, removeAlertFromQueue }) => {
   const { id, type, user } = alert;
   const alertType = ALERT_TYPES[type];
-  const { audio, duration } = alertType;
+  const { duration } = alertType;
 
   useEffect(() => {
     if (!alertType) {
       return;
+    }
+
+    if (alertType.audio) {
+      alertType.audio.play();
     }
 
     setTimeout(() => {
@@ -37,12 +46,11 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
   }
 
   if (type === "bigdata") {
-    return (
-      <Fragment>
-        {audio && <audio src={audio} autoPlay />}
-        <BigData duration={duration} />
-      </Fragment>
-    );
+    return <BigData duration={duration} />;
+  }
+
+  if (type === "immabee") {
+    return <ImmaBee duration={duration} />;
   }
 
   if (type === "follow") {

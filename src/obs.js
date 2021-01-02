@@ -18,6 +18,14 @@ const TRIGGER_SOURCES = [
       keyModifiers: GLOBAL_KEY_MODIFIERS,
     },
   },
+  {
+    name: "steve",
+    description: "octopussy ffs",
+    hotKeyOptions: {
+      keyId: "OBS_KEY_BRACKETRIGHT", // ]
+      keyModifiers: GLOBAL_KEY_MODIFIERS,
+    },
+  },
 ];
 
 let OBS_INITIALISED = false;

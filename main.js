@@ -90,7 +90,10 @@ async function main() {
     }) => {
       twitchChatMessage = twitchChatMessage.toLowerCase();
 
-      if (twitchChatMessage === "!song") {
+      if (
+        twitchChatMessage === "!song" ||
+        twitchChatMessage === "!music"
+      ) {
         const currentTrack = lastFM.getCurrentTrack();
 
         if (!currentTrack) {

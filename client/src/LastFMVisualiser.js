@@ -83,7 +83,7 @@ const LastFMVisualiser = ({ currentTrack }) => {
               : {}
           }
         >
-          {truncate(trackName, 20)}
+          {truncate(trackName, 30)}
           <span className="LastFMVisualiser__text__second-line">
             {truncate(artistName, 40)}
           </span>

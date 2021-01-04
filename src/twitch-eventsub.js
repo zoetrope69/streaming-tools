@@ -77,17 +77,15 @@ async function TwitchEventSub(url, app) {
       language,
       categoryId,
       categoryName,
-      isMature,
     ] = data;
 
-    eventEmitter.emit("channel", {
+    eventEmitter.emit("channelInfo", {
       id,
       username,
       title,
       language,
       categoryId,
       categoryName,
-      isMature,
     });
   });
 

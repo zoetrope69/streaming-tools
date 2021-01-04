@@ -31,6 +31,8 @@ const io = socketIO(server);
 
 const CLIENT_FILE_PATH = "client/build";
 
+let currentChannelInfo = {};
+
 // serve client files
 app.use(express.static(CLIENT_FILE_PATH));
 
@@ -56,6 +58,14 @@ async function main() {
   const twitchEventSub = await TwitchEventSub(ngrokUrl, app);
   const twitchBot = TwitchBot();
   const lastFM = LastFM();
+
+  // set and update channel info
+  currentChannelInfo = await twitchApi.getChannelInfo();
+  logger.info("🤖 Twitch Bot", "Setting channel info");
+  twitchEventSub.on("channelInfo", async (channelInfo) => {
+    logger.info("🤖 Twitch Bot", "Updating channel info");
+    currentChannelInfo = channelInfo;
+  });
 
   twitchBot.on("ready", async () => {
     const scheduledCommands = await twitchCommands.getScheduledCommands();
@@ -145,12 +155,12 @@ async function main() {
 
       obs.handleTriggers(twitchChatMessage);
 
-      if (twitchChatMessage.startsWith("!bigdata")) {
+      if (twitchChatMessage === "!bigdata") {
         sendAlertToClient({ type: "bigdata" });
       }
 
       if (
-        twitchChatMessage.startsWith("!bee") ||
+        twitchChatMessage === "!bee" ||
         twitchChatMessage.startsWith("!immabe") ||
         twitchChatMessage.startsWith("!imabe")
       ) {
@@ -166,13 +176,13 @@ async function main() {
         }
       }
 
-      if (twitchChatMessage.startsWith("!2020")) {
+      if (twitchChatMessage === "!2020") {
         sendAlertToClient({ type: "fuck-2020" });
       }
 
       if (
-        twitchChatMessage.startsWith("!fightme") ||
-        twitchChatMessage.startsWith("!fight")
+        twitchChatMessage === "!fightme" ||
+        twitchChatMessage === "!fight"
       ) {
         controlLols({
           twitchApi,
@@ -183,9 +193,53 @@ async function main() {
         });
       }
 
+      if (
+        twitchChatMessage === "!game" ||
+        twitchChatMessage === "!category"
+      ) {
+        const { categoryName } = currentChannelInfo;
+        if (categoryName) {
+          if (categoryName === "Just Chatting") {
+            twitchBot.say(`zac's farting about chatting`);
+          } else if (categoryName === "Makers & Crafting") {
+            twitchBot.say(`zac's making something`);
+          } else {
+            twitchBot.say(`zac's playing ${categoryName}`);
+          }
+        } else {
+          twitchBot.say(`zac isn't doing anything... fuck all`);
+        }
+      }
+
+      if (twitchChatMessage === "!title") {
+        if (currentChannelInfo.title) {
+          twitchBot.say(
+            `stream title is "${currentChannelInfo.title}"`
+          );
+        } else {
+          twitchBot.say(`there is no stream title`);
+        }
+      }
+
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
-        if (twitchChatMessage.startsWith("!test-follow")) {
+        if (twitchChatMessage.startsWith("!title")) {
+          const newTitle = twitchChatMessage
+            .replace("!title", "")
+            .trim();
+
+          if (!newTitle) {
+            return;
+          }
+
+          try {
+            await twitchApi.setChannelInfo({ title: newTitle });
+          } catch (e) {
+            twitchBot.say(e.message);
+          }
+        }
+
+        if (twitchChatMessage === "!test-follow") {
           console.log("hi");
           sendAlertToClient({
             type: "follow",
@@ -193,7 +247,11 @@ async function main() {
           });
         }
 
-        if (twitchChatMessage.startsWith("!so")) {
+        if (
+          twitchChatMessage.startsWith("!so") ||
+          twitchChatMessage.startsWith("!shoutout") ||
+          twitchChatMessage.startsWith("!shout-out")
+        ) {
           let shoutOutUsername = twitchChatMessage.split(" ")[1];
 
           if (!shoutOutUsername) {

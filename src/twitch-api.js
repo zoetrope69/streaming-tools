@@ -33,7 +33,7 @@ async function getOAuthToken() {
 }
 
 function callTwitchAPIBuilder(oAuthToken) {
-  return async function (endpoint, options) {
+  return async function (endpoint, options, fetchOptions) {
     const queryString = queryStringStringify(options);
     const url = `https://api.twitch.tv/helix/${endpoint}?${queryString}`;
 
@@ -44,7 +44,9 @@ function callTwitchAPIBuilder(oAuthToken) {
           Accept: "application/vnd.twitchtv.v5+json",
           Authorization: `Bearer ${oAuthToken}`,
           "Client-Id": TWITCH_CLIENT_ID,
+          "Content-Type": "application/json",
         },
+        ...fetchOptions,
       });
     } catch (e) {
       logger.error("💩 Twitch API", e);
@@ -121,6 +123,85 @@ async function getFollowers(callTwitchAPI) {
   };
 }
 
+async function getChannelInfo(callTwitchAPI) {
+  const response = await callTwitchAPI("channels", {
+    broadcaster_id: TWITCH_BROADCASTER_ID,
+  });
+
+  const { data } = response;
+
+  if (!data || data.length === 0) {
+    return {};
+  }
+
+  const {
+    broadcaster_id,
+    broadcaster_name,
+    broadcaster_language,
+    title,
+    game_id,
+    game_name,
+  } = data[0];
+
+  return {
+    id: broadcaster_id,
+    username: broadcaster_name,
+    title,
+    language: broadcaster_language,
+    categoryId: game_id,
+    categoryName: game_name,
+  };
+}
+
+async function getCategoryByName(callTwitchAPI, searchName) {
+  const response = await callTwitchAPI("games", { name: searchName });
+
+  const { data } = response;
+
+  if (!data || data.length === 0) {
+    return {};
+  }
+
+  const { id, name, box_art_url } = data[0];
+  console.log(data);
+  return {
+    id,
+    name,
+    image: box_art_url,
+  };
+}
+
+async function setChannelInfo(
+  callTwitchAPI,
+  { categoryName, title }
+) {
+  const newChannelInfo = {};
+
+  if (categoryName) {
+    const category = await getCategoryByName(categoryName);
+    if (!category) {
+      throw new Error(`${categoryName} isn't a category/game...`);
+    }
+
+    newChannelInfo.game_id = category.id;
+  }
+
+  if (title) {
+    newChannelInfo.title = title;
+  }
+
+  return callTwitchAPI(
+    "channels",
+    {
+      broadcaster_id: TWITCH_BROADCASTER_ID,
+    },
+    {
+      method: "PATCH",
+      body: JSON.stringify(newChannelInfo),
+    }
+  );
+}
+
 async function TwitchAPI() {
   const oAuthToken = await getOAuthToken();
   const callTwitchAPI = callTwitchAPIBuilder(oAuthToken);
@@ -135,6 +216,12 @@ async function TwitchAPI() {
     getFollowTotal: async () => {
       const { total } = await getFollowers(callTwitchAPI);
       return total;
+    },
+
+    getChannelInfo: async () => getChannelInfo(callTwitchAPI),
+
+    setChannelInfo: async ({ categoryName, title }) => {
+      return setChannelInfo(callTwitchAPI, { categoryName, title });
     },
   };
 }

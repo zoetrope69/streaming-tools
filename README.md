@@ -4,3 +4,4 @@ credits/shout outs
 
 - limmys alert stuff
 - those eyes shout out script
+- stole some code from tesjs

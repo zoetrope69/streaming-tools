@@ -28,6 +28,7 @@ function TwitchBotMain() {
       "🤖 Twitch Bot",
       `Connected to: ${TWITCH_BROADCASTER_NAME}`
     );
+    eventEmitter.emit("ready", { foo: "bar " });
   });
 
   Bot.on("join", (channel) => {
@@ -40,10 +41,6 @@ function TwitchBotMain() {
 
   Bot.on("close", () => {
     logger.info("🤖 Twitch Bot", "Closed bot IRC connection");
-  });
-
-  Bot.on("connected", () => {
-    eventEmitter.emit("ready");
   });
 
   Bot.on("message", (data) => {

@@ -3,6 +3,7 @@ require("dotenv").config();
 const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
+const logger = require("./logger");
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
@@ -68,7 +69,10 @@ function getNewToken(oAuth2Client) {
       scope: SCOPES,
     });
 
-    console.log("Authorize this app by visiting this url:", authUrl);
+    logger.error(
+      "🐑 Google Sheets",
+      `Authorize this app by visiting this url: ${authUrl}`
+    );
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -91,7 +95,10 @@ function getNewToken(oAuth2Client) {
             return reject(err);
           }
 
-          console.log("Token stored to", TOKEN_PATH);
+          logger.info(
+            "🐑 Google Sheets",
+            `Token stored to ${TOKEN_PATH}`
+          );
         });
 
         resolve(oAuth2Client);

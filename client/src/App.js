@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import openSocket from "socket.io-client";
 import PrideFlag from "./PrideFlag";
 import LastFMVisualiser from "./LastFMVisualiser";
-import FiftyCentFollowerCount from "./FiftyCentFollowerCount";
 import Alert from "./Alert";
 
 import "./App.css";
@@ -10,7 +9,6 @@ import "./App.css";
 const socket = openSocket("/");
 
 function App() {
-  const [currentFollowTotal, setCurrentFollowTotal] = useState();
   const [alertQueue, setAlertQueue] = useState([]);
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
@@ -34,13 +32,7 @@ function App() {
     const socketIOHandler = (data) => {
       console.log("data", data);
 
-      const {
-        twitchChatMessage,
-        alert,
-        track,
-        prideFlagName,
-        followTotal,
-      } = data;
+      const { twitchChatMessage, alert, track, prideFlagName } = data;
 
       if (alert) {
         if (!alert.loadImage) {
@@ -65,10 +57,6 @@ function App() {
       if (twitchChatMessage) {
         console.log("twitchChatMessage", twitchChatMessage);
       }
-
-      if (followTotal) {
-        setCurrentFollowTotal(followTotal);
-      }
     };
 
     socket.on("data", socketIOHandler);
@@ -82,7 +70,6 @@ function App() {
     <div className="App">
       <PrideFlag name={currentPrideFlagName} />
       <LastFMVisualiser currentTrack={currentTrack} />
-      <FiftyCentFollowerCount followTotal={currentFollowTotal} />
 
       {currentAlert && (
         <Alert

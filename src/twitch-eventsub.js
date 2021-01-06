@@ -1,54 +1,30 @@
 const events = require("events");
-const TES = require("tesjs");
 const logger = require("./helpers/logger");
 
+const eventSubExpress = require("./twitch-eventsub-express");
+
 // https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types
-
-const {
-  TWITCH_CLIENT_ID,
-  TWITCH_CLIENT_SECRET,
-  TWITCH_BROADCASTER_ID,
-} = process.env;
-
-async function TwitchEventSub(url, app) {
+async function TwitchEventSub(app, twitchApi) {
   const eventEmitter = new events.EventEmitter();
 
   logger.info("🌯 Twitch EventSub", "Starting...");
-
-  const twitchEventSub = new TES({
-    options: {
-      logging: false,
-    },
-    identity: {
-      id: TWITCH_CLIENT_ID,
-      secret: TWITCH_CLIENT_SECRET,
-    },
-    listener: {
-      baseURL: url,
-      server: app,
-    },
-  });
+  const expressEvents = eventSubExpress(app);
 
   async function subscribeToTopic(topic, callback) {
     try {
-      twitchEventSub.on(topic, (...data) => {
-        logger.log("🌯 Twitch EventSub", `${topic} triggered`);
-        callback(data);
-      });
+      expressEvents.on(topic, callback);
 
       // unsubscribe existing subscription
-      const subscriptions = await twitchEventSub.getSubscriptions();
-      if (subscriptions && subscriptions.data.length > 0) {
-        subscriptions.data.forEach(async (subscription) => {
+      const subscriptions = await twitchApi.eventSub.getSubscriptions();
+      if (subscriptions && subscriptions.length > 0) {
+        subscriptions.forEach(async (subscription) => {
           if (subscription.type === topic) {
-            await twitchEventSub.unsubscribe(subscription.id);
+            await twitchApi.eventSub.unsubscribe(subscription.id);
           }
         });
       }
 
-      await twitchEventSub.subscribe(topic, {
-        broadcaster_user_id: TWITCH_BROADCASTER_ID,
-      });
+      await twitchApi.eventSub.subscribe(topic);
 
       logger.info(
         "🌯 Twitch EventSub",
@@ -59,35 +35,71 @@ async function TwitchEventSub(url, app) {
         "🌯 Twitch EventSub",
         `${topic} failed: ${typeof e === "string" ? e : e.message}`
       );
+      console.error(e);
     }
   }
 
   // recieves a follow
   await subscribeToTopic("channel.follow", (data) => {
-    const [id, username] = data;
-    eventEmitter.emit("follow", { id, username });
+    const { user_id, user_name } = data;
+    eventEmitter.emit("follow", { id: user_id, username: user_name });
   });
 
   // updates the category, title
   await subscribeToTopic("channel.update", (data) => {
-    const [
-      id,
-      username,
-      title,
-      language,
-      categoryId,
-      categoryName,
-    ] = data;
-
+    const { title, category_id, category_name } = data;
     eventEmitter.emit("channelInfo", {
-      id,
-      username,
       title,
-      language,
-      categoryId,
-      categoryName,
+      categoryId: category_id,
+      categoryName: category_name,
     });
   });
+
+  // stream online/offline
+  await subscribeToTopic("stream.online", () =>
+    eventEmitter.emit("streamOnline", {})
+  );
+  await subscribeToTopic("stream.offline", () =>
+    eventEmitter.emit("streamOffline", {})
+  );
+
+  // channel point redemptions
+  const channelPointRedemptionHandler = (data) => {
+    const {
+      user_id,
+      user_name,
+      user_input,
+      redeemed_at,
+      status,
+      reward,
+    } = data;
+
+    if (status !== "fulfilled") {
+      return;
+    }
+
+    eventEmitter.emit("channelPointRewardFulfilled", {
+      user: {
+        id: user_id,
+        username: user_name,
+        input: user_input,
+      },
+      redeemedAt: redeemed_at,
+      reward,
+    });
+  };
+
+  eventEmitter.emit("channelPointRewardFulfilled", {
+    reward: { foo: "bar" },
+  });
+  await subscribeToTopic(
+    "channel.channel_points_custom_reward_redemption.add",
+    channelPointRedemptionHandler
+  );
+  await subscribeToTopic(
+    "channel.channel_points_custom_reward_redemption.update",
+    channelPointRedemptionHandler
+  );
 
   return eventEmitter;
 }

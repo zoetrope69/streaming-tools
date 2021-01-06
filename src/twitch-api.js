@@ -7,15 +7,24 @@ const {
   TWITCH_CLIENT_ID,
   TWITCH_CLIENT_SECRET,
   TWITCH_BROADCASTER_ID,
+  TWITCH_EVENTSUB_SECRET,
 } = process.env;
+
+const TWITCH_API_SCOPES = [
+  "channel:read:redemptions", // 	View Channel Points custom rewards and their redemptions on a channel.
+];
+
+// id.twitch.tv/oauth2/authorize?client_id=<clientid>&redirect_uri=https://zac.land&response_type=code&scope=channel:read:redemptions
 
 async function getOAuthToken() {
   const queryString = queryStringStringify({
     client_id: TWITCH_CLIENT_ID,
     client_secret: TWITCH_CLIENT_SECRET,
     grant_type: "client_credentials",
+    scope: TWITCH_API_SCOPES.join(" "),
   });
-  const url = ` https://id.twitch.tv/oauth2/token?${queryString}`;
+
+  const url = `https://id.twitch.tv/oauth2/token?${queryString}`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -25,6 +34,7 @@ async function getOAuthToken() {
   });
 
   const json = await response.json();
+
   if (!json.access_token) {
     throw new Error("No access token.");
   }
@@ -53,7 +63,7 @@ function callTwitchAPIBuilder(oAuthToken) {
     }
 
     if (!response) {
-      return;
+      return {};
     }
 
     const rateLimit = response.headers.get("ratelimit-limit");
@@ -68,7 +78,16 @@ function callTwitchAPIBuilder(oAuthToken) {
       );
     }
 
+    // no content
+    if (response.status === 204) {
+      return {};
+    }
+
     const json = await response.json();
+
+    if (json.error) {
+      logger.error("💩 Twitch API", json.message);
+    }
 
     if (!json) {
       logger.error("💩 Twitch API", `No data for: ${url}`);
@@ -163,7 +182,7 @@ async function getCategoryByName(callTwitchAPI, searchName) {
   }
 
   const { id, name, box_art_url } = data[0];
-  console.log(data);
+
   return {
     id,
     name,
@@ -202,7 +221,72 @@ async function setChannelInfo(
   );
 }
 
-async function TwitchAPI() {
+async function getEventSubSubscriptions(callTwitchAPI) {
+  const response = await callTwitchAPI("eventsub/subscriptions");
+
+  const { data } = response;
+
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  return data;
+}
+
+async function createEventSubSubscription(
+  callTwitchAPI,
+  { type, ngrokUrl }
+) {
+  const body = {
+    type,
+    version: "1",
+    condition: {
+      broadcaster_user_id: TWITCH_BROADCASTER_ID,
+    },
+    transport: {
+      method: "webhook",
+      callback: `${ngrokUrl}/eventSubCallback`,
+      secret: TWITCH_EVENTSUB_SECRET,
+    },
+  };
+
+  const response = await callTwitchAPI(
+    "eventsub/subscriptions",
+    {},
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    }
+  );
+
+  const { data } = response;
+
+  if (!data || data.length === 0) {
+    return {};
+  }
+
+  return data;
+}
+
+async function deleteEventSubSubscription(callTwitchAPI, { id }) {
+  const response = await callTwitchAPI(
+    "eventsub/subscriptions",
+    { id },
+    {
+      method: "DELETE",
+    }
+  );
+
+  const { data } = response;
+
+  if (!data || data.length === 0) {
+    return {};
+  }
+
+  return data;
+}
+
+async function TwitchAPI(ngrokUrl) {
   const oAuthToken = await getOAuthToken();
   const callTwitchAPI = callTwitchAPIBuilder(oAuthToken);
 
@@ -222,6 +306,20 @@ async function TwitchAPI() {
 
     setChannelInfo: async ({ categoryName, title }) => {
       return setChannelInfo(callTwitchAPI, { categoryName, title });
+    },
+
+    eventSub: {
+      getSubscriptions: async () =>
+        getEventSubSubscriptions(callTwitchAPI),
+      subscribe: async (type) => {
+        return createEventSubSubscription(callTwitchAPI, {
+          type,
+          ngrokUrl,
+        });
+      },
+      unsubscribe: async (id) => {
+        return deleteEventSubSubscription(callTwitchAPI, { id });
+      },
     },
   };
 }

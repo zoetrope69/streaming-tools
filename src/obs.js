@@ -39,8 +39,13 @@ function getTriggerSource(triggerName) {
 
 function request(requestName, options) {
   if (!AVAILABLE_OBS_REQUESTS.includes(requestName)) {
-    console.log("AVAILABLE_OBS_REQUESTS", AVAILABLE_OBS_REQUESTS);
-    console.error(
+    logger.debug(
+      "☢ OBS",
+      "AVAILABLE_OBS_REQUESTS",
+      AVAILABLE_OBS_REQUESTS
+    );
+    logger.debug(
+      "☢ OBS",
       ["Available requests:", ...AVAILABLE_OBS_REQUESTS].join("\n")
     );
     return Promise.reject(
@@ -93,7 +98,6 @@ function initialise() {
 
 async function getWebcamImage() {
   const webcamScreenshot = await request("TakeSourceScreenshot", {
-    sourceName: "Raw Webcam Scene",
     embedPictureFormat: "jpg",
   });
   return webcamScreenshot.img;

@@ -54,18 +54,10 @@ async function main() {
   twitchCommands.initialise();
 
   const ngrokUrl = await ngrok.connect(PORT);
-  const twitchApi = await TwitchAPI();
-  const twitchEventSub = await TwitchEventSub(ngrokUrl, app);
+  const twitchApi = await TwitchAPI(ngrokUrl);
+  const twitchEventSub = await TwitchEventSub(app, twitchApi);
   const twitchBot = TwitchBot();
   const lastFM = LastFM();
-
-  // set and update channel info
-  currentChannelInfo = await twitchApi.getChannelInfo();
-  logger.info("🤖 Twitch Bot", "Setting channel info");
-  twitchEventSub.on("channelInfo", async (channelInfo) => {
-    logger.info("🤖 Twitch Bot", "Updating channel info");
-    currentChannelInfo = channelInfo;
-  });
 
   twitchBot.on("ready", async () => {
     const scheduledCommands = await twitchCommands.getScheduledCommands();
@@ -88,6 +80,41 @@ async function main() {
       const followTotal = await twitchApi.getFollowTotal();
       io.emit("data", { followTotal });
     });
+
+    twitchEventSub.on(
+      "channelPointRewardFulfilled",
+      async ({ reward }) => {
+        if (!reward.title) {
+          return;
+        }
+
+        if (reward.title === "imma bee") {
+          logger.log("🐝 Imma bee", "Triggered...");
+
+          try {
+            const image = await obs.getWebcamImage();
+            await createBeeImage(image);
+            sendAlertToClient({ type: "immabee" });
+          } catch (e) {
+            logger.error("🐝 Imma bee", e);
+            twitchBot.say(`Couldn't find Zac's face...`);
+          }
+        }
+
+        if (reward.title === "big data") {
+          logger.log("😎 Big Data", "Triggered...");
+          sendAlertToClient({ type: "bigdata" });
+        }
+      }
+    );
+  });
+
+  // set and update channel info
+  currentChannelInfo = await twitchApi.getChannelInfo();
+  logger.info("🤖 Twitch Bot", "Setting channel info");
+  twitchEventSub.on("channelInfo", async (channelInfo) => {
+    logger.info("🤖 Twitch Bot", "Updating channel info");
+    currentChannelInfo = channelInfo;
   });
 
   twitchBot.on(
@@ -155,27 +182,6 @@ async function main() {
 
       obs.handleTriggers(twitchChatMessage);
 
-      if (twitchChatMessage === "!bigdata") {
-        sendAlertToClient({ type: "bigdata" });
-      }
-
-      if (
-        twitchChatMessage === "!bee" ||
-        twitchChatMessage.startsWith("!immabe") ||
-        twitchChatMessage.startsWith("!imabe")
-      ) {
-        logger.log("🐝 Imma bee", "Triggered...");
-
-        try {
-          const image = await obs.getWebcamImage();
-          await createBeeImage(image);
-          sendAlertToClient({ type: "immabee" });
-        } catch (e) {
-          logger.error("🐝 Imma bee", e);
-          twitchBot.say(`Couldn't find Zac's face...`);
-        }
-      }
-
       if (twitchChatMessage === "!2020") {
         sendAlertToClient({ type: "fuck-2020" });
       }
@@ -240,7 +246,6 @@ async function main() {
         }
 
         if (twitchChatMessage === "!test-follow") {
-          console.log("hi");
           sendAlertToClient({
             type: "follow",
             user: { username: "ninja" },

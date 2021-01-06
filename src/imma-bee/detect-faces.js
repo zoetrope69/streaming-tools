@@ -1,4 +1,5 @@
 const cv = require("opencv4nodejs");
+const logger = require("../helpers/logger");
 
 const DEBUG = false;
 
@@ -25,11 +26,11 @@ function outputDebugImage(cvImage, result) {
     cvImage,
     (err) => {
       if (err) {
-        console.error(err);
+        logger.debug("👽 Detect Face", err);
         return;
       }
 
-      console.log("done, saved results to out/faceDetection.jpg");
+      logger.debug("👽 Detect Face", "Saved debug image");
     }
   );
 }
@@ -67,9 +68,7 @@ async function detectFaces(dataUri) {
     })
     .sort((a, b) => b.confidence - a.confidence);
 
-  if (DEBUG) {
-    console.log(results);
-  }
+  logger.debug("👽 Detect Face", "Saved debug image");
 
   const [bestResult] = results;
 

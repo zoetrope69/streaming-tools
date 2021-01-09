@@ -1,0 +1,54 @@
+.PhilPunch {
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  animation: fadeIn 0.15s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.PhilPunch__image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  transform: translate(90%, 10%);
+  border: none;
+}
+
+.PhilPunch__text {
+  max-width: 20vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0 0.5em;
+  word-wrap: anywhere;
+  overflow: hidden;
+  animation: getPunched 1s forwards;
+}
+
+@keyframes getPunched {
+  0%,
+  45% {
+    transform: translate(30vw, 29vh) rotate(-2deg);
+  }
+  100% {
+    transform: translate(-100%, 200%) rotate(-720deg);
+  }
+}
+
+.PhilPunch__text p {
+  font-size: 2em;
+  background: white;
+}

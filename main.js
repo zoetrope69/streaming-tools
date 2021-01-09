@@ -17,7 +17,10 @@ const TwitchAPI = require("./src/twitch-api");
 const TwitchEventSub = require("./src/twitch-eventsub");
 const twitchCommands = require("./src/twitch-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
+const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
+
 const logger = require("./src/helpers/logger");
+
 const {
   getPrideFlag,
   getRandomPrideFlag,
@@ -83,12 +86,15 @@ async function main() {
 
     twitchEventSub.on(
       "channelPointRewardFulfilled",
-      async ({ reward }) => {
-        if (!reward.title) {
+      async ({ reward, user }) => {
+        const { title } = reward;
+        const { input } = user;
+
+        if (!title) {
           return;
         }
 
-        if (reward.title === "imma bee") {
+        if (title === "imma bee") {
           logger.log("🐝 Imma bee", "Triggered...");
 
           try {
@@ -101,9 +107,14 @@ async function main() {
           }
         }
 
-        if (reward.title === "big data") {
+        if (title === "big data") {
           logger.log("😎 Big Data", "Triggered...");
           sendAlertToClient({ type: "bigdata" });
+        }
+
+        if (title === "ally phil") {
+          logger.log("🥊 Phil Punch", "Triggered...");
+          sendAlertToClient({ type: "philpunch", message: input });
         }
       }
     );
@@ -229,6 +240,22 @@ async function main() {
 
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
+        if (twitchChatMessage.startsWith("!say")) {
+          const sayMessage = twitchChatMessage
+            .replace("!say", "")
+            .trim();
+          sendAlertToClient({
+            type: "say",
+            message: sayMessage,
+          });
+        }
+
+        if (twitchChatMessage === "!brb") {
+          const image = await obs.getWebcamImage();
+          await saveScreenshotToBrbScreen(image);
+          await obs.switchToScene("BRB");
+        }
+
         if (twitchChatMessage.startsWith("!title")) {
           const newTitle = twitchChatMessage
             .replace("!title", "")

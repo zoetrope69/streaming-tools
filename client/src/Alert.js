@@ -2,14 +2,18 @@ import React, { useEffect } from "react";
 import Axolotl from "./Alerts/Axolotl";
 import BigData from "./Alerts/BigData";
 import ImmaBee from "./Alerts/ImmaBee";
+import PhilPunch from "./Alerts/PhilPunch";
 
-const DEFAULT_DURATION = 1000;
+const DEFAULT_DURATION = 5000;
 
 const ALERT_TYPES = {
   "shout-out": {
     duration: 5000,
   },
   follow: {
+    duration: 5000,
+  },
+  say: {
     duration: 5000,
   },
   bigdata: {
@@ -23,6 +27,10 @@ const ALERT_TYPES = {
   "fuck-2020": {
     audio: new Audio("fuck-2020.mp3"),
     duration: 3000,
+  },
+  philpunch: {
+    audio: new Audio("phil-punch.mp3"),
+    duration: 1000,
   },
 };
 
@@ -73,6 +81,14 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
         <img src={user.image} alt="" />
       </Axolotl>
     );
+  }
+
+  if (type === "say") {
+    return <Axolotl duration={duration}>{alert.message}</Axolotl>;
+  }
+
+  if (type === "philpunch") {
+    return <PhilPunch>{alert.message}</PhilPunch>;
   }
 
   return null;

@@ -103,6 +103,12 @@ async function getWebcamImage() {
   return webcamScreenshot.img;
 }
 
+async function switchToScene(sceneName) {
+  return request("SetCurrentScene", {
+    "scene-name": sceneName,
+  });
+}
+
 async function resetTriggers() {
   await request("TriggerHotkeyBySequence", { keyId: "OBS_KEY_NUM5" });
 }
@@ -136,4 +142,5 @@ module.exports = {
   initialise,
   getWebcamImage,
   handleTriggers,
+  switchToScene,
 };

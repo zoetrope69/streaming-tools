@@ -26,6 +26,23 @@ const TRIGGER_SOURCES = [
       keyModifiers: GLOBAL_KEY_MODIFIERS,
     },
   },
+  {
+    name: "space",
+    description: "star trek vid",
+    hotKeyOptions: {
+      keyId: "OBS_KEY_NUMASTERISK", // NUM KEY *
+      keyModifiers: GLOBAL_KEY_MODIFIERS,
+    },
+  },
+  {
+    name: "star-trek-slideshow",
+    description: "star trek slideshow",
+    hotKeyOptions: {
+      keyId: "OBS_KEY_NUMSLASH", // NUM KEY /
+      keyModifiers: GLOBAL_KEY_MODIFIERS,
+    },
+    dontResetTriggers: true,
+  },
 ];
 
 let OBS_INITIALISED = false;
@@ -113,20 +130,17 @@ async function resetTriggers() {
   await request("TriggerHotkeyBySequence", { keyId: "OBS_KEY_NUM5" });
 }
 
-async function toggleOnOffHotKey({ hotKeyOptions }) {
-  await resetTriggers();
+async function toggleOnOffHotKey({
+  dontResetTriggers,
+  hotKeyOptions,
+}) {
+  if (!dontResetTriggers) await resetTriggers();
   setTimeout(async () => {
     await request("TriggerHotkeyBySequence", hotKeyOptions);
   }, 100); // need to time out for this to work
 }
 
-function handleTriggers(message) {
-  if (!message || message.length === 0 || !message.startsWith("!")) {
-    return;
-  }
-
-  const [command] = message.replace("!", "").split(" ");
-
+function handleTriggers(command) {
   const triggerSource = getTriggerSource(command);
 
   if (!triggerSource) {
@@ -142,5 +156,6 @@ module.exports = {
   initialise,
   getWebcamImage,
   handleTriggers,
+  resetTriggers,
   switchToScene,
 };

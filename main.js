@@ -116,6 +116,21 @@ async function main() {
           logger.log("🥊 Phil Punch", "Triggered...");
           sendAlertToClient({ type: "philpunch", message: input });
         }
+
+        if (title === "SPACE") {
+          logger.log("🌌 SPACE", "Triggered...");
+          obs.handleTriggers("space");
+          setTimeout(() => {
+            obs.handleTriggers("star-trek-slideshow");
+            twitchBot.say(
+              `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
+            );
+          }, 50 * 1000); // minute into the video
+
+          setTimeout(() => {
+            obs.resetTriggers();
+          }, 114 * 1000); // end of video
+        }
       }
     );
   });
@@ -191,7 +206,13 @@ async function main() {
         }
       }
 
-      obs.handleTriggers(twitchChatMessage);
+      if (twitchChatMessage === "!steve") {
+        obs.handleTriggers("steve");
+      }
+
+      if (twitchChatMessage === "!chanel") {
+        obs.handleTriggers("chanel");
+      }
 
       if (twitchChatMessage === "!2020") {
         sendAlertToClient({ type: "fuck-2020" });

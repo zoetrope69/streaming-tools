@@ -5,6 +5,7 @@
   left: 0;
   width: 100%;
   height: 100vh;
+  opacity: 0;
   animation: fadeIn 0.15s ease-in forwards;
 }
 
@@ -27,15 +28,17 @@
 }
 
 .PhilPunch__text {
+  display: block;
   max-width: 20vw;
   position: absolute;
   top: 0;
   left: 0;
   z-index: 10;
-  padding: 0 0.5em;
-  word-wrap: anywhere;
+  word-wrap: break-word;
   overflow: hidden;
+  transform: translate(30vw, 29vh) rotate(-2deg);
   animation: getPunched 1s forwards;
+  animation-delay: 1s;
 }
 
 @keyframes getPunched {
@@ -51,4 +54,6 @@
 .PhilPunch__text p {
   font-size: 2em;
   background: white;
+  padding: 0.5em;
+  border-radius: 5px;
 }

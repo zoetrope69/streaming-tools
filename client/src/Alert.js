@@ -30,7 +30,8 @@ const ALERT_TYPES = {
   },
   philpunch: {
     audio: new Audio("phil-punch.mp3"),
-    duration: 1000,
+    duration: 5000,
+    delayAudio: 1000,
   },
 };
 
@@ -44,11 +45,15 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
       return;
     }
 
+    let audioTimeout;
     if (alertType.audio) {
-      alertType.audio.play();
+      audioTimeout = setTimeout(() => {
+        alertType.audio.play();
+      }, alertType.delayAudio || 0);
     }
 
     setTimeout(() => {
+      clearTimeout(audioTimeout);
       removeAlertFromQueue(id);
     }, duration || DEFAULT_DURATION);
   }, [user, type, alertType, id, duration, removeAlertFromQueue]);

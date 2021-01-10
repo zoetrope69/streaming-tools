@@ -1,19 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import "./PhilPunch.css";
 
-const PhilPunch = ({ children }) => (
-  <div class="PhilPunch">
-    <div class="PhilPunch__text">
-      <p>{children}</p>
-    </div>
+const PhilPunch = ({ children }) => {
+  const [showPhil, setShowPhil] = useState(false);
 
-    <img
-      className="PhilPunch__image"
-      src="phil-punch.gif"
-      alt="Phil"
-    />
-  </div>
-);
+  useEffect(() => {
+    setTimeout(() => {
+      setShowPhil(true);
+
+      setTimeout(() => {
+        setShowPhil(false);
+      }, 1700);
+    }, 1000);
+  }, []);
+
+  return (
+    <div class="PhilPunch">
+      <div class="PhilPunch__text">
+        <p>{children}</p>
+      </div>
+
+      {showPhil && (
+        <img
+          className="PhilPunch__image"
+          src="phil-punch.gif"
+          alt="Phil"
+        />
+      )}
+    </div>
+  );
+};
 
 export default PhilPunch;

@@ -75,6 +75,18 @@ async function main() {
       });
     });
 
+    twitchEventSub.on("subscribe", (data) => {
+      sendAlertToClient({ type: "subscribe", ...data });
+      twitchBot.say(`hi @${data.user.username}, thanks for the sub!`);
+    });
+
+    twitchEventSub.on("bits", (data) => {
+      sendAlertToClient({ type: "bits", ...data });
+      twitchBot.say(
+        `hi @${data.user.username}, thanks for the bits!`
+      );
+    });
+
     twitchEventSub.on("follow", async (user) => {
       sendAlertToClient({ type: "follow", user });
       twitchBot.say(`hi @${user.username}, thanks for following!`);
@@ -88,7 +100,7 @@ async function main() {
       "channelPointRewardFulfilled",
       async ({ reward, user }) => {
         const { title } = reward;
-        const { input } = user;
+        const { message } = user;
 
         if (!title) {
           return;
@@ -114,7 +126,7 @@ async function main() {
 
         if (title === "ally phil") {
           logger.log("🥊 Phil Punch", "Triggered...");
-          sendAlertToClient({ type: "philpunch", message: input });
+          sendAlertToClient({ type: "philpunch", message });
         }
 
         if (title === "SPACE") {

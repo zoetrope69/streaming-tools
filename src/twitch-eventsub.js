@@ -39,6 +39,35 @@ async function TwitchEventSub(app, twitchApi) {
     }
   }
 
+  // subbies
+  await subscribeToTopic("channel.subscribe", (data) => {
+    const { user_id, user_name, is_gift } = data;
+
+    eventEmitter.emit("subscribe", {
+      isGift: is_gift,
+      user: {
+        id: user_id,
+        username: user_name,
+      },
+    });
+  });
+
+  // bitties
+  await subscribeToTopic("channel.cheer", (data) => {
+    console.log("channel.cheer data", data);
+    const { user_id, user_name, is_anonymous, message, bits } = data;
+
+    eventEmitter.emit("bits", {
+      isAnonymous: is_anonymous,
+      user: {
+        id: user_id,
+        username: user_name,
+      },
+      message,
+      amount: bits,
+    });
+  });
+
   // recieves a follow
   await subscribeToTopic("channel.follow", (data) => {
     const { user_id, user_name } = data;
@@ -82,16 +111,13 @@ async function TwitchEventSub(app, twitchApi) {
       user: {
         id: user_id,
         username: user_name,
-        input: user_input,
+        message: user_input,
       },
       redeemedAt: redeemed_at,
       reward,
     });
   };
 
-  eventEmitter.emit("channelPointRewardFulfilled", {
-    reward: { foo: "bar" },
-  });
   await subscribeToTopic(
     "channel.channel_points_custom_reward_redemption.add",
     channelPointRedemptionHandler

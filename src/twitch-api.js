@@ -11,10 +11,12 @@ const {
 } = process.env;
 
 const TWITCH_API_SCOPES = [
+  "channel:read:subscriptions", // subbies
+  "bits:read", // bits
   "channel:read:redemptions", // 	View Channel Points custom rewards and their redemptions on a channel.
 ];
 
-// id.twitch.tv/oauth2/authorize?client_id=<clientid>&redirect_uri=https://zac.land&response_type=code&scope=channel:read:redemptions
+// https://id.twitch.tv/oauth2/authorize?client_id=phtz03sabqh7wp44occt0apnd4xoko&redirect_uri=https://zac.land&response_type=code&scope=channel:read:redemptions bits:read channel:read:subscriptions
 
 async function getOAuthToken() {
   const queryString = queryStringStringify({

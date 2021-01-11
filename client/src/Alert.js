@@ -10,6 +10,12 @@ const ALERT_TYPES = {
   "shout-out": {
     duration: 5000,
   },
+  bits: {
+    duration: 5000,
+  },
+  subscribe: {
+    duration: 5000,
+  },
   follow: {
     duration: 5000,
   },
@@ -68,6 +74,28 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
 
   if (type === "immabee") {
     return <ImmaBee duration={duration} />;
+  }
+
+  if (type === "bits") {
+    return (
+      <Axolotl duration={duration}>
+        thanks for the bits{" "}
+        {alert.isAnonymous ? (
+          "bill gates"
+        ) : (
+          <strong>{user.username}</strong>
+        )}
+      </Axolotl>
+    );
+  }
+
+  if (type === "subscribe") {
+    return (
+      <Axolotl duration={duration}>
+        thanks for {alert.isGift ? "gifting " : ""}the sub{" "}
+        <strong>{user.username}</strong>
+      </Axolotl>
+    );
   }
 
   if (type === "follow") {

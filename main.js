@@ -346,7 +346,7 @@ async function main() {
           });
 
           twitchBot.say(
-            `shout out to twitch.tv/${shoutOutUser.username} Squid1 Squid3 Squid4`
+            `shout out to twitch.tv/${shoutOutUser.username} Squid1 Squid2 zactopUs Squid2 Squid4`
           );
         }
       }

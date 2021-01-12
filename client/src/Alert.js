@@ -110,7 +110,7 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
   if (type === "shout-out") {
     return (
       <Axolotl duration={duration}>
-        shout to <br /> <strong>{user.username}</strong>!
+        shout out to <br /> <strong>{user.username}</strong>!
         <img src={user.image} alt="" />
       </Axolotl>
     );

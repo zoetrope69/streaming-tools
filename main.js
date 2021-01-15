@@ -33,7 +33,8 @@ const io = socketIO(server);
 
 const CLIENT_FILE_PATH = "client/build";
 
-let currentChannelInfo = {};
+let PAUSE_FOLLOW_ALERT = false;
+let CURRENT_CHANNEL_INFO = {};
 
 // serve client files
 app.use(express.static(CLIENT_FILE_PATH));
@@ -61,11 +62,11 @@ async function main() {
   const lastFM = LastFM();
 
   // set and update channel info
-  currentChannelInfo = await twitch.getChannelInfo();
+  CURRENT_CHANNEL_INFO = await twitch.getChannelInfo();
   logger.info("🤖 Twitch Bot", "Setting channel info");
   twitch.on("channelInfo", async (channelInfo) => {
     logger.info("🤖 Twitch Bot", "Updating channel info");
-    currentChannelInfo = channelInfo;
+    CURRENT_CHANNEL_INFO = channelInfo;
   });
 
   const scheduledCommands = await twitchCommands.getScheduledCommands();
@@ -91,6 +92,10 @@ async function main() {
   });
 
   twitch.on("follow", async (user) => {
+    if (PAUSE_FOLLOW_ALERT) {
+      return;
+    }
+
     sendAlertToClient({ type: "follow", user });
     twitch.bot.say(`hi @${user.username}, thanks for following!`);
 
@@ -100,6 +105,15 @@ async function main() {
   });
 
   twitch.on("raid", async (user) => {
+    if (user.viewers > 50) {
+      PAUSE_FOLLOW_ALERT = true;
+      twitch.bot.say("beeeg raid, follow alerts paused for 5 mins");
+      setTimeout(() => {
+        PAUSE_FOLLOW_ALERT = false;
+        twitch.bot.say("follow alerts will happen again chief");
+      }, 5 * 60 * 1000); // after 5 minutes resume again
+    }
+
     sendAlertToClient({ type: "raid", user });
     twitch.bot.say(
       `hi @${user.username}, thanks for the raid! hi to the ${user.viewers} raiders.`
@@ -238,7 +252,7 @@ async function main() {
       }
 
       if (command === "!game" || command === "!category") {
-        const { categoryName } = currentChannelInfo;
+        const { categoryName } = CURRENT_CHANNEL_INFO;
         if (categoryName) {
           if (categoryName === "Just Chatting") {
             twitch.bot.say(`zac's farting about chatting`);
@@ -253,9 +267,9 @@ async function main() {
       }
 
       if (command === "!title") {
-        if (currentChannelInfo.title) {
+        if (CURRENT_CHANNEL_INFO.title) {
           twitch.bot.say(
-            `stream title is "${currentChannelInfo.title}"`
+            `stream title is "${CURRENT_CHANNEL_INFO.title}"`
           );
         } else {
           twitch.bot.say(`there is no stream title`);
@@ -264,6 +278,22 @@ async function main() {
 
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
+        if (command === "!follows") {
+          if (PAUSE_FOLLOW_ALERT) {
+            PAUSE_FOLLOW_ALERT = false;
+            twitch.bot.say(
+              "follow alerts will happen again now phew"
+            );
+          } else {
+            PAUSE_FOLLOW_ALERT = true;
+            twitch.bot.say("follow alerts paused for 5 mins");
+            setTimeout(() => {
+              PAUSE_FOLLOW_ALERT = false;
+              twitch.bot.say("follow alerts will happen again");
+            }, 5 * 60 * 1000); // after 5 minutes resume again
+          }
+        }
+
         if (command === "!say") {
           sendAlertToClient({
             type: "say",

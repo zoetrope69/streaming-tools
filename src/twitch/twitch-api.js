@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const { stringify: queryStringStringify } = require("qs");
 
-const logger = require("./helpers/logger");
+const logger = require("../helpers/logger");
 
 const {
   TWITCH_CLIENT_ID,
@@ -11,12 +11,13 @@ const {
 } = process.env;
 
 const TWITCH_API_SCOPES = [
-  "channel:read:subscriptions", // subbies
+  "user:edit:broadcast",
   "bits:read", // bits
+  "channel:read:subscriptions", // subbies
   "channel:read:redemptions", // 	View Channel Points custom rewards and their redemptions on a channel.
 ];
 
-// https://id.twitch.tv/oauth2/authorize?client_id=phtz03sabqh7wp44occt0apnd4xoko&redirect_uri=https://zac.land&response_type=code&scope=channel:read:redemptions bits:read channel:read:subscriptions
+// https://id.twitch.tv/oauth2/authorize?client_id=phtz03sabqh7wp44occt0apnd4xoko&redirect_uri=https://zac.land&response_type=code&scope=channel:read:redemptions bits:read channel:read:subscriptions user:edit:broadcast
 
 async function getOAuthToken() {
   const queryString = queryStringStringify({
@@ -288,7 +289,7 @@ async function deleteEventSubSubscription(callTwitchAPI, { id }) {
   return data;
 }
 
-async function TwitchAPI(ngrokUrl) {
+async function TwitchAPI({ ngrokUrl }) {
   const oAuthToken = await getOAuthToken();
   const callTwitchAPI = callTwitchAPIBuilder(oAuthToken);
 

@@ -53,10 +53,6 @@ function App() {
       if (prideFlagName) {
         setCurrentPrideFlagName(prideFlagName);
       }
-
-      if (twitchChatMessage) {
-        console.log("twitchChatMessage", twitchChatMessage);
-      }
     };
 
     socket.on("data", socketIOHandler);

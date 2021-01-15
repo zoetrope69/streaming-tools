@@ -111,13 +111,21 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
     return (
       <Axolotl duration={duration}>
         shout out to <br /> <strong>{user.username}</strong>!
-        <img src={user.image} alt="" />
+        <img class="avatar" src={user.image} alt="" />
       </Axolotl>
     );
   }
 
   if (type === "say") {
-    return <Axolotl duration={duration}>{alert.message}</Axolotl>;
+    return (
+      <Axolotl
+        message={alert.message}
+        duration={duration}
+        containsHTML
+      >
+        {alert.messageWithEmotes}
+      </Axolotl>
+    );
   }
 
   if (type === "philpunch") {

@@ -79,6 +79,7 @@ var Animalese = function (letters_file, onload) {
 
 function sayText(text) {
   var audio = new Audio();
+  audio.volume = 0.5;
   audio.src = synth.Animalese(text, false, 1.0).dataURI;
   audio.play();
 }

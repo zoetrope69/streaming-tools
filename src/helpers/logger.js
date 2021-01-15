@@ -6,6 +6,7 @@ const LOG_TYPES_TO_COLOR = {
   log: "yellow",
   info: "white",
   error: "red",
+  warn: "orange",
   debug: "blue",
 };
 
@@ -25,6 +26,7 @@ const logger = {
   log: logToConsole("log"),
   info: logToConsole("info"),
   error: logToConsole("error"),
+  warn: logToConsole("warn"),
   debug: logToConsole("debug"),
 };
 

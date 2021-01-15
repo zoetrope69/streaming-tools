@@ -1,8 +1,8 @@
-const events = require("events");
+const { EventEmitter } = require("events");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
 
-const logger = require("./helpers/logger");
+const logger = require("../helpers/logger");
 
 let RECENT_EVENTSUB_MESSAGES = [];
 const IGNORE_DUPLICATE_EVENTSUB_MESSAGES = true;
@@ -42,7 +42,7 @@ function verifyEventSubSCallback(request, _response, buffer) {
 }
 
 function eventSubExpress(app) {
-  const eventEmitter = new events.EventEmitter();
+  const eventEmitter = new EventEmitter();
 
   app.post(
     "/eventSubCallback",

@@ -1,6 +1,3 @@
-// get process.env from .env
-require("dotenv").config();
-
 const fetch = require("node-fetch");
 const { colorNameToXY, hexToXY } = require("./color-converting");
 

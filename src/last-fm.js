@@ -1,4 +1,4 @@
-const events = require("events");
+const { EventEmitter } = require("events");
 const fetch = require("node-fetch");
 const hash = require("object-hash");
 const { stringify: stringifyQueryString } = require("qs");
@@ -128,7 +128,7 @@ async function emitNowPlayingTrack(eventEmitter) {
 }
 
 function lastFm() {
-  const eventEmitter = new events.EventEmitter();
+  const eventEmitter = new EventEmitter();
 
   logger.info("🎸 Last.FM", "Checking for new now playing song...");
   // run as soon as we launch script

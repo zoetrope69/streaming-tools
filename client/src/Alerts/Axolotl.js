@@ -25,10 +25,10 @@ const getTextFromChildren = (children) => {
   return text;
 };
 
-const Axolotl = ({ children, duration }) => {
+const Axolotl = ({ children, message, duration, containsHTML }) => {
   useEffect(() => {
     if (window.sayAnimalese) {
-      const text = getTextFromChildren(children);
+      const text = message || getTextFromChildren(children);
       window.sayAnimalese(text);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -52,11 +52,23 @@ const Axolotl = ({ children, duration }) => {
           style={{ animationDuration: `${duration}ms` }}
         >
           <img
-            className="Axolotl__speech-bubble__image"
+            className="Axolotl__speech-bubble__image Axolotl__speech-bubble__image--top"
             src="speech-bubble-body.svg"
             alt=""
           />
-          <p className="Axolotl__speech-bubble__text">{children}</p>
+          <img
+            className="Axolotl__speech-bubble__image Axolotl__speech-bubble__image--bottom"
+            src="speech-bubble-body.svg"
+            alt=""
+          />
+          {containsHTML ? (
+            <p
+              className="Axolotl__speech-bubble__text"
+              dangerouslySetInnerHTML={{ __html: children }}
+            />
+          ) : (
+            <p className="Axolotl__speech-bubble__text">{children}</p>
+          )}
         </div>
       </div>
     </Fragment>

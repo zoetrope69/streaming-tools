@@ -1,5 +1,6 @@
 // get process.env from .env
 require("dotenv").config();
+
 const { PORT } = process.env;
 const { v4: randomID } = require("uuid");
 const express = require("express");
@@ -12,9 +13,7 @@ const { schedule } = require("./src/helpers/schedule");
 const controlLols = require("./control-lols");
 
 const LastFM = require("./src/last-fm");
-const TwitchBot = require("./src/twitch-bot");
-const TwitchAPI = require("./src/twitch-api");
-const TwitchEventSub = require("./src/twitch-eventsub");
+const Twitch = require("./src/twitch");
 const twitchCommands = require("./src/twitch-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
@@ -57,122 +56,115 @@ async function main() {
   twitchCommands.initialise();
 
   const ngrokUrl = await ngrok.connect(PORT);
-  const twitchApi = await TwitchAPI(ngrokUrl);
-  const twitchEventSub = await TwitchEventSub(app, twitchApi);
-  const twitchBot = TwitchBot();
+  logger.info("👽 Ngrok URL", ngrokUrl);
+  const twitch = await Twitch({ ngrokUrl, app });
   const lastFM = LastFM();
 
-  twitchBot.on("ready", async () => {
-    const scheduledCommands = await twitchCommands.getScheduledCommands();
-
-    scheduledCommands.forEach((scheduledCommand) => {
-      logger.info(
-        "🤖 Twitch Bot",
-        `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
-      );
-      schedule(scheduledCommand.schedule, () => {
-        twitchBot.say(scheduledCommand.value);
-      });
-    });
-
-    twitchEventSub.on("subscribe", (data) => {
-      sendAlertToClient({ type: "subscribe", ...data });
-      twitchBot.say(`hi @${data.user.username}, thanks for the sub!`);
-    });
-
-    twitchEventSub.on("bits", (data) => {
-      sendAlertToClient({ type: "bits", ...data });
-      twitchBot.say(
-        `hi @${data.user.username}, thanks for the bits!`
-      );
-    });
-
-    twitchEventSub.on("follow", async (user) => {
-      sendAlertToClient({ type: "follow", user });
-      twitchBot.say(`hi @${user.username}, thanks for following!`);
-
-      // update follow total
-      const followTotal = await twitchApi.getFollowTotal();
-      io.emit("data", { followTotal });
-    });
-
-    twitchEventSub.on(
-      "channelPointRewardFulfilled",
-      async ({ reward, user }) => {
-        const { title } = reward;
-        const { message } = user;
-
-        if (!title) {
-          return;
-        }
-
-        if (title === "imma bee") {
-          logger.log("🐝 Imma bee", "Triggered...");
-
-          try {
-            const image = await obs.getWebcamImage();
-            await createBeeImage(image);
-            sendAlertToClient({ type: "immabee" });
-          } catch (e) {
-            logger.error("🐝 Imma bee", e);
-            twitchBot.say(`Couldn't find Zac's face...`);
-          }
-        }
-
-        if (title === "big data") {
-          logger.log("😎 Big Data", "Triggered...");
-          sendAlertToClient({ type: "bigdata" });
-        }
-
-        if (title === "ally phil") {
-          logger.log("🥊 Phil Punch", "Triggered...");
-          sendAlertToClient({ type: "philpunch", message });
-        }
-
-        if (title === "SPACE") {
-          logger.log("🌌 SPACE", "Triggered...");
-          obs.handleTriggers("space");
-          setTimeout(() => {
-            obs.handleTriggers("star-trek-slideshow");
-            twitchBot.say(
-              `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
-            );
-          }, 50 * 1000); // minute into the video
-
-          setTimeout(() => {
-            obs.resetTriggers();
-          }, 114 * 1000); // end of video
-        }
-      }
-    );
-  });
-
   // set and update channel info
-  currentChannelInfo = await twitchApi.getChannelInfo();
+  currentChannelInfo = await twitch.getChannelInfo();
   logger.info("🤖 Twitch Bot", "Setting channel info");
-  twitchEventSub.on("channelInfo", async (channelInfo) => {
+  twitch.on("channelInfo", async (channelInfo) => {
     logger.info("🤖 Twitch Bot", "Updating channel info");
     currentChannelInfo = channelInfo;
   });
 
-  twitchBot.on(
+  const scheduledCommands = await twitchCommands.getScheduledCommands();
+
+  scheduledCommands.forEach((scheduledCommand) => {
+    logger.info(
+      "🤖 Twitch Bot",
+      `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
+    );
+    schedule(scheduledCommand.schedule, () => {
+      twitch.bot.say(scheduledCommand.value);
+    });
+  });
+
+  twitch.on("subscribe", (data) => {
+    sendAlertToClient({ type: "subscribe", ...data });
+    twitch.bot.say(`hi @${data.user.username}, thanks for the sub!`);
+  });
+
+  twitch.on("bits", (data) => {
+    sendAlertToClient({ type: "bits", ...data });
+    twitch.bot.say(`hi @${data.user.username}, thanks for the bits!`);
+  });
+
+  twitch.on("follow", async (user) => {
+    sendAlertToClient({ type: "follow", user });
+    twitch.bot.say(`hi @${user.username}, thanks for following!`);
+
+    // update follow total
+    const followTotal = await twitch.getFollowTotal();
+    io.emit("data", { followTotal });
+  });
+
+  twitch.on(
+    "channelPointRewardFulfilled",
+    async ({ reward, user }) => {
+      const { title } = reward;
+      const { message } = user;
+
+      if (!title) {
+        return;
+      }
+
+      if (title === "imma bee") {
+        logger.log("🐝 Imma bee", "Triggered...");
+
+        try {
+          const image = await obs.getWebcamImage();
+          await createBeeImage(image);
+          sendAlertToClient({ type: "immabee" });
+        } catch (e) {
+          logger.error("🐝 Imma bee", e);
+          twitch.bot.say(`Couldn't find Zac's face...`);
+        }
+      }
+
+      if (title === "big data") {
+        logger.log("😎 Big Data", "Triggered...");
+        sendAlertToClient({ type: "bigdata" });
+      }
+
+      if (title === "ally phil") {
+        logger.log("🥊 Phil Punch", "Triggered...");
+        sendAlertToClient({ type: "philpunch", message });
+      }
+
+      if (title === "SPACE") {
+        logger.log("🌌 SPACE", "Triggered...");
+        obs.handleTriggers("space");
+        setTimeout(() => {
+          obs.handleTriggers("star-trek-slideshow");
+          twitch.bot.say(
+            `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
+          );
+        }, 50 * 1000); // minute into the video
+
+        setTimeout(() => {
+          obs.resetTriggers();
+        }, 114 * 1000); // end of video
+      }
+    }
+  );
+
+  twitch.on(
     "message",
     async ({
       isMod,
       isBroadcaster,
-      message: twitchChatMessage,
+      message,
+      messageWithEmotes,
+      command,
+      commandArguments,
       user,
     }) => {
-      twitchChatMessage = twitchChatMessage.toLowerCase();
-
-      if (
-        twitchChatMessage === "!song" ||
-        twitchChatMessage === "!music"
-      ) {
+      if (command === "!song" || command === "!music") {
         const currentTrack = lastFM.getCurrentTrack();
 
         if (!currentTrack) {
-          twitchBot.say(`SingsNote Nothing is playing...`);
+          twitch.bot.say(`SingsNote Nothing is playing...`);
           return;
         }
 
@@ -183,19 +175,17 @@ async function main() {
         } = lastFM.getCurrentTrack();
 
         if (!artistName || !trackName || !albumName) {
-          twitchBot.say(`SingsNote Nothing is playing...`);
+          twitch.bot.say(`SingsNote Nothing is playing...`);
           return;
         }
 
-        twitchBot.say(
+        twitch.bot.say(
           `SingsNote ${trackName} — ${artistName} — ${albumName}`
         );
       }
 
-      if (twitchChatMessage.startsWith("!pride")) {
-        const inputPrideFlagName = twitchChatMessage
-          .replace("!pride", "")
-          .trim();
+      if (command === "!pride") {
+        const inputPrideFlagName = commandArguments;
 
         const prideFlag = getPrideFlag(inputPrideFlagName);
 
@@ -203,11 +193,11 @@ async function main() {
           setLightsToPrideFlag(prideFlag.name);
           io.emit("data", { prideFlagName: prideFlag.name });
           if (prideFlag.twitchEmote) {
-            twitchBot.say(`${prideFlag.twitchEmote} `.repeat(5));
+            twitch.bot.say(`${prideFlag.twitchEmote} `.repeat(5));
           }
         } else {
           const randomPrideFlagName = getRandomPrideFlag().name;
-          twitchBot.say(
+          twitch.bot.say(
             [
               inputPrideFlagName.length > 0
                 ? `Didn't find anything for "${inputPrideFlagName}". :-(`
@@ -218,94 +208,85 @@ async function main() {
         }
       }
 
-      if (twitchChatMessage === "!steve") {
+      if (command === "!steve") {
         obs.handleTriggers("steve");
       }
 
-      if (twitchChatMessage === "!chanel") {
+      if (command === "!chanel") {
         obs.handleTriggers("chanel");
       }
 
-      if (twitchChatMessage === "!2020") {
+      if (command === "!2020") {
         sendAlertToClient({ type: "fuck-2020" });
       }
 
-      if (
-        twitchChatMessage === "!fightme" ||
-        twitchChatMessage === "!fight"
-      ) {
+      if (command === "!fightme" || command === "!fight") {
         controlLols({
-          twitchApi,
+          twitch,
           user,
           isMod,
           isBroadcaster,
-          twitchChatMessage,
+          message,
         });
       }
 
-      if (
-        twitchChatMessage === "!game" ||
-        twitchChatMessage === "!category"
-      ) {
+      if (command === "!game" || command === "!category") {
         const { categoryName } = currentChannelInfo;
         if (categoryName) {
           if (categoryName === "Just Chatting") {
-            twitchBot.say(`zac's farting about chatting`);
+            twitch.bot.say(`zac's farting about chatting`);
           } else if (categoryName === "Makers & Crafting") {
-            twitchBot.say(`zac's making something`);
+            twitch.bot.say(`zac's making something`);
           } else {
-            twitchBot.say(`zac's playing ${categoryName}`);
+            twitch.bot.say(`zac's playing ${categoryName}`);
           }
         } else {
-          twitchBot.say(`zac isn't doing anything... fuck all`);
+          twitch.bot.say(`zac isn't doing anything... fuck all`);
         }
       }
 
-      if (twitchChatMessage === "!title") {
+      if (command === "!title") {
         if (currentChannelInfo.title) {
-          twitchBot.say(
+          twitch.bot.say(
             `stream title is "${currentChannelInfo.title}"`
           );
         } else {
-          twitchBot.say(`there is no stream title`);
+          twitch.bot.say(`there is no stream title`);
         }
       }
 
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
-        if (twitchChatMessage.startsWith("!say")) {
-          const sayMessage = twitchChatMessage
-            .replace("!say", "")
-            .trim();
+        if (command === "!say") {
           sendAlertToClient({
             type: "say",
-            message: sayMessage,
+            message: commandArguments,
+            messageWithEmotes: messageWithEmotes
+              .replace("!say", "")
+              .trim(),
           });
         }
 
-        if (twitchChatMessage === "!brb") {
+        if (command === "!brb") {
           const image = await obs.getWebcamImage();
           await saveScreenshotToBrbScreen(image);
           await obs.switchToScene("BRB");
         }
 
-        if (twitchChatMessage.startsWith("!title")) {
-          const newTitle = twitchChatMessage
-            .replace("!title", "")
-            .trim();
-
+        if (command === "!title") {
+          const newTitle = commandArguments;
           if (!newTitle) {
             return;
           }
 
           try {
-            await twitchApi.setChannelInfo({ title: newTitle });
+            await twitch.setChannelInfo({ title: newTitle });
           } catch (e) {
-            twitchBot.say(e.message);
+            twitch.bot.say(e.message);
           }
         }
 
-        if (twitchChatMessage === "!test-follow") {
+        if (command === "!test-follow") {
           sendAlertToClient({
             type: "follow",
             user: { username: "ninja" },
@@ -313,12 +294,11 @@ async function main() {
         }
 
         if (
-          twitchChatMessage.startsWith("!so") ||
-          twitchChatMessage.startsWith("!shoutout") ||
-          twitchChatMessage.startsWith("!shout-out")
+          command === "!so" ||
+          command === "!shoutout" ||
+          command === "!shout-out"
         ) {
-          let shoutOutUsername = twitchChatMessage.split(" ")[1];
-
+          let shoutOutUsername = commandArguments;
           if (!shoutOutUsername) {
             return;
           }
@@ -331,9 +311,12 @@ async function main() {
             return;
           }
 
-          const shoutOutUser = await twitchApi.getUser(
-            shoutOutUsername
+          const customShoutOuts = await twitch.getCustomShoutOuts();
+          const customShoutOut = customShoutOuts.find(
+            (shoutOut) =>
+              shoutOut.username === shoutOutUsername.toLowerCase()
           );
+          const shoutOutUser = await twitch.getUser(shoutOutUsername);
 
           if (!shoutOutUser) {
             return;
@@ -343,23 +326,33 @@ async function main() {
             type: "shout-out",
             user: shoutOutUser,
             loadImage: shoutOutUser.image,
+            customShoutOut,
           });
 
-          twitchBot.say(
-            `shout out to twitch.tv/${shoutOutUser.username} Squid1 Squid2 zactopUs Squid2 Squid4`
+          twitch.bot.say(
+            `shout out to ${
+              customShoutOut
+                ? customShoutOut.message
+                : shoutOutUser.username
+            } doing something cool over at twitch.tv/${
+              shoutOutUser.username
+            } Squid1 Squid2 zactopUs Squid2 Squid4`
           );
         }
       }
 
       const commands = await twitchCommands.getCommands();
-      const chatCommand = commands.find((command) =>
-        twitchChatMessage.startsWith(`!${command.name}`)
+      const chatCommand = commands.find(
+        (command) => command === `!${command.name}`
       );
       if (chatCommand) {
-        twitchBot.say(chatCommand.value);
+        twitch.bot.say(chatCommand.value);
       }
 
-      io.emit("data", { twitchChatMessage });
+      io.emit("data", {
+        message,
+        messageWithEmotes,
+      });
     }
   );
 
@@ -370,7 +363,7 @@ async function main() {
   io.on("connection", async (socket) => {
     logger.info("👽 Stream Client", "Connected");
 
-    const followTotal = await twitchApi.getFollowTotal();
+    const followTotal = await twitch.getFollowTotal();
     const track = lastFM.getCurrentTrack();
     io.emit("data", { track, followTotal });
 

@@ -102,6 +102,7 @@ async function TwitchBot({ eventEmitter }) {
   botClient.on(
     "resub",
     async (_channel, _username, _months, message, data) => {
+      console.log("resub data", { username, _months, message, data });
       message = message.trim();
       // const cumulativeMonths = ~~data["msg-param-cumulative-months"];
       const { emotes } = data;
@@ -123,6 +124,15 @@ async function TwitchBot({ eventEmitter }) {
       });
     }
   );
+
+  botClient.on("raided", (_channel, username, viewers) => {
+    console.log("raided", _channel, username, viewers);
+    const user = {
+      username,
+      viewers,
+    };
+    eventEmitter.emit("raid", user);
+  });
 
   await waitForTwitchBotToBeReady(botClient);
 

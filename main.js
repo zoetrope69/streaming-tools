@@ -99,6 +99,13 @@ async function main() {
     io.emit("data", { followTotal });
   });
 
+  twitch.on("raid", async (user) => {
+    sendAlertToClient({ type: "raid", user });
+    twitch.bot.say(
+      `hi @${user.username}, thanks for the raid! hi to the ${user.viewers} raiders.`
+    );
+  });
+
   twitch.on(
     "channelPointRewardFulfilled",
     async ({ reward, user }) => {

@@ -107,6 +107,15 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
     );
   }
 
+  if (type === "raid") {
+    return (
+      <Axolotl duration={duration}>
+        hi <strong>{user.username}</strong> <br />
+        thanks for raid!
+      </Axolotl>
+    );
+  }
+
   if (type === "shout-out") {
     return (
       <Axolotl duration={duration}>

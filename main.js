@@ -387,7 +387,7 @@ async function main() {
 
       const commands = await twitchCommands.getCommands();
       const chatCommand = commands.find(
-        (command) => command === `!${command.name}`
+        (c) => command === `!${c.name}`
       );
       if (chatCommand) {
         twitch.bot.say(chatCommand.value);

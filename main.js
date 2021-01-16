@@ -14,7 +14,7 @@ const controlLols = require("./control-lols");
 
 const LastFM = require("./src/last-fm");
 const Twitch = require("./src/twitch");
-const twitchCommands = require("./src/twitch-commands");
+const googleSheetCommands = require("./src/google-sheet-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
 
@@ -54,7 +54,7 @@ function sendAlertToClient(options) {
 async function main() {
   // initialise various things
   obs.initialise();
-  twitchCommands.initialise();
+  googleSheetCommands.initialise();
 
   const ngrokUrl = await ngrok.connect(PORT);
   logger.info("👽 Ngrok URL", ngrokUrl);
@@ -69,7 +69,7 @@ async function main() {
     CURRENT_CHANNEL_INFO = channelInfo;
   });
 
-  const scheduledCommands = await twitchCommands.getScheduledCommands();
+  const scheduledCommands = await googleSheetCommands.getScheduledCommands();
 
   scheduledCommands.forEach((scheduledCommand) => {
     logger.info(
@@ -385,7 +385,7 @@ async function main() {
         }
       }
 
-      const commands = await twitchCommands.getCommands();
+      const commands = await googleSheetCommands.getCommands();
       const chatCommand = commands.find(
         (c) => command === `!${c.name}`
       );

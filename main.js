@@ -130,6 +130,41 @@ async function main() {
         return;
       }
 
+      if (title === "show your pride") {
+        const inputPrideFlagName = message;
+
+        if (inputPrideFlagName === "straight") {
+          const { username } = user;
+          twitch.bot.say("Ok mate... straight pride doesn't exist.");
+          twitch.bot.timeout({
+            username,
+            lengthSeconds: 60,
+            reason: "Trying to chat shit about straight pride",
+          });
+          return;
+        }
+
+        const prideFlag = getPrideFlag(inputPrideFlagName);
+
+        if (prideFlag) {
+          setLightsToPrideFlag(prideFlag.name);
+          io.emit("data", { prideFlagName: prideFlag.name });
+          if (prideFlag.twitchEmote) {
+            twitch.bot.say(`${prideFlag.twitchEmote} `.repeat(5));
+          }
+        } else {
+          const randomPrideFlagName = getRandomPrideFlag().name;
+          twitch.bot.say(
+            [
+              inputPrideFlagName.length > 0
+                ? `Didn't find anything for "${inputPrideFlagName}". :-(`
+                : "",
+              `Try something like: !pride ${randomPrideFlagName}`,
+            ].join(" ")
+          );
+        }
+      }
+
       if (title === "imma bee") {
         logger.log("🐝 Imma bee", "Triggered...");
 
@@ -203,30 +238,6 @@ async function main() {
         twitch.bot.say(
           `SingsNote ${trackName} — ${artistName} — ${albumName}`
         );
-      }
-
-      if (command === "!pride") {
-        const inputPrideFlagName = commandArguments;
-
-        const prideFlag = getPrideFlag(inputPrideFlagName);
-
-        if (prideFlag) {
-          setLightsToPrideFlag(prideFlag.name);
-          io.emit("data", { prideFlagName: prideFlag.name });
-          if (prideFlag.twitchEmote) {
-            twitch.bot.say(`${prideFlag.twitchEmote} `.repeat(5));
-          }
-        } else {
-          const randomPrideFlagName = getRandomPrideFlag().name;
-          twitch.bot.say(
-            [
-              inputPrideFlagName.length > 0
-                ? `Didn't find anything for "${inputPrideFlagName}". :-(`
-                : "",
-              `Try something like: !pride ${randomPrideFlagName}`,
-            ].join(" ")
-          );
-        }
       }
 
       if (command === "!steve") {

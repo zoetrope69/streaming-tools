@@ -141,6 +141,14 @@ async function TwitchBot({ eventEmitter }) {
       say: (message) => {
         return botClient.say(TWITCH_BROADCASTER_NAME, message);
       },
+      timeout: ({ username, lengthSeconds, reason }) => {
+        return botClient.timeout(
+          TWITCH_BROADCASTER_NAME,
+          username,
+          lengthSeconds,
+          reason
+        );
+      },
     },
     eventEmitter,
   };

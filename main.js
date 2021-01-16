@@ -233,10 +233,6 @@ async function main() {
         obs.handleTriggers("steve");
       }
 
-      if (command === "!chanel") {
-        obs.handleTriggers("chanel");
-      }
-
       if (command === "!2020") {
         sendAlertToClient({ type: "fuck-2020" });
       }

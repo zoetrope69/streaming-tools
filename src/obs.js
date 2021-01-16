@@ -11,14 +11,6 @@ const GLOBAL_KEY_MODIFIERS = { alt: true };
 // https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h
 const TRIGGER_SOURCES = [
   {
-    name: "chanel",
-    description: "helps search for chanel",
-    hotKeyOptions: {
-      keyId: "OBS_KEY_BRACKETLEFT", // [
-      keyModifiers: GLOBAL_KEY_MODIFIERS,
-    },
-  },
-  {
     name: "steve",
     description: "octopussy ffs",
     hotKeyOptions: {

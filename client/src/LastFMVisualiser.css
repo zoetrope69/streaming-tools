@@ -8,23 +8,12 @@
   background: var(--color-black);
   color: var(--color-white);
   clip-path: url(#LastFMVisualiser-clip);
-  animation: slideUp 500ms ease-in forwards;
+  transform: translateY(0%);
+  transition: transform ease-in;
 }
 
 .LastFMVisualiser--hiding {
-  animation-name: slideDown;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-}
-
-@keyframes slideDown {
-  to {
-    transform: translateY(100%);
-  }
+  transform: translateY(100%);
 }
 
 .LastFMVisualiser__image {

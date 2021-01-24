@@ -107,13 +107,6 @@
   animation: speachBubbleJiggleImage 1s infinite alternate;
 }
 
-.Axolotl__speech-bubble__text .emote {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  transform: scale(1.15);
-}
-
 @keyframes speachBubbleJiggleImage {
   0% {
     transform: translate(150%, 75%) rotate(10deg);

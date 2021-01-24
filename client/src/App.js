@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import openSocket from "socket.io-client";
 import PrideFlag from "./PrideFlag";
+import PopUpMessage from "./PopUpMessage";
 import LastFMVisualiser from "./LastFMVisualiser";
 import Alert from "./Alert";
 
@@ -11,6 +12,7 @@ const socket = openSocket("/");
 function App() {
   const [alertQueue, setAlertQueue] = useState([]);
   const [currentTrack, setCurrentTrack] = useState({});
+  const [currentPopUpMessage, setCurrentPopUpMessage] = useState("");
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
     "gay"
   );
@@ -32,7 +34,7 @@ function App() {
     const socketIOHandler = (data) => {
       console.log("data", data);
 
-      const { twitchChatMessage, alert, track, prideFlagName } = data;
+      const { alert, track, prideFlagName, popUpMessage } = data;
 
       if (alert) {
         if (!alert.loadImage) {
@@ -48,6 +50,10 @@ function App() {
 
       if (track?.id !== currentTrack?.id) {
         setCurrentTrack(track);
+      }
+
+      if (typeof popUpMessage === "string") {
+        setCurrentPopUpMessage(popUpMessage);
       }
 
       if (prideFlagName) {
@@ -66,6 +72,7 @@ function App() {
     <div className="App">
       <PrideFlag name={currentPrideFlagName} />
       <LastFMVisualiser currentTrack={currentTrack} />
+      <PopUpMessage>{currentPopUpMessage}</PopUpMessage>
 
       {currentAlert && (
         <Alert

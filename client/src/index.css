@@ -11,6 +11,23 @@
   --border-radius-amount: 24px;
 }
 
+/*! Copyright (c) 2011 by Margaret Calvert & Henrik Kubel. */
+@font-face {
+  font-family: "New Transport";
+  src: url("/new-transport-normal.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "New Transport";
+  src: url("/new-transport-bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+  font-display: fallback;
+}
+
 body {
   background: black;
   overflow: hidden;
@@ -29,6 +46,14 @@ body {
 
 .FadeIn {
   animation: fadeIn 0.5s ease-in forwards;
+}
+
+.emote {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  transform: translateY(0.15em) scale(1.5);
+  margin: 0 0.45em;
 }
 
 @keyframes fadeIn {

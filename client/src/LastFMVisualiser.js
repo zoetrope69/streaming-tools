@@ -1,22 +1,15 @@
 import React, { Fragment, useEffect, useState } from "react";
 import classNames from "classnames";
-
+import truncate from "./helpers/truncate";
 import SVGClipPath from "./SVGClipPath";
 
 import "./LastFMVisualiser.css";
 
-function truncate(text, amount = 100) {
-  if (text.length < amount) {
-    return text;
-  }
-
-  return text.substring(0, amount) + "...";
-}
+const TRANSITION_DURATION = 500;
 
 const LastFMVisualiser = ({ currentTrack }) => {
   const [track, setTrack] = useState({});
-  const [isHidden, setIsHidden] = useState(true);
-  const [isHiding, setIsHiding] = useState(false);
+  const [isHiding, setIsHiding] = useState(true);
   const {
     albumArtURL,
     albumArtColors,
@@ -25,37 +18,45 @@ const LastFMVisualiser = ({ currentTrack }) => {
   } = track;
 
   useEffect(() => {
-    // if we've stopped playing the current song and a new song starts playing
-    if (!track?.isNowPlaying && currentTrack?.isNowPlaying) {
-      // show the track
-      setTrack(currentTrack);
-      setIsHidden(false);
-      return;
-    }
+    let timeout;
 
-    if (track?.isNowPlaying) {
-      if (
-        track.id !== currentTrack?.id &&
-        currentTrack?.isNowPlaying
-      ) {
+    console.log("hmm", track, currentTrack);
+    if (track && currentTrack && track.id !== currentTrack.id) {
+      if (currentTrack?.isNowPlaying) {
         setIsHiding(true);
-        setTimeout(() => {
-          setIsHiding(false);
-          setIsHidden(true);
 
-          setTrack(currentTrack);
-          setIsHidden(false);
-        }, 500);
+        timeout = setTimeout(
+          () => {
+            setTrack(currentTrack);
+            setIsHiding(false);
+          },
+          !track?.isNowPlaying ? 0 : TRANSITION_DURATION + 50
+        );
+      } else {
+        setIsHiding(true);
+        timeout = setTimeout(() => {
+          setTrack(currentTrack || {});
+        }, TRANSITION_DURATION + 50);
       }
     }
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
   }, [track, currentTrack]);
 
   const LastFMVisualiserClassName = classNames("LastFMVisualiser", {
     "LastFMVisualiser--hiding": isHiding,
   });
 
-  if (isHidden) {
-    return null;
+  const LastFMVisualiserStyles = {
+    transitionDuration: `${TRANSITION_DURATION}ms`,
+  };
+  const LastFMVisualiserTextStyles = {};
+
+  if (albumArtColors) {
+    LastFMVisualiserStyles.background = albumArtColors.darkestColor;
+    LastFMVisualiserTextStyles.color = albumArtColors.brightestColor;
   }
 
   return (
@@ -69,19 +70,11 @@ const LastFMVisualiser = ({ currentTrack }) => {
 
       <div
         className={LastFMVisualiserClassName}
-        style={
-          albumArtColors
-            ? { background: albumArtColors.darkestColor }
-            : {}
-        }
+        style={LastFMVisualiserStyles}
       >
         <p
           className="LastFMVisualiser__text"
-          style={
-            albumArtColors
-              ? { color: albumArtColors.brightestColor }
-              : {}
-          }
+          style={LastFMVisualiserTextStyles}
         >
           {truncate(trackName, 30)}
           <span className="LastFMVisualiser__text__second-line">

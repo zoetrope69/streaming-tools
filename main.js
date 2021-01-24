@@ -33,6 +33,7 @@ const io = socketIO(server);
 
 const CLIENT_FILE_PATH = "client/build";
 
+let POPUP_MESSAGE = "";
 let PAUSE_FOLLOW_ALERT = false;
 let CURRENT_CHANNEL_INFO = {};
 
@@ -296,6 +297,26 @@ async function main() {
 
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
+        if (command === "!sign" || command === "!alert") {
+          const newMessage = messageWithEmotes
+            .replace("!sign", "")
+            .replace("!alert", "")
+            .trim();
+
+          if (newMessage.length === 0) {
+            return;
+          }
+
+          io.emit("data", { popUpMessage: newMessage });
+
+          POPUP_MESSAGE = newMessage;
+        }
+
+        if (command === "!delete") {
+          POPUP_MESSAGE = "";
+          io.emit("data", { popUpMessage: "" });
+        }
+
         if (command === "!follows") {
           if (PAUSE_FOLLOW_ALERT) {
             PAUSE_FOLLOW_ALERT = false;
@@ -418,7 +439,11 @@ async function main() {
 
     const followTotal = await twitch.getFollowTotal();
     const track = lastFM.getCurrentTrack();
-    io.emit("data", { track, followTotal });
+    io.emit("data", {
+      track,
+      followTotal,
+      popUpMessage: POPUP_MESSAGE,
+    });
 
     socket.on("disconnect", () => {
       logger.info("👽 Stream Client", "Disconnected");

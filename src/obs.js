@@ -96,8 +96,6 @@ function initialise() {
           `obs-websocket version ${versionInfo.obsWebsocketVersion}`
         );
 
-        setTimeout(() => {}, 1000);
-
         OBS_INITIALISED = true;
         return resolve();
       });
@@ -143,6 +141,19 @@ function handleTriggers(command) {
   toggleOnOffHotKey(triggerSource);
 }
 
+async function midiTriggers(triggers) {
+  obs.on(
+    "SceneItemVisibilityChanged",
+    ({ itemVisible, itemName }) => {
+      if (!Object.prototype.hasOwnProperty.call(triggers, itemName)) {
+        return;
+      }
+
+      triggers[itemName]({ isVisible: itemVisible });
+    }
+  );
+}
+
 module.exports = {
   TRIGGER_SOURCES,
   initialise,
@@ -150,4 +161,5 @@ module.exports = {
   handleTriggers,
   resetTriggers,
   switchToScene,
+  midiTriggers,
 };

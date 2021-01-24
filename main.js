@@ -51,6 +51,13 @@ function sendAlertToClient(options) {
   io.emit("data", { alert });
 }
 
+async function switchToBRBScene() {
+  logger.info("🗺 Scene change", "BRB");
+  const image = await obs.getWebcamImage();
+  await saveScreenshotToBrbScreen(image);
+  await obs.switchToScene("BRB");
+}
+
 async function main() {
   // initialise various things
   obs.initialise();
@@ -60,6 +67,10 @@ async function main() {
   logger.info("👽 Ngrok URL", ngrokUrl);
   const twitch = await Twitch({ ngrokUrl, app });
   const lastFM = LastFM();
+
+  obs.midiTriggers({
+    "Scene change: BRB": async () => switchToBRBScene(),
+  });
 
   // set and update channel info
   CURRENT_CHANNEL_INFO = await twitch.getChannelInfo();
@@ -312,9 +323,7 @@ async function main() {
         }
 
         if (command === "!brb") {
-          const image = await obs.getWebcamImage();
-          await saveScreenshotToBrbScreen(image);
-          await obs.switchToScene("BRB");
+          await switchToBRBScene();
         }
 
         if (command === "!title") {

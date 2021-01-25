@@ -23,38 +23,41 @@ const ALERT_TYPES = {
     duration: 5000,
   },
   bigdata: {
-    audio: new Audio("bigdata.mp3"),
+    audioUrl: "bigdata.mp3",
     duration: 6000,
   },
   immabee: {
-    audio: new Audio("immabee.mp3"),
+    audioUrl: "immabee.mp3",
     duration: 4000,
   },
   "fuck-2020": {
-    audio: new Audio("fuck-2020.mp3"),
+    audioUrl: "fuck-2020.mp3",
     duration: 3000,
   },
   philpunch: {
-    audio: new Audio("phil-punch.mp3"),
+    audioUrl: "phil-punch.mp3",
     duration: 5000,
     delayAudio: 1000,
   },
 };
 
 const Alert = ({ alert, removeAlertFromQueue }) => {
-  const { id, type, user } = alert;
+  const { id, type, user, audioUrl } = alert;
   const alertType = ALERT_TYPES[type];
   const { duration } = alertType;
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (!alertType) {
       return;
     }
 
     let audioTimeout;
-    if (alertType.audio) {
+    const audioToPlay = alertType.audioUrl || audioUrl;
+    if (audioToPlay) {
       audioTimeout = setTimeout(() => {
-        alertType.audio.play();
+        const audio = new Audio(audioToPlay);
+        audio.play();
       }, alertType.delayAudio || 0);
     }
 
@@ -62,11 +65,18 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
       clearTimeout(audioTimeout);
       removeAlertFromQueue(id);
     }, duration || DEFAULT_DURATION);
-  }, [user, type, alertType, id, duration, removeAlertFromQueue]);
+
+    return () => {
+      clearTimeout(audioTimeout);
+    };
+  }, [alertType]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   if (!alertType) {
     return null;
   }
+
+  console.log({ alert, alertType });
 
   if (type === "bigdata") {
     return <BigData duration={duration} />;
@@ -120,7 +130,7 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
     return (
       <Axolotl duration={duration}>
         shout out to <br /> <strong>{user.username}</strong>!
-        <img class="avatar" src={user.image} alt="" />
+        <img className="avatar" src={user.image} alt="" />
       </Axolotl>
     );
   }

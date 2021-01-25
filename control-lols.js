@@ -33,10 +33,8 @@ async function controlLols({
     "/mnt/c/Program Files/Epic Games/Control/ui/hud/DynaHUD.js";
   fs.readFile(path, "utf-8", function (err, data) {
     if (err) {
-      return console.log(err);
+      return console.error(err);
     }
-
-    // console.log("data", data);
 
     const startString = "const ENEMY_IMAGE = '";
     const endString = "'; // end of ENEMY_IMAGE";
@@ -45,13 +43,10 @@ async function controlLols({
       .split(startString)[1]
       .split(endString)[0];
 
-    console.log("imageString", imageString);
-    console.log("userToFight.image", userToFight.image);
-
     const result = data.replace(imageString, userToFight.image);
 
     fs.writeFile(path, result, "utf8", function (err) {
-      if (err) return console.log(err);
+      if (err) return console.error(err);
     });
   });
 }

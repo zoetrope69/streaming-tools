@@ -17,6 +17,7 @@ const Twitch = require("./src/twitch");
 const googleSheetCommands = require("./src/google-sheet-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
+const textToSpeech = require("./src/text-to-speech");
 
 const logger = require("./src/helpers/logger");
 
@@ -119,14 +120,23 @@ async function main() {
   twitch.on("raid", async (user) => {
     if (user.viewers > 50) {
       PAUSE_FOLLOW_ALERT = true;
-      twitch.bot.say("beeeg raid, follow alerts paused for 5 mins");
+      twitch.bot.say("big raid, follow alerts paused for 5 mins");
       setTimeout(() => {
         PAUSE_FOLLOW_ALERT = false;
         twitch.bot.say("follow alerts will happen again chief");
       }, 5 * 60 * 1000); // after 5 minutes resume again
     }
 
-    sendAlertToClient({ type: "raid", user });
+    let raidAudioUrl;
+    try {
+      raidAudioUrl = await textToSpeech(
+        `oh shit here's ${user.username}`
+      );
+    } catch (e) {
+      // couldnt get name audio
+    }
+
+    sendAlertToClient({ type: "raid", user, audioUrl: raidAudioUrl });
     twitch.bot.say(
       `hi @${user.username}, thanks for the raid! hi to the ${user.viewers} raiders.`
     );
@@ -396,11 +406,19 @@ async function main() {
             return;
           }
 
+          let nameAudioUrl;
+          try {
+            nameAudioUrl = await textToSpeech(shoutOutUser.username);
+          } catch (e) {
+            // couldnt get name audio
+          }
+
           sendAlertToClient({
             type: "shout-out",
             user: shoutOutUser,
             loadImage: shoutOutUser.image,
             customShoutOut,
+            audioUrl: nameAudioUrl,
           });
 
           twitch.bot.say(

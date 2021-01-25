@@ -20,7 +20,6 @@ const LastFMVisualiser = ({ currentTrack }) => {
   useEffect(() => {
     let timeout;
 
-    console.log("hmm", track, currentTrack);
     if (track && currentTrack && track.id !== currentTrack.id) {
       if (currentTrack?.isNowPlaying) {
         setIsHiding(true);

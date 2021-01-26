@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "build": "npm run build:client",
-    "build:client": "cd client && npm install && npm run build",
+    "build:client": "cd client && npm run build",
+    "prestart": "npm run build",
     "start": "node main.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nodemon main.js",

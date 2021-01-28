@@ -3,6 +3,7 @@ import Axolotl from "./Alerts/Axolotl";
 import BigData from "./Alerts/BigData";
 import ImmaBee from "./Alerts/ImmaBee";
 import PhilPunch from "./Alerts/PhilPunch";
+import PenguinThrow from "./Alerts/PenguinThrow";
 
 const DEFAULT_DURATION = 5000;
 
@@ -24,25 +25,34 @@ const ALERT_TYPES = {
     duration: 5000,
   },
   bigdata: {
-    audioUrl: "bigdata.mp3",
+    audioUrl: "/alerts/bigdata.mp3",
     duration: 6000,
   },
   immabee: {
-    audioUrl: "immabee.mp3",
+    audioUrl: "/alerts/immabee.mp3",
     duration: 4000,
   },
   "fuck-2020": {
-    audioUrl: "fuck-2020.mp3",
+    audioUrl: "/alerts/fuck-2020.mp3",
     duration: 3000,
   },
   philpunch: {
-    audioUrl: "phil-punch.mp3",
+    audioUrl: "/alerts/phil-punch.mp3",
     duration: 5000,
     delayAudio: 1000,
   },
+  "penguin-throw": {
+    audioUrl: "/alerts/penguin-throw-snowball-impact.mp3",
+    duration: 2000,
+    delayAudio: 900,
+  },
 };
 
-const Alert = ({ alert, removeAlertFromQueue }) => {
+const Alert = ({
+  alert,
+  currentFaceDetection,
+  removeAlertFromQueue,
+}) => {
   const { id, type, user, audioUrl } = alert;
   const alertType = ALERT_TYPES[type];
   const { duration } = alertType;
@@ -77,7 +87,15 @@ const Alert = ({ alert, removeAlertFromQueue }) => {
     return null;
   }
 
-  console.log({ alert, alertType });
+  if (type === "penguin-throw") {
+    return (
+      <PenguinThrow
+        id={id}
+        duration={duration}
+        currentFaceDetection={currentFaceDetection}
+      />
+    );
+  }
 
   if (type === "bigdata") {
     return <BigData duration={duration} />;

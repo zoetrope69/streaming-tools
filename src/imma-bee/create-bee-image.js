@@ -1,5 +1,5 @@
 const jimp = require("jimp");
-const detectFaces = require("./detect-faces");
+const detectFaces = require("../helpers/detect-faces");
 
 function bufferFromBase64(base64text) {
   const base64data = base64text
@@ -36,7 +36,7 @@ async function createBeeImage(dataUri) {
   });
 
   await beeImage.writeAsync(
-    __dirname + "/../../client/build/immabee.png"
+    __dirname + "/../../client/build/alerts/immabee.png"
   );
 
   return Promise.resolve();

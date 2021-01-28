@@ -24,7 +24,7 @@ const PhilPunch = ({ children }) => {
       {showPhil && (
         <img
           className="PhilPunch__image"
-          src="phil-punch.gif"
+          src="/alerts/phil-punch.gif"
           alt="Phil"
         />
       )}

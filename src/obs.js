@@ -103,8 +103,9 @@ function initialise() {
   });
 }
 
-async function getWebcamImage() {
+async function getWebcamImage(sourceName) {
   const webcamScreenshot = await request("TakeSourceScreenshot", {
+    sourceName,
     embedPictureFormat: "jpg",
   });
   return webcamScreenshot.img;

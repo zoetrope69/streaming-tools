@@ -4,6 +4,7 @@ import PrideFlag from "./PrideFlag";
 import PopUpMessage from "./PopUpMessage";
 import LastFMVisualiser from "./LastFMVisualiser";
 import Alert from "./Alert";
+// import DebugFace from "./DebugFace";
 
 import "./App.css";
 
@@ -15,6 +16,9 @@ function App() {
   const [currentPopUpMessage, setCurrentPopUpMessage] = useState("");
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
     "gay"
+  );
+  const [currentFaceDetection, setCurrentFaceDetection] = useState(
+    {}
   );
   const [currentAlert] = alertQueue;
 
@@ -32,9 +36,15 @@ function App() {
     };
 
     const socketIOHandler = (data) => {
-      console.log("data", data);
+      // console.log("data", data);
 
-      const { alert, track, prideFlagName, popUpMessage } = data;
+      const {
+        alert,
+        track,
+        prideFlagName,
+        popUpMessage,
+        faceDetection,
+      } = data;
 
       if (alert) {
         if (!alert.loadImage) {
@@ -59,6 +69,10 @@ function App() {
       if (prideFlagName) {
         setCurrentPrideFlagName(prideFlagName);
       }
+
+      if (faceDetection) {
+        setCurrentFaceDetection(faceDetection);
+      }
     };
 
     socket.on("data", socketIOHandler);
@@ -73,10 +87,12 @@ function App() {
       <PrideFlag name={currentPrideFlagName} />
       <LastFMVisualiser currentTrack={currentTrack} />
       <PopUpMessage>{currentPopUpMessage}</PopUpMessage>
+      {/* <DebugFace currentFaceDetection={currentFaceDetection} /> */}
 
       {currentAlert && (
         <Alert
           alert={currentAlert}
+          currentFaceDetection={currentFaceDetection}
           removeAlertFromQueue={removeAlertFromQueue}
         />
       )}

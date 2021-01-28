@@ -6,7 +6,7 @@ const BigData = ({ duration }) => (
   <img
     style={{ animationDuration: `${duration}ms` }}
     className="BigData"
-    src="bigdata.png"
+    src="/alerts/bigdata.png"
     alt="Big Data"
   />
 );

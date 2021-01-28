@@ -9,7 +9,7 @@ const ImmaBee = ({ duration }) => (
   >
     <img
       className="ImmaBee"
-      src={`/immabee.png?${Math.random().toString()}`}
+      src={`/alerts/immabee.png?${Math.random().toString()}`}
       alt="Bee"
     />
   </div>

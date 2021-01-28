@@ -48,7 +48,11 @@ const Axolotl = ({ children, message, duration, containsHTML }) => {
         className="Axolotl"
         style={{ animationDuration: `${duration}ms` }}
       >
-        <img className="Axolotl__image" src="axolotl.png" alt="" />
+        <img
+          className="Axolotl__image"
+          src="/alerts/axolotl.png"
+          alt=""
+        />
         <div
           className="Axolotl__speech-bubble"
           style={{ animationDuration: `${duration}ms` }}
@@ -60,7 +64,7 @@ const Axolotl = ({ children, message, duration, containsHTML }) => {
           />
           <img
             className="Axolotl__speech-bubble__image Axolotl__speech-bubble__image--bottom"
-            src="speech-bubble-body.svg"
+            src="/alerts/axolotl-speech-bubble-body.svg"
             alt=""
           />
           {containsHTML ? (

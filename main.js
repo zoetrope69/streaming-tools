@@ -16,6 +16,7 @@ const LastFM = require("./src/last-fm");
 const Twitch = require("./src/twitch");
 const googleSheetCommands = require("./src/google-sheet-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
+const detectFaces = require("./src/helpers/detect-faces");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
 const textToSpeech = require("./src/text-to-speech");
 
@@ -69,6 +70,26 @@ async function main() {
   logger.info("👽 Ngrok URL", ngrokUrl);
   const twitch = await Twitch({ ngrokUrl, app });
   const lastFM = LastFM();
+
+  setInterval(async () => {
+    const image = await obs.getWebcamImage();
+
+    try {
+      const faceDetection = await detectFaces(image);
+
+      if (!faceDetection) {
+        throw new Error("No face detected");
+      }
+
+      if (faceDetection.confidence < 10) {
+        throw new Error("Not confident a face was detected");
+      }
+
+      io.emit("data", { faceDetection });
+    } catch (e) {
+      // io.emit("data", { faceDetection: {} });
+    }
+  }, 1000);
 
   obs.midiTriggers({
     "Scene change: BRB": async () => switchToBRBScene(),
@@ -223,6 +244,11 @@ async function main() {
         setTimeout(() => {
           obs.resetTriggers();
         }, 114 * 1000); // end of video
+      }
+
+      if (title === "snowball") {
+        logger.log("❄ Snowball", "Triggered...");
+        sendAlertToClient({ type: "penguin-throw" });
       }
     }
   );

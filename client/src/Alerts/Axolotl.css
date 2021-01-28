@@ -4,7 +4,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  /* animation: showAxolotl forwards ease-in-out; */
+  animation: showAxolotl forwards ease-in-out;
 }
 
 @keyframes showAxolotl {
@@ -20,7 +20,7 @@
   }
 
   100% {
-    opacity: 1;
+    opacity: 0;
     transform: translate(-10%, 50%);
     transform: translate(0, 0);
   }
@@ -52,6 +52,7 @@
   padding: 1em;
   left: 210px;
   bottom: 130px;
+  min-width: 150px;
   max-width: 40%;
   border-radius: 80px;
   transform: rotate(-2deg);
@@ -95,6 +96,7 @@
 .Axolotl__speech-bubble__text {
   transform: rotate(-1deg);
   line-height: 1.25em;
+  text-align: center;
 }
 
 .Axolotl__speech-bubble__text .avatar {

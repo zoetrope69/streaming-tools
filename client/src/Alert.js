@@ -9,6 +9,7 @@ const DEFAULT_DURATION = 5000;
 const ALERT_TYPES = {
   "shout-out": {
     duration: 5000,
+    delayAudio: 1500,
   },
   bits: {
     duration: 5000,

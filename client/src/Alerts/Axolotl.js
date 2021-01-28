@@ -28,8 +28,10 @@ const getTextFromChildren = (children) => {
 const Axolotl = ({ children, message, duration, containsHTML }) => {
   useEffect(() => {
     if (window.sayAnimalese) {
-      const text = message || getTextFromChildren(children);
-      window.sayAnimalese(text);
+      setTimeout(() => {
+        const text = message || getTextFromChildren(children);
+        window.sayAnimalese(text);
+      }, duration / 4);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

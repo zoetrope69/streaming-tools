@@ -104,6 +104,9 @@ function initialise() {
           `obs-websocket version ${versionInfo.obsWebsocketVersion}`
         );
 
+        // reset any triggers
+        resetTriggers();
+
         OBS_INITIALISED = true;
         return resolve();
       });

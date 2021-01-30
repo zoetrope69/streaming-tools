@@ -63,7 +63,7 @@ async function switchToBRBScene() {
 
 async function main() {
   // initialise various things
-  obs.initialise();
+  await obs.initialise();
   googleSheetCommands.initialise();
 
   const ngrokUrl = await ngrok.connect(PORT);

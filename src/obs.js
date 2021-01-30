@@ -35,6 +35,14 @@ const TRIGGER_SOURCES = [
     },
     dontResetTriggers: true,
   },
+  {
+    name: "barry",
+    description: "barry singing",
+    hotKeyOptions: {
+      keyId: "OBS_KEY_NUMPERIOD", // NUM KEY .
+      keyModifiers: GLOBAL_KEY_MODIFIERS,
+    },
+  },
 ];
 
 let OBS_INITIALISED = false;

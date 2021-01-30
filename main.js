@@ -250,6 +250,11 @@ async function main() {
         logger.log("❄ Snowball", "Triggered...");
         sendAlertToClient({ type: "penguin-throw" });
       }
+
+      if (title === "barry") {
+        logger.log(" Barry", "Triggered...");
+        obs.handleTriggers("barry");
+      }
     }
   );
 

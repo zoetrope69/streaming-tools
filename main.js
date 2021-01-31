@@ -73,9 +73,7 @@ async function main() {
   const twitch = await Twitch({ ngrokUrl, app });
   const lastFM = LastFM();
 
-  setInterval(async () => {
-    const image = await obs.getWebcamImage();
-
+  async function detectFacesSendToClient(image) {
     try {
       const faceDetection = await detectFaces(image);
 
@@ -89,9 +87,14 @@ async function main() {
 
       io.emit("data", { faceDetection });
     } catch (e) {
-      // io.emit("data", { faceDetection: {} });
+      // didn't work
     }
-  }, 1000);
+  }
+
+  setInterval(async () => {
+    const image = await obs.getWebcamImage();
+    detectFacesSendToClient(image);
+  }, 500);
 
   obs.midiTriggers({
     "Scene change: BRB": async () => switchToBRBScene(),

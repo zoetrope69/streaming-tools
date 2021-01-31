@@ -129,7 +129,25 @@ async function switchToScene(sceneName) {
 }
 
 async function resetTriggers() {
-  await request("TriggerHotkeyBySequence", { keyId: "OBS_KEY_NUM5" });
+  return await request("TriggerHotkeyBySequence", {
+    keyId: "OBS_KEY_NUM5",
+  });
+}
+
+async function showSource({ scene, source }) {
+  return await request("SetSceneItemRender", {
+    "scene-name": scene,
+    source,
+    render: true,
+  });
+}
+
+async function hideSource({ scene, source }) {
+  return await request("SetSceneItemRender", {
+    "scene-name": scene,
+    source,
+    render: false,
+  });
 }
 
 async function toggleOnOffHotKey({
@@ -174,4 +192,6 @@ module.exports = {
   resetTriggers,
   switchToScene,
   midiTriggers,
+  showSource,
+  hideSource,
 };

@@ -35,6 +35,8 @@ const io = socketIO(server);
 
 const CLIENT_FILE_PATH = "client/build";
 
+let STEVE_HAS_TALKED = false;
+let BEX_HAS_TALKED = false;
 let POPUP_MESSAGE = "";
 let PAUSE_FOLLOW_ALERT = false;
 let CURRENT_CHANNEL_INFO = {};
@@ -293,6 +295,26 @@ async function main() {
         );
       }
 
+      if (
+        !BEX_HAS_TALKED &&
+        user &&
+        user.username.toLowerCase() === "bexchat"
+      ) {
+        BEX_HAS_TALKED = true;
+        sendAlertToClient({ type: "bexchat" });
+      }
+      if (command === "!bex" || command === "!bexchat") {
+        sendAlertToClient({ type: "bexchat" });
+      }
+
+      if (
+        !STEVE_HAS_TALKED &&
+        user &&
+        user.username.toLowerCase() === "blgsteve"
+      ) {
+        STEVE_HAS_TALKED = true;
+        obs.handleTriggers("steve");
+      }
       if (command === "!steve") {
         obs.handleTriggers("steve");
       }

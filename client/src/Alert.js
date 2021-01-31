@@ -4,10 +4,15 @@ import BigData from "./Alerts/BigData";
 import ImmaBee from "./Alerts/ImmaBee";
 import PhilPunch from "./Alerts/PhilPunch";
 import PenguinThrow from "./Alerts/PenguinThrow";
+import BexcHat from "./Alerts/BexcHat";
 
 const DEFAULT_DURATION = 5000;
 
 const ALERT_TYPES = {
+  bexchat: {
+    audioUrl: "/alerts/bexchat.mp3",
+    duration: 10000,
+  },
   "shout-out": {
     duration: 5000,
     delayAudio: 1500,
@@ -85,6 +90,16 @@ const Alert = ({
 
   if (!alertType) {
     return null;
+  }
+
+  if (type === "bexchat") {
+    return (
+      <BexcHat
+        id={id}
+        duration={duration}
+        currentFaceDetection={currentFaceDetection}
+      />
+    );
   }
 
   if (type === "penguin-throw") {

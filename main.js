@@ -37,6 +37,7 @@ const CLIENT_FILE_PATH = "client/build";
 
 let STEVE_HAS_TALKED = false;
 let BEX_HAS_TALKED = false;
+let BOVRIL_HAS_TALKED = false;
 let POPUP_MESSAGE = "";
 let PAUSE_FOLLOW_ALERT = false;
 let CURRENT_CHANNEL_INFO = {};
@@ -308,6 +309,32 @@ async function main() {
       }
       if (command === "!bex" || command === "!bexchat") {
         sendAlertToClient({ type: "bexchat" });
+      }
+
+      function cylonRaiderAlert() {
+        obs.showSource({
+          scene: "Overlays",
+          source: "Cylon Raider",
+        });
+        sendAlertToClient({ type: "cylon-raider" });
+
+        setTimeout(() => {
+          obs.hideSource({
+            scene: "Overlays",
+            source: "Cylon Raider",
+          });
+        }, 8000);
+      }
+      if (
+        !BOVRIL_HAS_TALKED &&
+        user &&
+        user.username.toLowerCase() === "bovril_lavigne"
+      ) {
+        BOVRIL_HAS_TALKED = true;
+        cylonRaiderAlert();
+      }
+      if (command === "!bovril") {
+        cylonRaiderAlert();
       }
 
       if (

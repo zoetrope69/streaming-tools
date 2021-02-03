@@ -10,33 +10,17 @@
   background: url("/alerts/bexchat.png");
   background-size: contain;
   background-repeat: no-repeat;
+  transform: scale(1.4) rotate(0deg);
   animation: randomShit infinite 10s;
 }
 
 @keyframes randomShit {
   0% {
-    transform: scale(1) rotate(0deg);
     filter: invert(0) hue-rotate(0deg);
   }
 
-  10% {
-    transform: scale(1) rotate(1080deg);
-  }
-
   50% {
-    transform: scale(1.2);
-  }
-
-  55% {
-    transform: scale(1);
-  }
-
-  80% {
-    transform: scale(1) rotate(1080deg);
-  }
-
-  90% {
-    filter: invert(1) hue-rotate(360deg);
+    filter: invert(1) hue-rotate(180deg);
   }
 
   100% {

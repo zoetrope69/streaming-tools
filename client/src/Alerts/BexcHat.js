@@ -7,7 +7,8 @@ const BexcHat = ({ currentFaceDetection }) => {
     return null;
   }
 
-  const { x, y, width, height } = currentFaceDetection.rect;
+  const { x, y, width } = currentFaceDetection.rect;
+  const height = width * 0.77;
 
   const positionStyles = {
     transform: `translate(

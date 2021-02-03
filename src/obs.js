@@ -115,6 +115,10 @@ function initialise() {
 }
 
 async function getWebcamImage(sourceName) {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
   const webcamScreenshot = await request("TakeSourceScreenshot", {
     sourceName,
     embedPictureFormat: "jpg",
@@ -135,6 +139,10 @@ async function resetTriggers() {
 }
 
 async function showSource({ scene, source }) {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
   return await request("SetSceneItemRender", {
     "scene-name": scene,
     source,
@@ -143,6 +151,10 @@ async function showSource({ scene, source }) {
 }
 
 async function hideSource({ scene, source }) {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
   return await request("SetSceneItemRender", {
     "scene-name": scene,
     source,

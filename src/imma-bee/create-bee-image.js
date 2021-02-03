@@ -3,9 +3,7 @@ const detectFaces = require("../helpers/detect-faces");
 const bufferFromBase64 = require("../helpers/buffer-from-base64");
 
 async function createBeeImage(dataUri) {
-  const { buffer: imageBuffer, contentType } = bufferFromBase64(
-    dataUri
-  ); // TODO might not need this
+  const { buffer: imageBuffer } = bufferFromBase64(dataUri); // TODO might not need this
   const faceDetectionResult = await detectFaces(dataUri);
 
   if (!faceDetectionResult) {
@@ -13,7 +11,7 @@ async function createBeeImage(dataUri) {
   }
 
   const streamImage = await jimp.read(imageBuffer);
-  const beeImage = await jimp.read(__dirname + "/bee." + contentType);
+  const beeImage = await jimp.read(__dirname + "/bee.png");
   const circleMaskImage = await jimp.read(
     __dirname + "/circle-mask.png"
   );

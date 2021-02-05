@@ -59,9 +59,13 @@ function sendAlertToClient(options) {
 
 async function switchToBRBScene() {
   logger.info("🗺 Scene change", "BRB");
-  const image = await obs.getWebcamImage();
-  await saveScreenshotToBrbScreen(image);
-  await obs.switchToScene("BRB");
+  try {
+    const image = await obs.getWebcamImage();
+    await saveScreenshotToBrbScreen(image);
+    await obs.switchToScene("BRB");
+  } catch (e) {
+    // didn't find the image
+  }
 }
 
 async function main() {
@@ -93,8 +97,12 @@ async function main() {
   }
 
   setInterval(async () => {
-    const image = await obs.getWebcamImage();
-    detectFacesSendToClient(image);
+    try {
+      const image = await obs.getWebcamImage();
+      detectFacesSendToClient(image);
+    } catch (e) {
+      // didn't find the image
+    }
   }, 500);
 
   obs.midiTriggers({

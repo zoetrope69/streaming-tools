@@ -269,6 +269,14 @@ async function main() {
         logger.log(" Barry", "Triggered...");
         obs.handleTriggers("barry");
       }
+
+      if (title === "BroomyJagRace") {
+        logger.log("🚗 BroomyJagRace", "Triggered...");
+        obs.showSource({
+          scene: "Overlays",
+          source: "BroomyJagRace",
+        });
+      }
     }
   );
 

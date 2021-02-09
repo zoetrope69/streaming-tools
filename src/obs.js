@@ -6,53 +6,8 @@ const obs = new OBSWebSocket();
 
 const { OBS_WEBSOCKET_ADDRESS, OBS_WEBSOCKET_PASSWORD } = process.env;
 
-const GLOBAL_KEY_MODIFIERS = { alt: true };
-
-// https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h
-const TRIGGER_SOURCES = [
-  {
-    name: "steve",
-    description: "octopussy ffs",
-    hotKeyOptions: {
-      keyId: "OBS_KEY_BRACKETRIGHT", // ]
-      keyModifiers: GLOBAL_KEY_MODIFIERS,
-    },
-  },
-  {
-    name: "space",
-    description: "star trek vid",
-    hotKeyOptions: {
-      keyId: "OBS_KEY_NUMASTERISK", // NUM KEY *
-      keyModifiers: GLOBAL_KEY_MODIFIERS,
-    },
-  },
-  {
-    name: "star-trek-slideshow",
-    description: "star trek slideshow",
-    hotKeyOptions: {
-      keyId: "OBS_KEY_NUMSLASH", // NUM KEY /
-      keyModifiers: GLOBAL_KEY_MODIFIERS,
-    },
-    dontResetTriggers: true,
-  },
-  {
-    name: "barry",
-    description: "barry singing",
-    hotKeyOptions: {
-      keyId: "OBS_KEY_NUMPERIOD", // NUM KEY .
-      keyModifiers: GLOBAL_KEY_MODIFIERS,
-    },
-  },
-];
-
 let OBS_INITIALISED = false;
 let AVAILABLE_OBS_REQUESTS = [];
-
-function getTriggerSource(triggerName) {
-  return TRIGGER_SOURCES.find(
-    (trigger) => trigger.name === triggerName
-  );
-}
 
 function request(requestName, options) {
   if (!AVAILABLE_OBS_REQUESTS.includes(requestName)) {
@@ -162,27 +117,6 @@ async function hideSource({ scene, source }) {
   });
 }
 
-async function toggleOnOffHotKey({
-  dontResetTriggers,
-  hotKeyOptions,
-}) {
-  if (!dontResetTriggers) await resetTriggers();
-  setTimeout(async () => {
-    await request("TriggerHotkeyBySequence", hotKeyOptions);
-  }, 100); // need to time out for this to work
-}
-
-function handleTriggers(command) {
-  const triggerSource = getTriggerSource(command);
-
-  if (!triggerSource) {
-    return;
-  }
-
-  logger.info("☢ OBS", `Triggering "${triggerSource.name}"...`);
-  toggleOnOffHotKey(triggerSource);
-}
-
 async function midiTriggers(triggers) {
   obs.on(
     "SceneItemVisibilityChanged",
@@ -197,11 +131,8 @@ async function midiTriggers(triggers) {
 }
 
 module.exports = {
-  TRIGGER_SOURCES,
   initialise,
   getWebcamImage,
-  handleTriggers,
-  resetTriggers,
   switchToScene,
   midiTriggers,
   showSource,

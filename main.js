@@ -68,6 +68,29 @@ async function switchToBRBScene() {
   }
 }
 
+async function turnOnOverlay(source, timeout) {
+  await obs.hideSource({
+    scene: "Overlays",
+    source,
+  });
+
+  setTimeout(() => {
+    obs.showSource({
+      scene: "Overlays",
+      source,
+    });
+
+    if (timeout) {
+      setTimeout(() => {
+        obs.hideSource({
+          scene: "Overlays",
+          source,
+        });
+      }, timeout);
+    }
+  }, 100); // wait 100 ms i guess
+}
+
 async function main() {
   // initialise various things
   await obs.initialise();
@@ -247,17 +270,13 @@ async function main() {
 
       if (title === "SPACE") {
         logger.log("🌌 SPACE", "Triggered...");
-        obs.handleTriggers("space");
+        turnOnOverlay("Star Trek Space Video", 103 * 1000);
         setTimeout(() => {
-          obs.handleTriggers("star-trek-slideshow");
+          turnOnOverlay("Star Trek Slideshow", 53 * 1000);
           twitch.bot.say(
             `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
           );
         }, 50 * 1000); // minute into the video
-
-        setTimeout(() => {
-          obs.resetTriggers();
-        }, 114 * 1000); // end of video
       }
 
       if (title === "snowball") {
@@ -267,15 +286,17 @@ async function main() {
 
       if (title === "barry") {
         logger.log(" Barry", "Triggered...");
-        obs.handleTriggers("barry");
+        turnOnOverlay("Barry Singing", 104 * 1000);
       }
 
       if (title === "BroomyJagRace") {
         logger.log("🚗 BroomyJagRace", "Triggered...");
-        obs.showSource({
-          scene: "Overlays",
-          source: "BroomyJagRace",
-        });
+        turnOnOverlay("BroomyJagRace");
+      }
+
+      if (title === "im not a cat") {
+        logger.log("🐈 I'm not a cat", "Triggered...");
+        turnOnOverlay("I'm not a cat", 34 * 1000);
       }
     }
   );
@@ -359,10 +380,10 @@ async function main() {
         user.username.toLowerCase() === "blgsteve"
       ) {
         STEVE_HAS_TALKED = true;
-        obs.handleTriggers("steve");
+        turnOnOverlay("octopussy", 12 * 1000);
       }
       if (command === "!steve") {
-        obs.handleTriggers("steve");
+        turnOnOverlay("octopussy", 12 * 1000);
       }
 
       if (command === "!2020") {

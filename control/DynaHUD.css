@@ -1,0 +1,149 @@
+/*===============================*/
+/*  CONFIGURABLE SETTINGS START  */
+/*===============================*/
+/* NOTE: Do not remove the trailing semicolons! */
+:root {
+    /* ====================== */
+    /*  HUD Opacity Settings  */
+    /* ====================== */
+
+    /* Health Bar Opacity */
+    --dynahud-opacity-hp-bar: 0.8;
+
+    /* Enemy Health Bar Opacity */
+    --dynahud-opacity-enemy-hp-bar: 1.0;
+
+    /* Energy Bar Opacity */
+    --dynahud-opacity-energy-bar: 1.0;
+
+    /* Crosshair Opacity */
+    --dynahud-opacity-crosshair: 1.0;
+
+    /* Ammo Bar Opacity */
+    --dynahud-opacity-ammo-bar: 1.0;
+
+    /* Mission Log Opacity */
+    --dynahud-opacity-mission-log: 1.0;
+
+    /* Source Collection Notification Opacity */
+    --dynahud-opacity-source-collector: 1.0;
+
+    /* Item Pickup Notification Opacity */
+    --dynahud-opacity-pickup-notification: 1.0;
+
+    /* Interaction Marker Opacity */
+    --dynahud-opacity-interaction-marker: 1.0;
+
+    /* Threat Indicator Opacity */
+    --dynahud-opacity-threat-indicator: 1.0;
+
+    /* Expedition Modifiers */
+    --dynahud-opacity-expedition-modifiers: 1.0;
+
+    /* ========================== */
+    /*  Dynamic Opacity Settings  */
+    /* ========================== */
+
+    /* Health bar opacity when hidden */
+    --dynahud-opacity-hp-bar-hidden: 0;
+
+    /* Mission log opacity when hidden */
+    --dynahud-opacity-mission-log-hidden: 0;
+
+    /* Crosshair opacity when hidden */
+    --dynahud-opacity-crosshair-hidden: 0;
+}
+
+/*=============================*/
+/*  CONFIGURABLE SETTINGS END  */
+/*=============================*/
+
+/* Health Bar */
+.health-bar:not(.health-bar--hidden) {
+    opacity: var(--dynahud-opacity-hp-bar);
+}
+.health-bar--hidden {
+    /* Allow hidden attribute to override any inline styles we set via script */
+    opacity: 0 !important;
+}
+
+/* Enemy Health Bar */
+.enemy-health-container {
+    opacity: var(--dynahud-opacity-enemy-hp-bar);
+}
+.enemy-health__compel-prompt:not(.enemy-health__compel-prompt--hidden) {
+    opacity: var(--dynahud-opacity-enemy-hp-bar);
+}
+
+/* Energy Bar */
+.ability-resource-bar:not(.ability-resource-bar--full):not(.ability-resource-bar--hidden) {
+    opacity: var(--dynahud-opacity-energy-bar);
+}
+
+/* Crosshair */
+.awesome-crosshair:not(.awesome-crosshair--hidden) {
+    opacity: var(--dynahud-opacity-crosshair);
+}
+
+/* Mission Log */
+.mission-log-wrapper {
+    opacity: var(--dynahud-opacity-mission-log);
+}
+
+/* Source Collector */
+.essence-collector--hud.essence-collector--show {
+    opacity: var(--dynahud-opacity-source-collector);
+}
+
+/* Item Pickup Notifications */
+.pickup-notifications-container {
+    opacity: var(--dynahud-opacity-pickup-notification);
+}
+
+/* Interaction Marker */
+.interaction-marker-container {
+    opacity: var(--dynahud-opacity-interaction-marker);
+}
+
+/* Threat Indicator */
+.threat-indicators {
+    opacity: var(--dynahud-opacity-threat-indicator);
+}
+
+/* Expedition Modifiers on HUD */
+.expedition-hud > .expedition-mod-group {
+    opacity: var(--dynahud-opacity-expedition-modifiers);
+}
+
+/* Other */
+.ability-resource-bar--full {
+    /* disable white flash animation when full since this results in a opacity 1 flash */
+    animation: unset;
+}
+
+/* MissionLogComponent */
+.mission-log-wrapper {
+    transition: opacity 300ms var(--easing);
+}
+
+.mission-log-wrapper.dynahud-hide {
+    opacity: var(--dynahud-opacity-mission-log-hidden);
+}
+
+.mission-log-wrapper.dynahud-in-map {
+    /* Ensure full opacity when in map */
+    opacity: 1;
+}
+
+/* CrosshairComponent */
+.awesome-crosshair.dynahud-hide {
+    opacity: var(--dynahud-opacity-crosshair-hidden);
+    transition: opacity 300ms var(--easing);
+}
+
+/* pink UI stuff */
+
+*, *::before, *::after {
+	/* color: pink !important; */
+	/* border: 1px solid red !important; */
+}

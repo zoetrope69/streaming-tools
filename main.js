@@ -335,18 +335,14 @@ async function main() {
       user,
     }) => {
       if (command === "!song" || command === "!music") {
-        const currentTrack = lastFM.getCurrentTrack();
+        const currentTrack = await lastFM.getCurrentTrack();
 
-        if (!currentTrack) {
+        if (!currentTrack || !currentTrack.isNowPlaying) {
           twitch.bot.say(`SingsNote Nothing is playing...`);
           return;
         }
 
-        const {
-          artistName,
-          trackName,
-          albumName,
-        } = lastFM.getCurrentTrack();
+        const { artistName, trackName, albumName } = currentTrack;
 
         if (!artistName || !trackName || !albumName) {
           twitch.bot.say(`SingsNote Nothing is playing...`);
@@ -598,9 +594,9 @@ async function main() {
     logger.info("👽 Stream Client", "Connected");
 
     const followTotal = await twitch.getFollowTotal();
-    const track = lastFM.getCurrentTrack();
+    const currentTrack = await lastFM.getCurrentTrack();
     io.emit("data", {
-      track,
+      track: currentTrack,
       followTotal,
       popUpMessage: POPUP_MESSAGE,
     });

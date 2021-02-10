@@ -10,7 +10,7 @@ const ngrok = require("ngrok");
 
 const { schedule } = require("./src/helpers/schedule");
 
-const controlLols = require("./control-lols");
+const controlLols = require("./control/main");
 
 const LastFM = require("./src/last-fm");
 const Twitch = require("./src/twitch");
@@ -41,6 +41,20 @@ let BOVRIL_HAS_TALKED = false;
 let POPUP_MESSAGE = "";
 let PAUSE_FOLLOW_ALERT = false;
 let CURRENT_CHANNEL_INFO = {};
+let ALERT_QUEUE = [];
+let ALERT_IS_RUNNING = false;
+
+function addToAlertQueue(alert) {
+  const newAlertQueue = ALERT_QUEUE.concat([alert]);
+  ALERT_QUEUE = newAlertQueue;
+}
+
+function removeAlertFromQueue(alertId) {
+  const newAlertQueue = ALERT_QUEUE.filter(
+    (alert) => alert.id !== alertId
+  );
+  ALERT_QUEUE = newAlertQueue;
+}
 
 // serve client files
 app.use(express.static(CLIENT_FILE_PATH));
@@ -54,7 +68,16 @@ function sendAlertToClient(options) {
     id: randomID(),
     ...options,
   };
-  io.emit("data", { alert });
+  addToAlertQueue(alert);
+
+  if (ALERT_QUEUE.length === 1) {
+    ALERT_IS_RUNNING = true;
+    io.emit("data", { alert });
+  } else if (!ALERT_IS_RUNNING && ALERT_QUEUE.length > 1) {
+    ALERT_IS_RUNNING = true;
+    const [nextAlert] = ALERT_QUEUE;
+    io.emit("data", { alert: nextAlert });
+  }
 }
 
 async function switchToBRBScene() {
@@ -118,7 +141,6 @@ async function main() {
       // didn't work
     }
   }
-
   setInterval(async () => {
     try {
       const image = await obs.getWebcamImage();
@@ -581,6 +603,20 @@ async function main() {
       track,
       followTotal,
       popUpMessage: POPUP_MESSAGE,
+    });
+
+    socket.on("data", ({ alertIdRemove }) => {
+      if (alertIdRemove) {
+        removeAlertFromQueue(alertIdRemove);
+        ALERT_IS_RUNNING = false;
+
+        // get next alert if there
+        if (ALERT_QUEUE.length > 0) {
+          ALERT_IS_RUNNING = true;
+          const [nextAlert] = ALERT_QUEUE;
+          io.emit("data", { alert: nextAlert });
+        }
+      }
     });
 
     socket.on("disconnect", () => {

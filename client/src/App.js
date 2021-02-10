@@ -11,7 +11,7 @@ import "./App.css";
 const socket = openSocket("/");
 
 function App() {
-  const [alertQueue, setAlertQueue] = useState([]);
+  const [currentAlert, setCurrentAlert] = useState();
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPopUpMessage, setCurrentPopUpMessage] = useState("");
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
@@ -20,23 +20,10 @@ function App() {
   const [currentFaceDetection, setCurrentFaceDetection] = useState(
     {}
   );
-  const [currentAlert] = alertQueue;
-
-  const removeAlertFromQueue = (alertId) => {
-    const newAlertQueue = alertQueue.filter(
-      (alert) => alert.id !== alertId
-    );
-    setAlertQueue(newAlertQueue);
-  };
 
   useEffect(() => {
-    const addToAlertQueue = (alert) => {
-      const newAlertQueue = alertQueue.concat([alert]);
-      setAlertQueue(newAlertQueue);
-    };
-
     const socketIOHandler = (data) => {
-      // console.log("data", data);
+      console.log("data", data);
 
       const {
         alert,
@@ -48,11 +35,11 @@ function App() {
 
       if (alert) {
         if (!alert.loadImage) {
-          addToAlertQueue(alert);
+          setCurrentAlert(alert);
         } else {
           const alertImage = new Image();
           alertImage.addEventListener("load", () => {
-            addToAlertQueue(alert);
+            setCurrentAlert(alert);
           });
           alertImage.src = alert.loadImage;
         }
@@ -80,7 +67,12 @@ function App() {
     return () => {
       socket.off("data", socketIOHandler);
     };
-  }, [alertQueue, currentTrack]);
+  }, [currentTrack]);
+
+  function removeAlertFromQueue(alertId) {
+    setCurrentAlert(null);
+    socket.emit("data", { alertIdRemove: alertId });
+  }
 
   return (
     <div className="App">

@@ -11,7 +11,7 @@ import "./App.css";
 const socket = openSocket("/");
 
 function App() {
-  const [currentAlert, setCurrentAlert] = useState();
+  const [currentAlert, setCurrentAlert] = useState({});
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPopUpMessage, setCurrentPopUpMessage] = useState("");
   const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
@@ -69,11 +69,6 @@ function App() {
     };
   }, [currentTrack]);
 
-  function removeAlertFromQueue(alertId) {
-    setCurrentAlert(null);
-    socket.emit("data", { alertIdRemove: alertId });
-  }
-
   return (
     <div className="App">
       <PrideFlag name={currentPrideFlagName} />
@@ -85,7 +80,6 @@ function App() {
         <Alert
           alert={currentAlert}
           currentFaceDetection={currentFaceDetection}
-          removeAlertFromQueue={removeAlertFromQueue}
         />
       )}
     </div>

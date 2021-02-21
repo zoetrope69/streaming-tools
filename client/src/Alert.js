@@ -9,90 +9,32 @@ import CylonRaider from "./Alerts/CylonRaider";
 
 const DEFAULT_DURATION = 5000;
 
-const ALERT_TYPES = {
-  "shout-out": {
-    duration: 5000,
-    delayAudio: 1500,
-  },
-  bits: {
-    duration: 5000,
-  },
-  subscribe: {
-    duration: 5000,
-  },
-  follow: {
-    duration: 5000,
-  },
-  say: {
-    duration: 5000,
-  },
-  bigdata: {
-    audioUrl: "/alerts/bigdata.mp3",
-    duration: 6000,
-  },
-  immabee: {
-    audioUrl: "/alerts/immabee.mp3",
-    duration: 4000,
-  },
-  "fuck-2020": {
-    audioUrl: "/alerts/fuck-2020.mp3",
-    duration: 3000,
-  },
-  philpunch: {
-    audioUrl: "/alerts/phil-punch.mp3",
-    duration: 5000,
-    delayAudio: 1000,
-  },
-  "penguin-throw": {
-    audioUrl: "/alerts/penguin-throw-snowball-impact.mp3",
-    duration: 2000,
-    delayAudio: 900,
-  },
-  bexchat: {
-    audioUrl: "/alerts/bexchat.mp3",
-    duration: 10000,
-  },
-  "cylon-raider": {
-    duration: 10000,
-  },
-};
+const Alert = ({ alert, currentFaceDetection }) => {
+  const { id, type, user, audioUrl, delayAudio, duration } = alert;
 
-const Alert = ({
-  alert,
-  currentFaceDetection,
-  removeAlertFromQueue,
-}) => {
-  const { id, type, user, audioUrl } = alert;
-  const alertType = ALERT_TYPES[type];
-  const { duration } = alertType;
-
-  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
-    if (!alertType) {
+    if (!id && !type) {
       return;
     }
 
     let audioTimeout;
-    const audioToPlay = alertType.audioUrl || audioUrl;
-    if (audioToPlay) {
+    if (audioUrl) {
       audioTimeout = setTimeout(() => {
-        const audio = new Audio(audioToPlay);
+        const audio = new Audio(audioUrl);
         audio.play();
-      }, alertType.delayAudio || 0);
+      }, delayAudio || 0);
     }
 
     setTimeout(() => {
       clearTimeout(audioTimeout);
-      removeAlertFromQueue(id);
     }, duration || DEFAULT_DURATION);
 
     return () => {
       clearTimeout(audioTimeout);
     };
-  }, [alertType]);
-  /* eslint-enable react-hooks/exhaustive-deps */
+  }, [id, type, audioUrl, duration, delayAudio]);
 
-  if (!alertType) {
+  if (!id && !type) {
     return null;
   }
 

@@ -44,6 +44,54 @@ let CURRENT_CHANNEL_INFO = {};
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 
+const ALERT_TYPES = {
+  "shout-out": {
+    duration: 5000,
+    delayAudio: 1500,
+  },
+  bits: {
+    duration: 5000,
+  },
+  subscribe: {
+    duration: 5000,
+  },
+  follow: {
+    duration: 5000,
+  },
+  say: {
+    duration: 5000,
+  },
+  bigdata: {
+    audioUrl: "/alerts/bigdata.mp3",
+    duration: 6000,
+  },
+  immabee: {
+    audioUrl: "/alerts/immabee.mp3",
+    duration: 4000,
+  },
+  "fuck-2020": {
+    audioUrl: "/alerts/fuck-2020.mp3",
+    duration: 3000,
+  },
+  philpunch: {
+    audioUrl: "/alerts/phil-punch.mp3",
+    duration: 5000,
+    delayAudio: 1000,
+  },
+  "penguin-throw": {
+    audioUrl: "/alerts/penguin-throw-snowball-impact.mp3",
+    duration: 2000,
+    delayAudio: 900,
+  },
+  bexchat: {
+    audioUrl: "/alerts/bexchat.mp3",
+    duration: 10000,
+  },
+  "cylon-raider": {
+    duration: 10000,
+  },
+};
+
 function addToAlertQueue(alert) {
   const newAlertQueue = ALERT_QUEUE.concat([alert]);
   ALERT_QUEUE = newAlertQueue;
@@ -63,21 +111,42 @@ app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
 
+function processAlert() {
+  if (ALERT_QUEUE.length === 0) {
+    io.emit("data", { alert: {} });
+    return;
+  }
+
+  // if alert is running we wait for it to finish
+  if (ALERT_IS_RUNNING) {
+    return;
+  }
+
+  ALERT_IS_RUNNING = true;
+  const [alert] = ALERT_QUEUE;
+  io.emit("data", { alert: {} }); // clear current alert
+  io.emit("data", { alert });
+
+  if (alert.duration) {
+    setTimeout(() => {
+      removeAlertFromQueue(alert.id);
+      ALERT_IS_RUNNING = false;
+
+      // get next alert if there
+      processAlert();
+    }, alert.duration);
+  }
+}
+
 function sendAlertToClient(options) {
+  const alertType = ALERT_TYPES[options.type];
   const alert = {
     id: randomID(),
+    ...alertType,
     ...options,
   };
   addToAlertQueue(alert);
-
-  if (ALERT_QUEUE.length === 1) {
-    ALERT_IS_RUNNING = true;
-    io.emit("data", { alert });
-  } else if (!ALERT_IS_RUNNING && ALERT_QUEUE.length > 1) {
-    ALERT_IS_RUNNING = true;
-    const [nextAlert] = ALERT_QUEUE;
-    io.emit("data", { alert: nextAlert });
-  }
+  processAlert();
 }
 
 async function switchToBRBScene() {
@@ -599,20 +668,6 @@ async function main() {
       track: currentTrack,
       followTotal,
       popUpMessage: POPUP_MESSAGE,
-    });
-
-    socket.on("data", ({ alertIdRemove }) => {
-      if (alertIdRemove) {
-        removeAlertFromQueue(alertIdRemove);
-        ALERT_IS_RUNNING = false;
-
-        // get next alert if there
-        if (ALERT_QUEUE.length > 0) {
-          ALERT_IS_RUNNING = true;
-          const [nextAlert] = ALERT_QUEUE;
-          io.emit("data", { alert: nextAlert });
-        }
-      }
     });
 
     socket.on("disconnect", () => {

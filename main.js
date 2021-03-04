@@ -263,14 +263,13 @@ async function main() {
   });
 
   const scheduledCommands = await googleSheetCommands.getScheduledCommands();
-
   scheduledCommands.forEach((scheduledCommand) => {
     logger.info(
       "🤖 Twitch Bot",
       `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
     );
     schedule(scheduledCommand.schedule, () => {
-      twitch.bot.say(scheduledCommand.value);
+      twitch.bot.say(`/me ${scheduledCommand.value}`);
     });
   });
 
@@ -672,6 +671,7 @@ async function main() {
       }
 
       const commands = await googleSheetCommands.getCommands();
+
       const chatCommand = commands.find(
         (c) => command === `!${c.name}`
       );

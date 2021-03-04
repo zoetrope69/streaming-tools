@@ -67,7 +67,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     await subscribeToTopic("channel.subscribe", (data) => {
       console.log("channel.subscribe data", data);
       const { user_id, user_name, is_gift } = data;
-
       eventEmitter.emit("subscribe", {
         isGift: is_gift,
         user: {
@@ -76,7 +75,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         },
       });
     }),
-
     // bitties
     await subscribeToTopic("channel.cheer", (data) => {
       console.log("channel.cheer data", data);
@@ -87,7 +85,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         message,
         bits,
       } = data;
-
       eventEmitter.emit("bits", {
         isAnonymous: is_anonymous,
         user: {
@@ -98,7 +95,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         amount: bits,
       });
     }),
-
     // recieves a follow
     await subscribeToTopic("channel.follow", (data) => {
       const { user_id, user_name } = data;
@@ -107,7 +103,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         username: user_name,
       });
     }),
-
     // updates the category, title
     await subscribeToTopic("channel.update", (data) => {
       const { title, category_id, category_name } = data;
@@ -117,7 +112,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         categoryName: category_name,
       });
     }),
-
     // stream online/offline
     await subscribeToTopic("stream.online", () =>
       eventEmitter.emit("streamOnline", {})
@@ -125,7 +119,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     await subscribeToTopic("stream.offline", () =>
       eventEmitter.emit("streamOffline", {})
     ),
-
     await subscribeToTopic(
       "channel.channel_points_custom_reward_redemption.add",
       channelPointRedemptionHandler

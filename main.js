@@ -10,8 +10,6 @@ const ngrok = require("ngrok");
 
 const { schedule } = require("./src/helpers/schedule");
 
-const controlLols = require("./control/main");
-
 const LastFM = require("./src/last-fm");
 const Twitch = require("./src/twitch");
 const googleSheetCommands = require("./src/google-sheet-commands");
@@ -505,16 +503,6 @@ async function main() {
 
       if (command === "!2020") {
         sendAlertToClient({ type: "fuck-2020" });
-      }
-
-      if (command === "!fightme" || command === "!fight") {
-        controlLols({
-          twitch,
-          user,
-          isMod,
-          isBroadcaster,
-          message,
-        });
       }
 
       if (command === "!game" || command === "!category") {

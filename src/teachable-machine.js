@@ -185,62 +185,40 @@ class TeachableMachine {
   }
 }
 
-// const HERBERT_MODEL =
+// const OLD_HERBERT_MODEL =
 //   "https://teachablemachine.withgoogle.com/models/r3XWcpK0R/";
-// const model = new TeachableMachine({
-//   modelUrl: HERBERT_MODEL,
-// });
+const HERBERT_MODEL =
+  "https://teachablemachine.withgoogle.com/models/SF6Vq47UF/";
+const model = new TeachableMachine({
+  modelUrl: HERBERT_MODEL,
+});
 
-// async function isImageClassified({
-//   image,
-//   classification,
-//   threshold,
-// }) {
-//   const predictions = await model.classify({
-//     base64ImageString: image,
-//   });
+async function isImageClassified({
+  image,
+  classification,
+  threshold,
+}) {
+  const predictions = await model.classify({
+    base64ImageString: image,
+  });
 
-//   console.log("predicitons", predictions);
+  if (!predictions) {
+    return false;
+  }
 
-//   if (!predictions) {
-//     return false;
-//   }
+  const isClassificationPrediction = [...predictions].find(
+    (p) => p.class === classification
+  );
 
-//   const isClassificationPrediciton = [...predictions].find(
-//     (p) => p.class === classification
-//   );
+  if (!isClassificationPrediction) {
+    return false;
+  }
 
-//   if (!classification) {
-//     return false;
-//   }
+  if (isClassificationPrediction.score > threshold) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
-//   if (isClassificationPrediciton.score > threshold) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
-
-// async function detectHerbert(image) {
-//   const isHerbert = await isImageClassified({
-//     image,
-//     classification: "Herbert",
-//     threshold: 0.9,
-//   });
-
-//   if (isHerbert) {
-//     return obs.showSource({
-//       scene: "Overlays",
-//       source: "Crowd Cheering",
-//     });
-//   }
-
-//   return obs.hideSource({
-//     scene: "Overlays",
-//     source: "Crowd Cheering",
-//   });
-// }
-
-// detectHerbert(image);
-
-module.exports = TeachableMachine;
+module.exports = { isImageClassified };

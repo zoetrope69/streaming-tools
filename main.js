@@ -19,6 +19,7 @@ const createBeeImage = require("./src/imma-bee/create-bee-image");
 const detectFaces = require("./src/helpers/detect-faces");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
 const textToSpeech = require("./src/text-to-speech");
+const { isImageClassified } = require("./src/teachable-machine");
 
 const logger = require("./src/helpers/logger");
 
@@ -110,6 +111,27 @@ app.use(express.static(CLIENT_FILE_PATH));
 app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
+
+async function detectHerbert(image) {
+  const isHerbert = await isImageClassified({
+    image,
+    classification: "Herbert",
+    threshold: 0.9,
+  });
+
+  if (isHerbert) {
+    turnOnOverlay("Holy Fuck It's Herbert", 3000);
+    return obs.showSource({
+      scene: "Overlays",
+      source: "Crowd Cheering",
+    });
+  }
+
+  return obs.hideSource({
+    scene: "Overlays",
+    source: "Crowd Cheering",
+  });
+}
 
 function processAlert() {
   if (ALERT_QUEUE.length === 0) {
@@ -218,6 +240,15 @@ async function main() {
       // didn't find the image
     }
   }, 500);
+
+  setInterval(async () => {
+    try {
+      const image = await obs.getWebcamImage("Raw Webcam");
+      detectHerbert(image);
+    } catch (e) {
+      // didn't find the image
+    }
+  }, 3000);
 
   obs.midiTriggers({
     "Scene change: BRB": async () => switchToBRBScene(),

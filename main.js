@@ -110,6 +110,7 @@ app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
 
+// eslint-disable-next-line no-unused-vars
 async function detectHerbert(image) {
   const isHerbert = await isImageClassified({
     image,
@@ -239,14 +240,14 @@ async function main() {
     }
   }, 500);
 
-  setInterval(async () => {
-    try {
-      const image = await obs.getWebcamImage("Raw Webcam");
-      detectHerbert(image);
-    } catch (e) {
-      // didn't find the image
-    }
-  }, 3000);
+  // setInterval(async () => {
+  //   try {
+  //     const image = await obs.getWebcamImage("Raw Webcam");
+  //     detectHerbert(image);
+  //   } catch (e) {
+  //     // didn't find the image
+  //   }
+  // }, 3000);
 
   obs.midiTriggers({
     "Scene change: BRB": async () => switchToBRBScene(),

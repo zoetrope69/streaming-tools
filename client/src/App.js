@@ -3,7 +3,8 @@ import openSocket from "socket.io-client";
 import PrideFlag from "./PrideFlag";
 import PopUpMessage from "./PopUpMessage";
 import LastFMVisualiser from "./LastFMVisualiser";
-import Alert from "./Alert";
+import Goosebumps from "./Goosebumps/index";
+import Alert from "./Alert/index";
 // import DebugFace from "./DebugFace";
 
 import "./App.css";
@@ -20,6 +21,10 @@ function App() {
   const [currentFaceDetection, setCurrentFaceDetection] = useState(
     {}
   );
+  const [
+    currentGoosebumpsBookTitle,
+    setCurrentGoosebumpsBookTitle,
+  ] = useState(null);
 
   useEffect(() => {
     const socketIOHandler = (data) => {
@@ -31,6 +36,7 @@ function App() {
         prideFlagName,
         popUpMessage,
         faceDetection,
+        goosebumpsBookTitle,
       } = data;
 
       if (alert) {
@@ -60,6 +66,10 @@ function App() {
       if (faceDetection) {
         setCurrentFaceDetection(faceDetection);
       }
+
+      if (typeof goosebumpsBookTitle !== "undefined") {
+        setCurrentGoosebumpsBookTitle(goosebumpsBookTitle);
+      }
     };
 
     socket.on("data", socketIOHandler);
@@ -74,6 +84,7 @@ function App() {
       <PrideFlag name={currentPrideFlagName} />
       <LastFMVisualiser currentTrack={currentTrack} />
       <PopUpMessage>{currentPopUpMessage}</PopUpMessage>
+      <Goosebumps bookTitle={currentGoosebumpsBookTitle} />
       {/* <DebugFace currentFaceDetection={currentFaceDetection} /> */}
 
       {currentAlert && (

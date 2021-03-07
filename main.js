@@ -17,7 +17,6 @@ const createBeeImage = require("./src/imma-bee/create-bee-image");
 const detectFaces = require("./src/helpers/detect-faces");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
 const textToSpeech = require("./src/text-to-speech");
-const { isImageClassified } = require("./src/teachable-machine");
 
 const logger = require("./src/helpers/logger");
 
@@ -27,6 +26,7 @@ const {
   setLightsToPrideFlag,
 } = require("./src/pride-flags");
 const obs = require("./src/obs");
+const createGoosebumpsBookImage = require("./src/goosebumps");
 
 const app = express();
 const server = http.createServer(app);
@@ -42,6 +42,7 @@ let PAUSE_FOLLOW_ALERT = false;
 let CURRENT_CHANNEL_INFO = {};
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
+let CURRENT_GOOSEBUMP_BOOK = null;
 
 const ALERT_TYPES = {
   "shout-out": {
@@ -109,28 +110,6 @@ app.use(express.static(CLIENT_FILE_PATH));
 app.get("/", (_request, response) => {
   response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
 });
-
-// eslint-disable-next-line no-unused-vars
-async function detectHerbert(image) {
-  const isHerbert = await isImageClassified({
-    image,
-    classification: "Herbert",
-    threshold: 0.9,
-  });
-
-  if (isHerbert) {
-    turnOnOverlay("Holy Fuck It's Herbert", 3000);
-    return obs.showSource({
-      scene: "Overlays",
-      source: "Crowd Cheering",
-    });
-  }
-
-  return obs.hideSource({
-    scene: "Overlays",
-    source: "Crowd Cheering",
-  });
-}
 
 function processAlert() {
   if (ALERT_QUEUE.length === 0) {
@@ -240,17 +219,13 @@ async function main() {
     }
   }, 500);
 
-  // setInterval(async () => {
-  //   try {
-  //     const image = await obs.getWebcamImage("Raw Webcam");
-  //     detectHerbert(image);
-  //   } catch (e) {
-  //     // didn't find the image
-  //   }
-  // }, 3000);
-
   obs.midiTriggers({
     "Scene change: BRB": async () => switchToBRBScene(),
+    "Stop Goosebumps": async () => {
+      io.emit("data", { goosebumpsBookTitle: null });
+      CURRENT_GOOSEBUMP_BOOK = null;
+      await obs.switchToScene("Main Bigger Zac");
+    },
   });
 
   // set and update channel info
@@ -418,6 +393,22 @@ async function main() {
         logger.log("🐈 I'm not a cat", "Triggered...");
         turnOnOverlay("I'm not a cat", 34 * 1000);
       }
+
+      if (title === "goosebumps") {
+        logger.log("📚 Goosebumps Book", "Triggered...");
+        try {
+          const { bookTitle } = await createGoosebumpsBookImage(
+            message
+          );
+          io.emit("data", { goosebumpsBookTitle: bookTitle });
+          CURRENT_GOOSEBUMP_BOOK = bookTitle;
+          await obs.switchToScene("Goosebumps");
+        } catch (e) {
+          logger.error("📚 Goosebumps Book", e);
+          twitch.bot.say(`Couldn't generate a book for ${message}`);
+          CURRENT_GOOSEBUMP_BOOK = null;
+        }
+      }
     }
   );
 
@@ -551,6 +542,12 @@ async function main() {
         if (command === "!delete") {
           POPUP_MESSAGE = "";
           io.emit("data", { popUpMessage: "" });
+        }
+
+        if (command === "!deletebook") {
+          io.emit("data", { goosebumpsBookTitle: null });
+          CURRENT_GOOSEBUMP_BOOK = null;
+          await obs.switchToScene("Main Bigger Zac");
         }
 
         if (command === "!follows") {
@@ -688,6 +685,7 @@ async function main() {
       track: currentTrack,
       followTotal,
       popUpMessage: POPUP_MESSAGE,
+      goosebumpsBookTitle: CURRENT_GOOSEBUMP_BOOK,
     });
 
     socket.on("disconnect", () => {

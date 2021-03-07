@@ -221,4 +221,38 @@ async function isImageClassified({
   }
 }
 
+/*
+
+async function detectHerbert(image) {
+  const isHerbert = await isImageClassified({
+    image,
+    classification: "Herbert",
+    threshold: 0.9,
+  });
+
+  if (isHerbert) {
+    turnOnOverlay("Holy Fuck It's Herbert", 3000);
+    return obs.showSource({
+      scene: "Overlays",
+      source: "Crowd Cheering",
+    });
+  }
+
+  return obs.hideSource({
+    scene: "Overlays",
+    source: "Crowd Cheering",
+  });
+}
+
+setInterval(async () => {
+  try {
+    const image = await obs.getWebcamImage("Raw Webcam");
+    detectHerbert(image);
+  } catch (e) {
+    // didn't find the image
+  }
+}, 3000);
+
+*/
+
 module.exports = { isImageClassified };

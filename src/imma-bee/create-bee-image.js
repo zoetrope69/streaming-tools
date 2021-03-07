@@ -2,6 +2,8 @@ const jimp = require("jimp");
 const detectFaces = require("../helpers/detect-faces");
 const bufferFromBase64 = require("../helpers/buffer-from-base64");
 
+const { BLEND_MULTIPLY, AUTO } = jimp;
+
 async function createBeeImage(dataUri) {
   const { buffer: imageBuffer } = bufferFromBase64(dataUri); // TODO might not need this
   const faceDetectionResult = await detectFaces(dataUri);
@@ -18,11 +20,11 @@ async function createBeeImage(dataUri) {
 
   const { x, y, width, height } = faceDetectionResult.rect;
   streamImage.crop(x, y, width, height);
-  streamImage.resize(576, jimp.AUTO);
+  streamImage.resize(576, AUTO);
   streamImage.mask(circleMaskImage, 0, 0);
 
   beeImage.composite(streamImage, 600, 232, {
-    mode: jimp.BLEND_MULTIPLY,
+    mode: BLEND_MULTIPLY,
     opacitySource: 1,
     opacityDest: 1,
   });

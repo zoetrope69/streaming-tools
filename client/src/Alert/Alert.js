@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import Axolotl from "./Alerts/Axolotl";
-import BigData from "./Alerts/BigData";
-import ImmaBee from "./Alerts/ImmaBee";
-import PhilPunch from "./Alerts/PhilPunch";
-import PenguinThrow from "./Alerts/PenguinThrow";
-import BexcHat from "./Alerts/BexcHat";
-import CylonRaider from "./Alerts/CylonRaider";
+import Axolotl from "./Axolotl";
+import BigData from "./BigData";
+import ImmaBee from "./ImmaBee";
+import PhilPunch from "./PhilPunch";
+import PenguinThrow from "./PenguinThrow";
+import BexcHat from "./BexcHat";
+import CylonRaider from "./CylonRaider";
 
 const DEFAULT_DURATION = 5000;
 

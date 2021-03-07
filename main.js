@@ -394,7 +394,7 @@ async function main() {
         turnOnOverlay("I'm not a cat", 34 * 1000);
       }
 
-      if (title === "goosebumps") {
+      if (title === "goosebumps book") {
         logger.log("📚 Goosebumps Book", "Triggered...");
         try {
           const { bookTitle } = await createGoosebumpsBookImage(

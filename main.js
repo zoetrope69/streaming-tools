@@ -362,6 +362,11 @@ async function main() {
         return;
       }
 
+      if (title === "pog") {
+        turnOnOverlay("Steve Pointing Group", 9 * 1000);
+        twitch.bot.say("thanks twitch.tv/blgsteve for the pog audit");
+      }
+
       if (title === "big drink") {
         await obs.hideSource({
           scene: "Overlays",

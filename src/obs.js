@@ -117,6 +117,23 @@ async function hideSource({ scene, source }) {
   });
 }
 
+async function toggleFilter({ source, filter }) {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
+  const result = await request("GetSourceFilterInfo", {
+    sourceName: source,
+    filterName: filter,
+  });
+
+  return await request("SetSourceFilterVisibility", {
+    sourceName: source,
+    filterName: filter,
+    filterEnabled: !result.enabled,
+  });
+}
+
 async function midiTriggers(triggers) {
   obs.on(
     "SceneItemVisibilityChanged",
@@ -137,4 +154,5 @@ module.exports = {
   midiTriggers,
   showSource,
   hideSource,
+  toggleFilter,
 };

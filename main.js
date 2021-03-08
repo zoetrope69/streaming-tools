@@ -220,6 +220,33 @@ async function main() {
   }, 500);
 
   obs.midiTriggers({
+    "Joycon: A": async () => {
+      return obs.toggleFilter({
+        source: "Webcam Mirror",
+        filter: "Webcam: Recursion Effect",
+      });
+    },
+    "Joycon: B": async () => {
+      return obs.toggleFilter({
+        source: "Webcam Mirror",
+        filter: "Webcam: Time Warp Scan",
+      });
+    },
+    "Joycon: Y": async () => {
+      return obs.toggleFilter({
+        source: "Webcam Mirror",
+        filter: "Webcam: Trail",
+      });
+    },
+    "Joycon: X": async () => {
+      await obs.switchToScene("Dance");
+    },
+    "Joycon: Right Shoulder": async () => {
+      await obs.switchToScene("Dance Multiple");
+    },
+    "Joycon: Right Trigger": async () => {
+      await obs.switchToScene("Dance everywhere");
+    },
     "Scene change: BRB": async () => switchToBRBScene(),
     "Stop Goosebumps": async () => {
       io.emit("data", { goosebumpsBookTitle: null });

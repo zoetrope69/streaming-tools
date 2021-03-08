@@ -322,6 +322,36 @@ async function main() {
     );
   });
 
+  twitch.on("channelPointRewardUnfulfilled", async ({ reward }) => {
+    const { title } = reward;
+
+    if (!title) {
+      return;
+    }
+
+    if (title === "big drink") {
+      await obs.showSource({
+        scene: "Overlays",
+        source: "Amelia Water Loop",
+      });
+    }
+  });
+
+  twitch.on("channelPointRewardCancelled", async ({ reward }) => {
+    const { title } = reward;
+
+    if (!title) {
+      return;
+    }
+
+    if (title === "big drink") {
+      await obs.hideSource({
+        scene: "Overlays",
+        source: "Amelia Water Loop",
+      });
+    }
+  });
+
   twitch.on(
     "channelPointRewardFulfilled",
     async ({ reward, user }) => {
@@ -330,6 +360,13 @@ async function main() {
 
       if (!title) {
         return;
+      }
+
+      if (title === "big drink") {
+        await obs.hideSource({
+          scene: "Overlays",
+          source: "Amelia Water Loop",
+        });
       }
 
       if (title === "show your pride") {

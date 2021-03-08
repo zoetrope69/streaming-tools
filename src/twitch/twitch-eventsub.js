@@ -47,11 +47,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       reward,
     } = data;
 
-    if (status !== "fulfilled") {
-      return;
-    }
-
-    eventEmitter.emit("channelPointRewardFulfilled", {
+    const dataEmit = {
       user: {
         id: user_id,
         username: user_name,
@@ -59,7 +55,19 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       },
       redeemedAt: redeemed_at,
       reward,
-    });
+    };
+
+    if (status === "unfulfilled") {
+      eventEmitter.emit("channelPointRewardUnfulfilled", dataEmit);
+    }
+
+    if (status === "fulfilled") {
+      eventEmitter.emit("channelPointRewardFulfilled", dataEmit);
+    }
+
+    if (status === "cancelled") {
+      eventEmitter.emit("channelPointRewardCancelled", dataEmit);
+    }
   };
 
   await Promise.all([

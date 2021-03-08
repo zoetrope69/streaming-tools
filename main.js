@@ -367,6 +367,10 @@ async function main() {
           scene: "Overlays",
           source: "Amelia Water Loop",
         });
+
+        twitch.bot.say(
+          "Shout out to twitch.tv/ameliabayler the water singer"
+        );
       }
 
       if (title === "show your pride") {

@@ -11,7 +11,7 @@
     "prestart": "npm run build",
     "start": "node main.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "nodemon main.js",
+    "dev:server": "nodemon --unhandled-rejections=strict --trace-warnings main.js",
     "dev:client": "cd client && BROWSER=none npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

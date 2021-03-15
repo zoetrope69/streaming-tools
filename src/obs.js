@@ -93,7 +93,7 @@ async function resetTriggers() {
   });
 }
 
-async function showSource({ scene, source }) {
+async function showHideSource({ scene, source, isVisible }) {
   if (!OBS_INITIALISED) {
     throw new Error("OBS isn't ready");
   }
@@ -101,8 +101,16 @@ async function showSource({ scene, source }) {
   return await request("SetSceneItemRender", {
     "scene-name": scene,
     source,
-    render: true,
+    render: isVisible,
   });
+}
+
+async function showSource({ scene, source }) {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
+  return await showHideSource({ scene, source, isVisible: true });
 }
 
 async function hideSource({ scene, source }) {
@@ -110,10 +118,18 @@ async function hideSource({ scene, source }) {
     throw new Error("OBS isn't ready");
   }
 
-  return await request("SetSceneItemRender", {
-    "scene-name": scene,
-    source,
-    render: false,
+  return await showHideSource({ scene, source, isVisible: false });
+}
+
+async function showHideFilter({ source, filter, filterEnabled }) {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
+  return await request("SetSourceFilterVisibility", {
+    sourceName: source,
+    filterName: filter,
+    filterEnabled,
   });
 }
 
@@ -127,32 +143,70 @@ async function toggleFilter({ source, filter }) {
     filterName: filter,
   });
 
-  return await request("SetSourceFilterVisibility", {
-    sourceName: source,
-    filterName: filter,
+  return await showHideFilter({
+    source,
+    filter,
     filterEnabled: !result.enabled,
   });
 }
 
-async function midiTriggers(triggers) {
-  obs.on(
-    "SceneItemVisibilityChanged",
-    ({ itemVisible, itemName }) => {
-      if (!Object.prototype.hasOwnProperty.call(triggers, itemName)) {
-        return;
-      }
+async function handleTriggers({ triggers, itemVisible, itemName }) {
+  if (!Object.prototype.hasOwnProperty.call(triggers, itemName)) {
+    return;
+  }
 
-      triggers[itemName]({ isVisible: itemVisible });
-    }
+  const triggerFunction = triggers[itemName];
+
+  try {
+    return await triggerFunction({ isVisible: itemVisible });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function sourceVisibilityTriggers(triggers) {
+  obs.on("SceneItemVisibilityChanged", ({ itemVisible, itemName }) =>
+    handleTriggers({ triggers, itemVisible, itemName })
   );
+}
+
+async function filterVisibilityTriggers(sourcesObject) {
+  const sources = Object.keys(sourcesObject);
+  sources.forEach(async (source) => {
+    const triggers = sourcesObject[source];
+    const { filters } = await request("GetSourceFilters", {
+      sourceName: source,
+    });
+
+    filters.forEach(async (filter) => {
+      await handleTriggers({
+        triggers,
+        itemVisible: filter.enabled,
+        itemName: filter.name,
+      });
+    });
+
+    obs.on(
+      "SourceFilterVisibilityChanged",
+      ({ filterEnabled, filterName }) =>
+        handleTriggers({
+          triggers,
+          itemVisible: filterEnabled,
+          itemName: filterName,
+        })
+    );
+  });
 }
 
 module.exports = {
   initialise,
   getWebcamImage,
   switchToScene,
-  midiTriggers,
+  sourceVisibilityTriggers,
+  filterVisibilityTriggers,
   showSource,
   hideSource,
+  showHideSource,
+  showHideFilter,
   toggleFilter,
 };

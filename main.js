@@ -219,7 +219,7 @@ async function main() {
     }
   }, 500);
 
-  obs.midiTriggers({
+  obs.sourceVisibilityTriggers({
     "Joycon: A": async () => {
       return obs.toggleFilter({
         source: "Webcam Mirror",
@@ -252,6 +252,32 @@ async function main() {
       io.emit("data", { goosebumpsBookTitle: null });
       CURRENT_GOOSEBUMP_BOOK = null;
       await obs.switchToScene("Main Bigger Zac");
+    },
+  });
+
+  obs.filterVisibilityTriggers({
+    "TONOR Microphone": {
+      "Mic: Deep Voice": async ({ isVisible }) => {
+        return await obs.showHideSource({
+          scene: "Overlays",
+          source: "MIDI: Bass Spin",
+          isVisible,
+        });
+      },
+      "Mic: Delay": async ({ isVisible }) => {
+        return await obs.showHideSource({
+          scene: "Overlays",
+          source: "MIDI: Echo",
+          isVisible,
+        });
+      },
+      "Mic: Auto-Loop": async ({ isVisible }) => {
+        return await obs.showHideSource({
+          scene: "Overlays",
+          source: "MIDI: Auto-loop",
+          isVisible,
+        });
+      },
     },
   });
 

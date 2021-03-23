@@ -1,7 +1,6 @@
 // get process.env from .env
 require("dotenv").config();
 
-const { PORT } = process.env;
 const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
@@ -10,8 +9,11 @@ const ngrok = require("ngrok");
 
 const { schedule } = require("./src/helpers/schedule");
 
+const logger = require("./src/helpers/logger");
+
 const LastFM = require("./src/last-fm");
 const Twitch = require("./src/twitch");
+const KoFi = require("./src/ko-fi");
 const googleSheetCommands = require("./src/google-sheet-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
 const detectFaces = require("./src/helpers/detect-faces");
@@ -21,9 +23,6 @@ const {
   initialiseHueBulbs,
   resetLights,
 } = require("./src/helpers/hue-bulbs");
-
-const logger = require("./src/helpers/logger");
-
 const {
   getPrideFlag,
   getRandomPrideFlag,
@@ -36,8 +35,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
+const { NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT } = process.env;
 const CLIENT_FILE_PATH = "client/build";
-
 let STEVE_HAS_TALKED = false;
 let BEX_HAS_TALKED = false;
 let BOVRIL_HAS_TALKED = false;
@@ -57,6 +56,9 @@ const ALERT_TYPES = {
     duration: 5000,
   },
   subscribe: {
+    duration: 5000,
+  },
+  donation: {
     duration: 5000,
   },
   follow: {
@@ -197,10 +199,24 @@ async function main() {
   await obs.initialise();
   googleSheetCommands.initialise();
 
-  const ngrokUrl = await ngrok.connect(PORT);
+  const ngrokUrl = await ngrok.connect({
+    addr: PORT,
+    authtoken: NGROK_AUTH_TOKEN,
+    region: "eu",
+    subdomain: NGROK_SUBDOMAIN,
+  });
   logger.info("👽 Ngrok URL", ngrokUrl);
   const twitch = await Twitch({ ngrokUrl, app });
   const lastFM = LastFM();
+  const kofi = KoFi({ ngrokUrl, app });
+
+  kofi.on("payment", ({ type, isAnonymous, user }) => {
+    if (type === "Donation") {
+      sendAlertToClient({ type: "donation", user, isAnonymous });
+      const userName = isAnonymous ? "bill gates" : user.username;
+      twitch.bot.say(`hi ${userName}, thanks for the donation!`);
+    }
+  });
 
   async function detectFacesSendToClient(image) {
     try {

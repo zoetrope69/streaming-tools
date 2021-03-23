@@ -82,8 +82,21 @@ const Alert = ({ alert, currentFaceDetection }) => {
   if (type === "subscribe") {
     return (
       <Axolotl duration={duration}>
-        thanks for {alert.isGift ? "gifting " : ""}the sub{" "}
+        thanks for {alert.isGift ? "gifting " : ""}the sub <br />
         <strong>{user.username}</strong>
+      </Axolotl>
+    );
+  }
+
+  if (type === "donation") {
+    return (
+      <Axolotl duration={duration}>
+        thanks for the donation <br />
+        {alert.isAnonymous ? (
+          "bill gates"
+        ) : (
+          <strong>{user.username}</strong>
+        )}
       </Axolotl>
     );
   }

@@ -59,7 +59,7 @@ const Axolotl = ({ children, message, duration, containsHTML }) => {
         >
           <img
             className="Axolotl__speech-bubble__image Axolotl__speech-bubble__image--top"
-            src="speech-bubble-body.svg"
+            src="/alerts/axolotl-speech-bubble-body.svg"
             alt=""
           />
           <img

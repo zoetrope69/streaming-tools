@@ -69,7 +69,7 @@ const Alert = ({ alert, currentFaceDetection }) => {
   if (type === "bits") {
     return (
       <Axolotl duration={duration}>
-        thanks for the bits{" "}
+        thanks for the bits <br />
         {alert.isAnonymous ? (
           "bill gates"
         ) : (

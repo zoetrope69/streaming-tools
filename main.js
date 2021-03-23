@@ -332,7 +332,10 @@ async function main() {
 
   twitch.on("bits", (data) => {
     sendAlertToClient({ type: "bits", ...data });
-    twitch.bot.say(`hi @${data.user.username}, thanks for the bits!`);
+    const userName = data.isAnonymous
+      ? "bill gates"
+      : "@" + data.user.username;
+    twitch.bot.say(`hi ${userName}, thanks for the bits!`);
   });
 
   twitch.on("follow", async (user) => {

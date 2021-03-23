@@ -105,12 +105,42 @@ async function setFairyLights(value) {
 }
 
 async function resetLights() {
-  await setLightsColor("warm");
-  return;
+  setFairyLights({ on: true });
+
+  const DEFAULT_STATES = {
+    lamp: {
+      on: true,
+      bri: 50,
+      hue: 8408,
+      sat: 173,
+      xy: [0.4756, 0.4178],
+      ct: 396,
+    },
+    ceiling: {
+      on: true,
+      bri: 254,
+      hue: 58454,
+      sat: 243,
+      xy: [0.4802, 0.2154],
+      ct: 403,
+    },
+  };
+
+  ["ceiling", "lamp"].forEach(async (lightName) => {
+    const light = await getLightByName(lightName);
+
+    if (light) {
+      callHueBulbAPI(`lights/${light.id}/state`, {
+        method: "PUT",
+        body: DEFAULT_STATES[lightName],
+      });
+    }
+  });
 }
 
 module.exports = {
   initialiseHueBulbs,
+  getLights,
   setLightsColor,
   setFairyLights,
   resetLights,

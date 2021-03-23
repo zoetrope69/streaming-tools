@@ -17,6 +17,10 @@ const createBeeImage = require("./src/imma-bee/create-bee-image");
 const detectFaces = require("./src/helpers/detect-faces");
 const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
 const textToSpeech = require("./src/text-to-speech");
+const {
+  initialiseHueBulbs,
+  resetLights,
+} = require("./src/helpers/hue-bulbs");
 
 const logger = require("./src/helpers/logger");
 
@@ -184,6 +188,11 @@ async function turnOnOverlay(source, timeout) {
 }
 
 async function main() {
+  // reset lights for streaming
+  initialiseHueBulbs()
+    .then(resetLights)
+    .catch((error) => logger.error("💡 Hue Bulbs", error));
+
   // initialise various things
   await obs.initialise();
   googleSheetCommands.initialise();

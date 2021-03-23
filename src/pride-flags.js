@@ -154,9 +154,6 @@ async function setLightsToPrideFlag(name) {
   return goThroughColors(prideFlag.lightColors);
 }
 
-// initialise on require
-initialiseHueBulbs().then(resetLights);
-
 module.exports = {
   getPrideFlag,
   getRandomPrideFlag,

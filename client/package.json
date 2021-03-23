@@ -10,7 +10,7 @@
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-helmet": "6.1.0",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.4"
   },
   "scripts": {
     "dev:client": "npm start",

@@ -272,6 +272,12 @@ async function main() {
     "Joycon: Right Trigger": async () => {
       await obs.switchToScene("Dance everywhere");
     },
+    "Joycon: Right Analog In": async () => {
+      return obs.toggleFilter({
+        source: "Webcam Mirror",
+        filter: "Webcam: Rainbow",
+      });
+    },
     "Scene change: BRB": async () => switchToBRBScene(),
     "Stop Goosebumps": async () => {
       io.emit("data", { goosebumpsBookTitle: null });

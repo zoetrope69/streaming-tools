@@ -37,7 +37,7 @@
     "object-hash": "^2.0.3",
     "obs-websocket-js": "^4.0.2",
     "opencv4nodejs": "^5.6.0",
-    "pureimage": "^0.2.5",
+    "pureimage": "^0.3.0",
     "qs": "^6.9.4",
     "replaceall": "^0.1.6",
     "socket.io": "^2.3.0",

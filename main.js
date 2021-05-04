@@ -328,7 +328,7 @@ async function main() {
       `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
     );
     schedule(scheduledCommand.schedule, () => {
-      twitch.bot.say(`/me ${scheduledCommand.value}`);
+      twitch.bot.say(scheduledCommand.value);
     });
   });
 

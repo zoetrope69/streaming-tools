@@ -13,12 +13,11 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
 
       // unsubscribe existing subscription
       const subscriptions = await twitchApi.eventSub.getSubscriptions();
-      if (subscriptions && subscriptions.length > 0) {
-        subscriptions.forEach(async (subscription) => {
-          if (subscription.type === topic) {
-            await twitchApi.eventSub.unsubscribe(subscription.id);
-          }
-        });
+      const existingSubscription = subscriptions.find(
+        (subscription) => subscription.type === topic
+      );
+      if (existingSubscription) {
+        await twitchApi.eventSub.unsubscribe(existingSubscription.id);
       }
 
       await twitchApi.eventSub.subscribe(topic);

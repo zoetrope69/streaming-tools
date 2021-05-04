@@ -195,14 +195,18 @@ async function main() {
   // initialise various things
   await obs.initialise();
   googleSheetCommands.initialise();
-
-  const ngrokUrl = await ngrok.connect({
-    addr: PORT,
-    authtoken: NGROK_AUTH_TOKEN,
-    region: "eu",
-    subdomain: NGROK_SUBDOMAIN,
-  });
-  logger.info("👽 Ngrok URL", ngrokUrl);
+  let ngrokUrl;
+  try {
+    ngrokUrl = await ngrok.connect({
+      addr: PORT,
+      authtoken: NGROK_AUTH_TOKEN,
+      region: "eu",
+      subdomain: NGROK_SUBDOMAIN,
+    });
+  } catch (e) {
+    logger.error("👽 Ngrok", e);
+  }
+  logger.info("👽 Ngrok", `URL: ${ngrokUrl}`);
   const twitch = await Twitch({ ngrokUrl, app });
   const lastFM = LastFM();
   const kofi = KoFi({ ngrokUrl, app });

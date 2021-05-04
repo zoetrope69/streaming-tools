@@ -247,19 +247,19 @@ async function main() {
   obs.sourceVisibilityTriggers({
     "Joycon: A": async () => {
       return obs.toggleFilter({
-        source: "Webcam Mirror",
+        source: "Raw Webcam",
         filter: "Webcam: Recursion Effect",
       });
     },
     "Joycon: B": async () => {
       return obs.toggleFilter({
-        source: "Webcam Mirror",
+        source: "Raw Webcam",
         filter: "Webcam: Time Warp Scan",
       });
     },
     "Joycon: Y": async () => {
       return obs.toggleFilter({
-        source: "Webcam Mirror",
+        source: "Raw Webcam",
         filter: "Webcam: Trail",
       });
     },
@@ -274,7 +274,7 @@ async function main() {
     },
     "Joycon: Right Analog In": async () => {
       return obs.toggleFilter({
-        source: "Webcam Mirror",
+        source: "Raw Webcam",
         filter: "Webcam: Rainbow",
       });
     },

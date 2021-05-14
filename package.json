@@ -31,7 +31,7 @@
     "image-url": "^1.1.0",
     "jimp": "^0.16.1",
     "memory-cache": "^0.2.0",
-    "ngrok": "^3.4.0",
+    "ngrok": "^4.0.0",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
     "object-hash": "^2.0.3",

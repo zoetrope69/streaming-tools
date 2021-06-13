@@ -20,9 +20,9 @@
     "@tensorflow/tfjs-node": "^3.0.0",
     "body-parser": "^1.19.0",
     "chroma-js": "^2.1.0",
-    "color-name-list": "^7.14.0",
+    "color-name-list": "^8.0.0",
     "color-space": "^1.16.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "get-image-colors": "^4.0.0",
     "googleapis": "^39.2.0",
@@ -32,7 +32,7 @@
     "jimp": "^0.16.1",
     "memory-cache": "^0.2.0",
     "ngrok": "^4.0.0",
-    "node-cron": "^2.0.3",
+    "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
     "object-hash": "^2.0.3",
     "obs-websocket-js": "^4.0.2",
@@ -40,7 +40,7 @@
     "pureimage": "^0.3.0",
     "qs": "^6.9.4",
     "replaceall": "^0.1.6",
-    "socket.io": "^2.3.0",
+    "socket.io": "^4.0.0",
     "tesjs": "^0.4.0",
     "tmi.js": "^1.7.1",
     "uuid": "^8.3.1",
@@ -48,11 +48,11 @@
   },
   "devDependencies": {
     "chalk": "4.1.1",
-    "concurrently": "5.3.0",
-    "eslint": "7.24.0",
-    "eslint-config-prettier": "6.15.0",
-    "eslint-plugin-prettier": "3.3.1",
+    "concurrently": "6.2.0",
+    "eslint": "7.28.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-prettier": "3.4.0",
     "nodemon": "2.0.7",
-    "prettier": "2.2.1"
+    "prettier": "2.3.1"
   }
 }

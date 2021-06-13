@@ -32,7 +32,7 @@
     "jimp": "^0.16.1",
     "memory-cache": "^0.2.0",
     "ngrok": "^3.4.0",
-    "node-cron": "^2.0.3",
+    "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
     "object-hash": "^2.0.3",
     "obs-websocket-js": "^4.0.2",

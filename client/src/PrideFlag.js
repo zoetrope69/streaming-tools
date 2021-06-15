@@ -7,37 +7,19 @@ import "./PrideFlag.css";
 
 const FADE_DURATION_MILLISECONDS = 1000;
 
-const PRIDE_FLAGS = [
-  "agender",
-  "aromantic",
-  "asexual",
-  "bisexual",
-  "gay",
-  "genderfluid",
-  "genderqueer",
-  "intersex",
-  "lesbian",
-  "non-binary",
-  "pansexual",
-  "polysexual",
-  "transgender",
-];
-
 const PrideFlag = ({ name }) => {
   const [isNewFlagShown, setIsNewFlagShown] = useState(false);
   const [newFlagName, setNewFlagName] = useState("");
   const [currentName, setCurrentName] = useState("gay");
 
   useEffect(() => {
-    if (PRIDE_FLAGS.includes(name)) {
-      if (name !== currentName) {
-        setNewFlagName(name);
-        setIsNewFlagShown(true);
-        setTimeout(() => {
-          setCurrentName(name);
-          setIsNewFlagShown(false);
-        }, FADE_DURATION_MILLISECONDS);
-      }
+    if (name !== currentName) {
+      setNewFlagName(name);
+      setIsNewFlagShown(true);
+      setTimeout(() => {
+        setCurrentName(name);
+        setIsNewFlagShown(false);
+      }, FADE_DURATION_MILLISECONDS);
     }
   }, [name, currentName]);
 

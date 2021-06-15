@@ -43,6 +43,7 @@ let CURRENT_CHANNEL_INFO = {};
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 let CURRENT_GOOSEBUMP_BOOK = null;
+let CURRENT_PRIDE_FLAG_NAME = "gay";
 
 const ALERT_TYPES = {
   "shout-out": {
@@ -194,7 +195,6 @@ async function main() {
 
   // initialise various things
   await obs.initialise();
-  googleSheetCommands.initialise();
   let ngrokUrl;
   try {
     ngrokUrl = await ngrok.connect({
@@ -205,6 +205,7 @@ async function main() {
     });
   } catch (e) {
     logger.error("👽 Ngrok", e);
+    process.exit(1); // can't do anything without ngrok
   }
   logger.info("👽 Ngrok", `URL: ${ngrokUrl}`);
   const twitch = await Twitch({ ngrokUrl, app });
@@ -321,16 +322,20 @@ async function main() {
     CURRENT_CHANNEL_INFO = channelInfo;
   });
 
-  const scheduledCommands = await googleSheetCommands.getScheduledCommands();
-  scheduledCommands.forEach((scheduledCommand) => {
-    logger.info(
-      "🤖 Twitch Bot",
-      `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
-    );
-    schedule(scheduledCommand.schedule, () => {
-      twitch.bot.say(scheduledCommand.value);
+  try {
+    const scheduledCommands = await googleSheetCommands.getScheduledCommands();
+    scheduledCommands.forEach((scheduledCommand) => {
+      logger.info(
+        "🤖 Twitch Bot",
+        `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
+      );
+      schedule(scheduledCommand.schedule, () => {
+        twitch.bot.say(scheduledCommand.value);
+      });
     });
-  });
+  } catch (e) {
+    logger.info("🤖 Twitch Bot", "Couldn't run scheduled commands");
+  }
 
   twitch.on("subscribe", (data) => {
     sendAlertToClient({ type: "subscribe", ...data });
@@ -456,6 +461,7 @@ async function main() {
         const prideFlag = getPrideFlag(inputPrideFlagName);
 
         if (prideFlag) {
+          CURRENT_PRIDE_FLAG_NAME = prideFlag.name;
           setLightsToPrideFlag(prideFlag.name);
           io.emit("data", { prideFlagName: prideFlag.name });
           if (prideFlag.twitchEmote) {
@@ -482,7 +488,7 @@ async function main() {
           await createBeeImage(image);
           sendAlertToClient({ type: "immabee" });
         } catch (e) {
-          logger.error("🐝 Imma bee", e);
+          logger.error("🐝 Imma bee", JSON.stringify(e));
           twitch.bot.say(`Couldn't find Zac's face...`);
         }
       }
@@ -528,7 +534,7 @@ async function main() {
         turnOnOverlay("I'm not a cat", 8 * 1000);
       }
 
-      if (title === "goosebumps book") {
+      if (title === "goosebumpz book") {
         logger.log("📚 Goosebumps Book", "Triggered...");
         try {
           const { bookTitle } = await createGoosebumpsBookImage(
@@ -820,6 +826,7 @@ async function main() {
       followTotal,
       popUpMessage: POPUP_MESSAGE,
       goosebumpsBookTitle: CURRENT_GOOSEBUMP_BOOK,
+      prideFlagName: CURRENT_PRIDE_FLAG_NAME,
     });
 
     socket.on("disconnect", () => {

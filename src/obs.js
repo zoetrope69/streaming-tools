@@ -74,11 +74,18 @@ async function getWebcamImage(sourceName) {
     throw new Error("OBS isn't ready");
   }
 
-  const webcamScreenshot = await request("TakeSourceScreenshot", {
-    sourceName,
-    embedPictureFormat: "jpg",
-  });
-  return webcamScreenshot.img;
+  let webcamScreenshot;
+  try {
+    webcamScreenshot = await request("TakeSourceScreenshot", {
+      sourceName,
+      embedPictureFormat: "png",
+    });
+  } catch (e) {
+    console.log("e", e);
+    throw new Error(e.error || e);
+  }
+
+  return webcamScreenshot?.img;
 }
 
 async function switchToScene(sceneName) {

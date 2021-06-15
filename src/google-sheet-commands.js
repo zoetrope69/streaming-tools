@@ -1,11 +1,13 @@
 const cache = require("memory-cache");
 
 const { getSpreadsheetRows } = require("./helpers/google-sheets");
+const logger = require("./helpers/logger");
 
 const CACHE_KEY = "COMMANDS";
 const CACHE_TIMEOUT_MS = 10 * 1000; // 10 seconds
 
 async function getCommands() {
+  logger.info("🐑 Google Sheet", "Getting commands...");
   const rows = await getSpreadsheetRows({
     spreadsheetId: "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA",
     range: "Commands!A2:C",
@@ -23,11 +25,6 @@ async function getCommands() {
   });
 }
 
-async function initialise() {
-  const commands = await getCommands();
-  cache.put(CACHE_KEY, commands, CACHE_TIMEOUT_MS);
-}
-
 async function getCachedCommands() {
   const cachedCommands = cache.get(CACHE_KEY);
 
@@ -35,20 +32,31 @@ async function getCachedCommands() {
     return cachedCommands;
   }
 
-  return await getCommands();
+  const commands = await getCommands();
+
+  cache.put(CACHE_KEY, commands, CACHE_TIMEOUT_MS);
+
+  return commands;
 }
 
 async function getScheduledCommands() {
-  const commands = await getCachedCommands();
-  const scheduledCommands = commands.filter(
-    (command) => command.schedule
-  );
+  try {
+    const commands = await getCachedCommands();
+    const scheduledCommands = commands.filter(
+      (command) => command.schedule
+    );
 
-  return scheduledCommands;
+    logger.info(
+      "🐑 Google Sheet",
+      `${scheduledCommands.length} commands`
+    );
+    return scheduledCommands;
+  } catch (e) {
+    logger.error("🐑 Google Sheet", e.message || e);
+  }
 }
 
 module.exports = {
-  initialise,
   getCommands: getCachedCommands,
   getScheduledCommands,
 };

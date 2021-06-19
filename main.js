@@ -323,7 +323,8 @@ async function main() {
   });
 
   try {
-    const scheduledCommands = await googleSheetCommands.getScheduledCommands();
+    const scheduledCommands =
+      await googleSheetCommands.getScheduledCommands();
     scheduledCommands.forEach((scheduledCommand) => {
       logger.info(
         "🤖 Twitch Bot",
@@ -786,14 +787,19 @@ async function main() {
             audioUrl: nameAudioUrl,
           });
 
+          let nameString;
+          if (customShoutOut) {
+            nameString = customShoutOut.message;
+          } else if (shoutOutUser.pronouns) {
+            nameString = `${shoutOutUser.username} (${shoutOutUser.pronouns})`;
+          } else {
+            nameString = shoutOutUser.username;
+          }
+
+          const urlString = `twitch.tv/${shoutOutUser.username.toLowerCase()}`;
+
           twitch.bot.say(
-            `shout out to ${
-              customShoutOut
-                ? customShoutOut.message
-                : shoutOutUser.username
-            } doing something cool over at twitch.tv/${
-              shoutOutUser.username
-            } Squid1 Squid2 zactopUs Squid2 Squid4`
+            `shout out to ${nameString} doing something cool over at ${urlString} Squid1 Squid2 zactopUs Squid2 Squid4`
           );
         }
       }

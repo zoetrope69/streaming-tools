@@ -3,6 +3,8 @@ const { stringify: queryStringStringify } = require("qs");
 
 const logger = require("../helpers/logger");
 
+const getUserPronouns = require("./helpers/pronouns");
+
 const {
   TWITCH_CLIENT_ID,
   TWITCH_CLIENT_SECRET,
@@ -297,7 +299,18 @@ async function TwitchAPI({ ngrokUrl }) {
     getOAuthToken,
 
     getUser: async (username) => {
-      return getUser(callTwitchAPI, username);
+      const user = await getUser(callTwitchAPI, username);
+
+      if (!user) {
+        return null;
+      }
+
+      const pronouns = await getUserPronouns(user.username);
+
+      return {
+        ...user,
+        pronouns,
+      };
     },
 
     getFollowTotal: async () => {

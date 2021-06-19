@@ -758,16 +758,18 @@ async function main() {
             return;
           }
 
-          const customShoutOuts = await twitch.getCustomShoutOuts();
-          const customShoutOut = customShoutOuts.find(
-            (shoutOut) =>
-              shoutOut.username === shoutOutUsername.toLowerCase()
-          );
           const shoutOutUser = await twitch.getUser(shoutOutUsername);
 
           if (!shoutOutUser) {
             return;
           }
+
+          const customShoutOuts = await twitch.getCustomShoutOuts();
+          const customShoutOut = customShoutOuts.find(
+            (shoutOut) =>
+              shoutOut.username ===
+              shoutOutUser.username.toLowerCase()
+          );
 
           let nameAudioUrl;
           try {

@@ -50,7 +50,7 @@
   position: absolute;
   background: var(--color-white);
   padding: 1em;
-  left: 210px;
+  left: 250px;
   bottom: 130px;
   min-width: 150px;
   max-width: 40%;
@@ -99,22 +99,35 @@
   text-align: center;
 }
 
-.Axolotl__speech-bubble__text .avatar {
+.Axolotl__speech-bubble__text .avatar,
+.Axolotl__speech-bubble__text .pronouns {
   clip-path: url(#Axolotl__speech-bubble__text__image-clip);
   width: 200px;
   position: absolute;
   bottom: 0;
-  left: 0;
-  transform: translate(150%, 75%) rotate(10deg);
-  animation: speachBubbleJiggleImage 1s infinite alternate;
+  right: 0;
+  transform-origin: center;
+  transform: translate(0%, 0%) rotate(10deg);
+  animation: speechBubbleJiggleImage 1s infinite alternate;
 }
 
-@keyframes speachBubbleJiggleImage {
+.Axolotl__speech-bubble__text .pronouns {
+  right: -50px;
+  width: auto;
+  bottom: -100px;
+  padding: 0.25em 0.5em;
+  color: var(--color-white);
+  font-size: 0.85em;
+  font-weight: bolder;
+  background: var(--color-black);
+}
+
+@keyframes speechBubbleJiggleImage {
   0% {
-    transform: translate(150%, 75%) rotate(10deg);
+    transform: translate(110%, 30%) rotate(10deg);
   }
 
   100% {
-    transform: translate(150%, 72%) rotate(10deg);
+    transform: translate(110%, 33%) rotate(8deg);
   }
 }

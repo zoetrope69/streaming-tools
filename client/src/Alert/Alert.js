@@ -124,6 +124,9 @@ const Alert = ({ alert, currentFaceDetection }) => {
       <Axolotl duration={duration}>
         shout out to <br /> <strong>{user.username}</strong>!
         <img className="avatar" src={user.image} alt="" />
+        {user.pronouns && (
+          <span className="pronouns">{user.pronouns}</span>
+        )}
       </Axolotl>
     );
   }

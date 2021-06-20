@@ -340,6 +340,14 @@ async function main() {
 
   twitch.on("subscribe", (data) => {
     sendAlertToClient({ type: "subscribe", ...data });
+
+    if (data.isGift) {
+      twitch.bot.say(
+        `thanks for gifting a sub to @${data.user.username}`
+      );
+      return;
+    }
+
     twitch.bot.say(`hi @${data.user.username}, thanks for the sub!`);
   });
 

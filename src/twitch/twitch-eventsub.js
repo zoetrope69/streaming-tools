@@ -12,7 +12,8 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       expressEvents.on(topic, callback);
 
       // unsubscribe existing subscription
-      const subscriptions = await twitchApi.eventSub.getSubscriptions();
+      const subscriptions =
+        await twitchApi.eventSub.getSubscriptions();
       const existingSubscription = subscriptions.find(
         (subscription) => subscription.type === topic
       );
@@ -85,13 +86,8 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     // bitties
     await subscribeToTopic("channel.cheer", (data) => {
       console.log("channel.cheer data", data);
-      const {
-        user_id,
-        user_name,
-        is_anonymous,
-        message,
-        bits,
-      } = data;
+      const { user_id, user_name, is_anonymous, message, bits } =
+        data;
       eventEmitter.emit("bits", {
         isAnonymous: is_anonymous,
         user: {

@@ -123,7 +123,13 @@ function lastFm() {
 
   // again gross, should be returning a class or something
   eventEmitter.getCurrentTrack = async () => {
-    return await getLastFmRecentTrack();
+    let track;
+    try {
+      track = await getLastFmRecentTrack();
+    } catch (exception) {
+      logger.error("🎸 Last.FM", exception);
+    }
+    return track;
   };
 
   return eventEmitter;

@@ -37,11 +37,11 @@
 
 @keyframes bobUpAndDown {
   0% {
-    transform: translateY(45%) rotate(1deg);
+    transform: translateY(5%) rotate(1deg);
   }
 
   100% {
-    transform: translateY(44%) rotate(-1deg);
+    transform: translateY(4%) rotate(-1deg);
   }
 }
 
@@ -51,7 +51,7 @@
   background: var(--color-white);
   padding: 1em;
   left: 250px;
-  bottom: 130px;
+  bottom: 100px;
   min-width: 150px;
   max-width: 40%;
   border-radius: 80px;

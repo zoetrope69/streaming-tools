@@ -48,7 +48,7 @@ let CURRENT_PRIDE_FLAG_NAME = "gay";
 const ALERT_TYPES = {
   "shout-out": {
     duration: 10000,
-    delayAudio: 1500,
+    delayAudio: 3100,
   },
   bits: {
     duration: 5000,

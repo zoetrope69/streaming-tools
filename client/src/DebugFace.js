@@ -1,7 +1,7 @@
 import React from "react";
 
 const DebugFace = ({ currentFaceDetection }) => {
-  if (!currentFaceDetection || !currentFaceDetection.rect) {
+  if (!currentFaceDetection || !currentFaceDetection.position) {
     return null;
   }
 
@@ -11,10 +11,10 @@ const DebugFace = ({ currentFaceDetection }) => {
         position: "absolute",
         border: "2px solid red",
         color: "red",
-        left: `${currentFaceDetection.rect.x}px`,
-        top: `${currentFaceDetection.rect.y}px`,
-        width: `${currentFaceDetection.rect.width}px`,
-        height: `${currentFaceDetection.rect.height}px`,
+        left: `${currentFaceDetection.position.x}px`,
+        top: `${currentFaceDetection.position.y}px`,
+        width: `${currentFaceDetection.position.width}px`,
+        height: `${currentFaceDetection.position.height}px`,
       }}
     >
       {currentFaceDetection.confidence}

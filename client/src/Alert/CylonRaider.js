@@ -3,11 +3,11 @@ import React from "react";
 import "./CylonRaider.css";
 
 const CylonRaider = ({ currentFaceDetection }) => {
-  if (!currentFaceDetection || !currentFaceDetection.rect) {
+  if (!currentFaceDetection || !currentFaceDetection.position) {
     return null;
   }
 
-  const { x, y, width: faceWidth } = currentFaceDetection.rect;
+  const { x, y, width: faceWidth } = currentFaceDetection.position;
   const width = faceWidth * 8.8;
   const height = width / 3;
 

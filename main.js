@@ -228,10 +228,6 @@ async function main() {
         throw new Error("No face detected");
       }
 
-      if (faceDetection.confidence < 10) {
-        throw new Error("Not confident a face was detected");
-      }
-
       io.emit("data", { faceDetection });
     } catch (e) {
       // didn't work
@@ -244,7 +240,7 @@ async function main() {
     } catch (e) {
       // didn't find the image
     }
-  }, 500);
+  }, 1000);
 
   obs.sourceVisibilityTriggers({
     "Joycon: A": async () => {

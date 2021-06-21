@@ -8,9 +8,8 @@ const PENGUIN_THROW_ANIMATION_DURATION = 750;
 
 const PenguinThrow = ({ id, currentFaceDetection }) => {
   const [isHidden, setIsHidden] = useState(false);
-  const [isFaceDetectionPaused, setIsFaceDetectionPaused] = useState(
-    false
-  );
+  const [isFaceDetectionPaused, setIsFaceDetectionPaused] =
+    useState(false);
   const [isTargetVisible, setIsTargetVisible] = useState(true);
   const [isSnowballVisible, setIsSnowballVisible] = useState(false);
   const [faceDetection, setFaceDetection] = useState(null);
@@ -36,7 +35,7 @@ const PenguinThrow = ({ id, currentFaceDetection }) => {
 
   useEffect(() => {
     if (!isFaceDetectionPaused) {
-      setFaceDetection(currentFaceDetection.rect);
+      setFaceDetection(currentFaceDetection.position);
     }
   }, [isFaceDetectionPaused, setFaceDetection, currentFaceDetection]);
 

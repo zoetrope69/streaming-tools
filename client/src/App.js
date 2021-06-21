@@ -15,16 +15,13 @@ function App() {
   const [currentAlert, setCurrentAlert] = useState({});
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPopUpMessage, setCurrentPopUpMessage] = useState("");
-  const [currentPrideFlagName, setCurrentPrideFlagName] = useState(
-    "gay"
-  );
+  const [currentPrideFlagName, setCurrentPrideFlagName] =
+    useState("gay");
   const [currentFaceDetection, setCurrentFaceDetection] = useState(
     {}
   );
-  const [
-    currentGoosebumpsBookTitle,
-    setCurrentGoosebumpsBookTitle,
-  ] = useState(null);
+  const [currentGoosebumpsBookTitle, setCurrentGoosebumpsBookTitle] =
+    useState(null);
 
   useEffect(() => {
     const socketIOHandler = (data) => {

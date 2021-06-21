@@ -3,11 +3,11 @@ import React from "react";
 import "./BexcHat.css";
 
 const BexcHat = ({ currentFaceDetection }) => {
-  if (!currentFaceDetection || !currentFaceDetection.rect) {
+  if (!currentFaceDetection || !currentFaceDetection.position) {
     return null;
   }
 
-  const { x, y, width } = currentFaceDetection.rect;
+  const { x, y, width } = currentFaceDetection.position;
   const height = width * 0.77;
 
   const positionStyles = {

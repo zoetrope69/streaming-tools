@@ -1,82 +1,65 @@
-const cv = require("opencv4nodejs");
-const logger = require("../helpers/logger");
+const fs = require("fs");
+const vision = require("@google-cloud/vision");
 
-const DEBUG = false;
+const bufferFromBase64 = require("./buffer-from-base64");
 
-function drawRect(cvImage, rect, color, opts = { thickness: 2 }) {
-  return cvImage.drawRectangle(
-    rect,
-    color,
-    opts.thickness,
-    cv.LINE_8
-  );
+const client = new vision.ImageAnnotatorClient();
+
+async function saveBase64Image(base64) {
+  const { buffer, contentType } = bufferFromBase64(base64);
+  const imagePath = `temp-face-image.${contentType}`;
+  fs.writeFileSync(imagePath, buffer);
+  return imagePath;
 }
 
-function drawBlueRect(cvImage, rect, opts = { thickness: 2 }) {
-  return drawRect(cvImage, rect, new cv.Vec(255, 0, 0), opts);
-}
+async function detectFaces(base64) {
+  const imagePath = await saveBase64Image(base64);
 
-function outputDebugImage(cvImage, result) {
-  // drawn lines for debug
-  const thickness = result.confidence < 10 ? 1 : 2;
-  drawBlueRect(cvImage, result.rect, { thickness });
+  const [faceDetectionResult] = await client.faceDetection(imagePath);
 
-  cv.imwriteAsync(
-    __dirname + "/debug-face-detection.jpg",
-    cvImage,
-    (err) => {
-      if (err) {
-        logger.debug("👽 Detect Face", err);
-        return;
-      }
-
-      logger.debug("👽 Detect Face", "Saved debug image");
-    }
-  );
-}
-
-function bufferFromBase64(base64text) {
-  const base64data = base64text
-    .replace("data:image/jpeg;base64", "")
-    .replace("data:image/jpg;base64", "")
-    .replace("data:image/png;base64", ""); // strip image type prefix
-
-  return Buffer.from(base64data, "base64");
-}
-
-async function detectFaces(dataUri) {
-  const imageBuffer = bufferFromBase64(dataUri);
-  const cvImage = cv.imdecode(imageBuffer);
-  const classifier = new cv.CascadeClassifier(
-    cv.HAAR_FRONTALFACE_ALT2
-  );
-
-  // detect faces
-  const {
-    objects,
-    numDetections: confidences,
-  } = classifier.detectMultiScale(cvImage.bgrToGray());
-
-  if (!objects.length) {
+  if (
+    !faceDetectionResult ||
+    faceDetectionResult.faceAnnotations.length === 0
+  ) {
     throw new Error("No faces detected!");
   }
 
-  const results = objects
-    .map((object, i) => {
-      const confidence = confidences[i];
-      return { rect: object, confidence };
-    })
-    .sort((a, b) => b.confidence - a.confidence);
+  const [face] = faceDetectionResult.faceAnnotations.sort(
+    (a, b) => b.detectionConfidence - a.detectionConfidence
+  );
 
-  logger.debug("👽 Detect Face", "Saved debug image");
-
-  const [bestResult] = results;
-
-  if (DEBUG) {
-    outputDebugImage(cvImage, bestResult);
+  if (face.detectionConfidence < 0.2) {
+    throw new Error("No faces detected!");
   }
 
-  return Promise.resolve(bestResult);
+  // boundingPoly - full head
+  // fdBoundingPoly - just face
+  const { vertices } = face.fdBoundingPoly;
+  /*
+    [
+      { x: 64,  y: 77  },  top left
+      { x: 240, y: 77  },  top right
+      { x: 240, y: 262 },  bottom right
+      { x: 64,  y: 262 }   bottom left
+    ]
+  */
+
+  const xYPositions = vertices[0];
+  const bottomRightXyPositions = vertices[2];
+
+  const { x, y } = xYPositions;
+  const width = bottomRightXyPositions.x - x;
+  const height = bottomRightXyPositions.y - y;
+
+  return {
+    position: {
+      x,
+      y,
+      width,
+      height,
+    },
+    confidence: face.detectionConfidence,
+  };
 }
 
 module.exports = detectFaces;

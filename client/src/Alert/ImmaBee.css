@@ -26,10 +26,10 @@
 
 .ImmaBee {
   position: absolute;
-  top: 200px;
+  top: 0;
   left: 0;
-  display: block;
-  width: 600px;
+  right: 0;
+  bottom: 0;
   filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
   animation: bobAround infinite alternate 240ms ease-out;
   animation-delay: 300ms;

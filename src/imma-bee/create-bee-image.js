@@ -18,7 +18,7 @@ async function createBeeImage(dataUri) {
     __dirname + "/circle-mask.png"
   );
 
-  const { x, y, width, height } = faceDetectionResult.rect;
+  const { x, y, width, height } = faceDetectionResult.position;
   streamImage.crop(x, y, width, height);
   streamImage.resize(576, AUTO);
   streamImage.mask(circleMaskImage, 0, 0);

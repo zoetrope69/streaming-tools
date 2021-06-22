@@ -1,28 +1,43 @@
 const cache = require("memory-cache");
+const { GoogleSpreadsheet } = require("google-spreadsheet");
 
-const { getSpreadsheetRows } = require("./helpers/google-sheets");
+const googleCredentials = require("../google-credentials.json");
 const logger = require("./helpers/logger");
 
+const SPREADSHEET_ID = "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA";
 const CACHE_KEY = "COMMANDS";
 const CACHE_TIMEOUT_MS = 10 * 1000; // 10 seconds
 
+async function getSpreadsheet() {
+  const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
+
+  await doc.useServiceAccountAuth({
+    client_email: googleCredentials["client_email"],
+    private_key: googleCredentials["private_key"],
+  });
+
+  await doc.loadInfo(); // loads document properties and worksheets
+
+  const sheet = doc.sheetsByIndex[0];
+
+  return sheet;
+}
+
 async function getCommands() {
   logger.info("🐑 Google Sheet", "Getting commands...");
-  const rows = await getSpreadsheetRows({
-    spreadsheetId: "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA",
-    range: "Commands!A2:C",
-  });
 
-  const rowObjects = rows.map(([name, value, schedule]) => ({
-    name,
-    value,
-    schedule,
-  }));
+  const sheet = await getSpreadsheet();
+  const rows = await sheet.getRows();
 
-  // filter out invalid commands
-  return rowObjects.filter(({ name, value }) => {
-    return name && name.length !== 0 && value && value.length !== 0;
-  });
+  return rows
+    .map(({ name, value, schedule }) => ({
+      name,
+      value,
+      schedule,
+    }))
+    .filter(({ name, value }) => {
+      return name && name.length !== 0 && value && value.length !== 0;
+    });
 }
 
 async function getCachedCommands() {

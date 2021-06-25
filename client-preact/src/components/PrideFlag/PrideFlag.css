@@ -1,0 +1,159 @@
+.PrideFlag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  clip-path: url(#PrideFlag-clip);
+}
+
+.PrideFlag--new {
+  animation: fadeIn ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.PrideFlag--gay {
+  background-image: linear-gradient(
+    to bottom,
+    black,
+    brown,
+    red,
+    orange,
+    yellow,
+    green,
+    blue,
+    purple
+  );
+}
+
+.PrideFlag--agender {
+  background-image: linear-gradient(
+    to bottom,
+    #000,
+    #bababa,
+    #fff,
+    #b9f484,
+    #fff,
+    #bababa,
+    #000
+  );
+}
+
+.PrideFlag--aromantic {
+  background-image: linear-gradient(
+    to bottom,
+    #3aa740,
+    #a8d47a,
+    #fff,
+    #aaabaa,
+    #000
+  );
+}
+
+.PrideFlag--asexual {
+  background-image: linear-gradient(
+    to bottom,
+    #000000,
+    #a4a5a4,
+    #fff,
+    #810081
+  );
+}
+
+.PrideFlag--bisexual {
+  background-image: linear-gradient(
+    to bottom,
+    #d70071,
+    #9c4e97,
+    #0035a9
+  );
+}
+
+.PrideFlag--genderfluid {
+  background-image: linear-gradient(
+    to bottom,
+    #ff76a3,
+    #fff,
+    #bf11d7,
+    #000,
+    #303cbe
+  );
+}
+
+.PrideFlag--genderqueer {
+  background-image: linear-gradient(
+    to bottom,
+    #b67fdd,
+    #fff,
+    #49821e
+  );
+}
+
+.PrideFlag--intersex {
+  background-image: linear-gradient(
+    to bottom,
+    #ffd900,
+    #7a00ab,
+    #ffd900,
+    #7a00ab,
+    #ffd900
+  );
+}
+
+.PrideFlag--lesbian {
+  background-image: linear-gradient(
+    to bottom,
+    #d62900,
+    #ff9b55,
+    #fff,
+    #d462a5,
+    #a50062
+  );
+}
+
+.PrideFlag--non-binary {
+  background-image: linear-gradient(
+    to bottom,
+    #fcf431,
+    #fff,
+    #9d59d2,
+    #282828
+  );
+}
+
+.PrideFlag--pansexual {
+  background-image: linear-gradient(
+    to bottom,
+    #ff1b8d,
+    #ffd900,
+    #1bb3ff
+  );
+}
+
+.PrideFlag--polysexual {
+  background-image: linear-gradient(
+    to bottom,
+    #f616ba,
+    #01d669,
+    #1593f6
+  );
+}
+.PrideFlag--transgender {
+  background-image: linear-gradient(
+    to bottom,
+    #5bcefa,
+    #f5a9b8,
+    #fff,
+    #f5a9b8,
+    #5bcefa
+  );
+}

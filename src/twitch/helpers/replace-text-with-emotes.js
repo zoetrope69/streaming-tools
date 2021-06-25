@@ -52,10 +52,8 @@ function getTwitchEmotes(text, emotes) {
       return;
     }
 
-    const [
-      emoteStartPositionString,
-      emoteEndPositionString,
-    ] = emoteStringPosition.split("-");
+    const [emoteStartPositionString, emoteEndPositionString] =
+      emoteStringPosition.split("-");
     const emoteStartPosition = parseInt(emoteStartPositionString, 10);
     const emoteEndPosition = parseInt(emoteEndPositionString, 10);
 
@@ -67,7 +65,7 @@ function getTwitchEmotes(text, emotes) {
     emotePositions.push({
       type: "twitch",
       id: emoteId,
-      image: `http://static-cdn.jtvnw.net/emoticons/v1/${emoteId}/3.0`,
+      image: `https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/dark/3.0`,
       code: emoteText,
     });
   });

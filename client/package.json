@@ -8,12 +8,12 @@
     "lint": "eslint src"
   },
   "devDependencies": {
-    "preact-cli": "^3.0.0"
+    "preact-cli": "3.2.2"
   },
   "dependencies": {
-    "classnames": "^2.3.1",
-    "preact": "^10.3.2",
-    "preact-render-to-string": "^5.1.4",
-    "socket.io-client": "^4.1.2"
+    "classnames": "2.3.1",
+    "preact": "10.5.13",
+    "preact-render-to-string": "5.1.19",
+    "socket.io-client": "4.1.2"
   }
 }

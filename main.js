@@ -66,29 +66,29 @@ const ALERT_TYPES = {
     duration: 5000,
   },
   bigdata: {
-    audioUrl: "/alerts/bigdata.mp3",
+    audioUrl: "/assets/alerts/bigdata.mp3",
     duration: 6000,
   },
   immabee: {
-    audioUrl: "/alerts/immabee.mp3",
+    audioUrl: "/assets/alerts/immabee.mp3",
     duration: 4000,
   },
   "fuck-2020": {
-    audioUrl: "/alerts/fuck-2020.mp3",
+    audioUrl: "/assets/alerts/fuck-2020.mp3",
     duration: 3000,
   },
   philpunch: {
-    audioUrl: "/alerts/phil-punch.mp3",
+    audioUrl: "/assets/alerts/phil-punch.mp3",
     duration: 5000,
     delayAudio: 1000,
   },
   "penguin-throw": {
-    audioUrl: "/alerts/penguin-throw-snowball-impact.mp3",
+    audioUrl: "/assets/alerts/penguin-throw-snowball-impact.mp3",
     duration: 2000,
     delayAudio: 900,
   },
   bexchat: {
-    audioUrl: "/alerts/bexchat.mp3",
+    audioUrl: "/assets/alerts/bexchat.mp3",
     duration: 10000,
   },
   "cylon-raider": {

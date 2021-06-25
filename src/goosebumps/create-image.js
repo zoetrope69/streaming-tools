@@ -140,7 +140,7 @@ async function createImage(keyword, text) {
   );
 
   await textOnImage.writeAsync(
-    __dirname + "/../../client/build/goosebumps/book.jpg"
+    __dirname + "/../../client/build/assets/goosebumps/book.jpg"
   );
 }
 

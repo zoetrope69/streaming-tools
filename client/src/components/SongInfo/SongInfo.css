@@ -1,0 +1,46 @@
+.SongInfo {
+  position: absolute;
+  bottom: 0;
+  right: 1em;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-black);
+  color: var(--color-white);
+  clip-path: url(#SongInfo-clip);
+  transform: translateY(0%);
+  transition: transform ease-in;
+}
+
+.SongInfo--hiding {
+  transform: translateY(100%);
+}
+
+.SongInfo__image {
+  display: block;
+  width: 3em;
+}
+
+.SongInfo__text {
+  font-size: 1em;
+  padding: 0 1em;
+  transform: translateY(5px) rotate(-1deg);
+}
+
+.SongInfo__text__second-line {
+  display: block;
+  font-size: 0.75em;
+}
+
+.SongInfo__command {
+  display: flex;
+  align-items: center;
+  height: 3em;
+  padding: 0.5em;
+  padding-right: 1em;
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: 1em;
+  font-family: "Fredoka One", sans-serif;
+  font-weight: 400;
+}

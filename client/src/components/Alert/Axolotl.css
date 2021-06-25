@@ -1,0 +1,134 @@
+.Axolotl {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  animation: showAxolotl forwards ease-in-out;
+  z-index: 2000;
+}
+
+@keyframes showAxolotl {
+  0% {
+    opacity: 0;
+    transform: translate(-10%, 50%);
+  }
+
+  20%,
+  80% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-10%, 50%);
+    transform: translate(0, 0);
+  }
+}
+
+.Axolotl__image {
+  position: absolute;
+  bottom: 0;
+  left: -40px;
+  width: 15%;
+  filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
+  animation: bobUpAndDown 0.66s infinite alternate;
+}
+
+@keyframes bobUpAndDown {
+  0% {
+    transform: translateY(5%) rotate(1deg);
+  }
+
+  100% {
+    transform: translateY(4%) rotate(-1deg);
+  }
+}
+
+.Axolotl__speech-bubble {
+  z-index: 10;
+  position: absolute;
+  background: var(--color-white);
+  padding: 1em;
+  left: 250px;
+  bottom: 100px;
+  min-width: 150px;
+  max-width: 40%;
+  border-radius: 80px;
+  transform: rotate(-2deg);
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.5));
+  animation: showSpeechBubble forwards ease-in-out;
+}
+
+@keyframes showSpeechBubble {
+  0% {
+    opacity: 0;
+  }
+
+  40%,
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.Axolotl__speech-bubble__image {
+  z-index: -1;
+  position: absolute;
+  width: 100%;
+}
+
+.Axolotl__speech-bubble__image--top {
+  right: 11px;
+  top: -43px;
+  transform: rotate(180deg);
+}
+
+.Axolotl__speech-bubble__image--bottom {
+  left: -15px;
+  bottom: -35px;
+  transform: rotate(4deg);
+}
+
+.Axolotl__speech-bubble__text {
+  transform: rotate(-1deg);
+  line-height: 1.25em;
+  text-align: center;
+}
+
+.Axolotl__speech-bubble__avatar,
+.Axolotl__speech-bubble__pronouns {
+  clip-path: url(#Axolotl__speech-bubble__text__image-clip);
+  width: 200px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform-origin: center;
+  transform: translate(0%, 0%) rotate(10deg);
+  animation: speechBubbleJiggleImage 1s infinite alternate;
+}
+
+.Axolotl__speech-bubble__pronouns {
+  right: -50px;
+  width: auto;
+  bottom: -100px;
+  padding: 0.25em 0.5em;
+  color: var(--color-white);
+  font-size: 0.85em;
+  font-weight: bolder;
+  background: var(--color-black);
+}
+
+@keyframes speechBubbleJiggleImage {
+  0% {
+    transform: translate(110%, 30%) rotate(10deg);
+  }
+
+  100% {
+    transform: translate(110%, 33%) rotate(8deg);
+  }
+}

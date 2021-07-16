@@ -22,14 +22,6 @@ const Music = ({ currentTrack }) => {
     const hasChangedPlayingState =
       track?.isNowPlaying !== currentTrack?.isNowPlaying;
 
-    console.log({
-      track,
-      currentTrack,
-      isNewTrack,
-      hasChangedPlayingState,
-      result: isNewTrack || hasChangedPlayingState,
-    });
-
     if (isNewTrack || hasChangedPlayingState) {
       if (currentTrack?.isNowPlaying) {
         setIsHiding(true);

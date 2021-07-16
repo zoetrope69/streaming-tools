@@ -73,7 +73,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   await Promise.all([
     // subbies
     await subscribeToTopic("channel.subscribe", (data) => {
-      console.log("channel.subscribe data", data);
       const { user_id, user_name, is_gift } = data;
       eventEmitter.emit("subscribe", {
         isGift: is_gift,
@@ -85,7 +84,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     }),
     // bitties
     await subscribeToTopic("channel.cheer", (data) => {
-      console.log("channel.cheer data", data);
       const { user_id, user_name, is_anonymous, message, bits } =
         data;
       eventEmitter.emit("bits", {

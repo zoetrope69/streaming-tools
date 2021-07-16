@@ -11,7 +11,8 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json nodemon --unhandled-rejections=strict --trace-warnings main.js",
     "dev:client": "cd client && BROWSER=none npm start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/"
   },
   "dependencies": {
     "@google-cloud/vision": "^2.3.3",

@@ -13,7 +13,6 @@ module.exports = {
   rules: {
     "prettier/prettier": ["error"],
   },
-  sourceType: "module",
   ecmaFeatures: {
     jsx: true,
   },

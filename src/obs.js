@@ -47,9 +47,8 @@ function initialise() {
       obs.send("GetVersion").then((versionInfo) => {
         logger.info("☢ OBS", "Connected!");
 
-        AVAILABLE_OBS_REQUESTS = versionInfo.availableRequests.split(
-          ","
-        );
+        AVAILABLE_OBS_REQUESTS =
+          versionInfo.availableRequests.split(",");
         logger.info(
           "☢ OBS",
           `Version ${versionInfo.obsStudioVersion}`

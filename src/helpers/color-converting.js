@@ -39,7 +39,8 @@ function colorNameToHex(name) {
   return namedColor.hex;
 }
 
-const RGB_HEX = /^#?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/i;
+const RGB_HEX =
+  /^#?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/i;
 
 function hexToRgb(str) {
   if (!str) {
@@ -69,6 +70,16 @@ function hexToRgb(str) {
  *
  * returns r, g, and b in an array [0, 255].
  */
+
+function hue2rgb(p, q, t) {
+  if (t < 0) t += 1;
+  if (t > 1) t -= 1;
+  if (t < 1 / 6) return p + (q - p) * 6 * t;
+  if (t < 1 / 2) return q;
+  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+  return p;
+}
+
 function hslToRgb(hslArray) {
   const normalisedHSLArray = [
     hslArray[0] / 360,
@@ -82,15 +93,6 @@ function hslToRgb(hslArray) {
   if (saturation === 0) {
     r = g = b = lightness;
   } else {
-    function hue2rgb(p, q, t) {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    }
-
     var q =
       lightness < 0.5
         ? lightness * (1 + saturation)

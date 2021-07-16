@@ -18,6 +18,7 @@ function logToConsole(type) {
 
   const chalkWithType = chalk[LOG_TYPES_TO_COLOR[type]];
   return function (location, message) {
+    // eslint-disable-next-line no-console
     console[type](chalkWithType(`[${location}] ${message}`));
   };
 }

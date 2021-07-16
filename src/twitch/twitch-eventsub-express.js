@@ -29,9 +29,8 @@ function verifyEventSubSCallback(request, _response, buffer) {
     const id = request.headers["twitch-eventsub-message-id"];
     const timestamp =
       request.headers["twitch-eventsub-message-timestamp"];
-    const signature = request.headers[
-      "twitch-eventsub-message-signature"
-    ].split("=");
+    const signature =
+      request.headers["twitch-eventsub-message-signature"].split("=");
 
     request.calculatedSignature = crypto
       .createHmac(signature[0], TWITCH_EVENTSUB_SECRET)

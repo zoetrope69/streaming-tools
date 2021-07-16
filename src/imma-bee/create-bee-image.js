@@ -1,3 +1,4 @@
+const path = require("path");
 const jimp = require("jimp");
 const detectFaces = require("../helpers/detect-faces");
 const bufferFromBase64 = require("../helpers/buffer-from-base64");
@@ -13,9 +14,9 @@ async function createBeeImage(dataUri) {
   }
 
   const streamImage = await jimp.read(imageBuffer);
-  const beeImage = await jimp.read(__dirname + "/bee.png");
+  const beeImage = await jimp.read(path.join(__dirname, "/bee.png"));
   const circleMaskImage = await jimp.read(
-    __dirname + "/circle-mask.png"
+    path.join(__dirname, "/circle-mask.png")
   );
 
   const { x, y, width, height } = faceDetectionResult.position;
@@ -30,7 +31,10 @@ async function createBeeImage(dataUri) {
   });
 
   await beeImage.writeAsync(
-    __dirname + "/../../client/build/assets/alerts/immabee.png"
+    path.join(
+      __dirname,
+      "/../../client/build/assets/alerts/immabee.png"
+    )
   );
 
   return Promise.resolve();

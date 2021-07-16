@@ -32,7 +32,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         "🌯 Twitch EventSub",
         `${topic} failed: ${typeof e === "string" ? e : e.message}`
       );
-      console.error(e);
+      logger.error("🌯 Twitch EventSub", e);
     }
   }
 

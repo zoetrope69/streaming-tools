@@ -5,15 +5,13 @@ module.exports = {
     commonjs: true,
     es2021: true,
   },
-  extends: ["eslint:recommended", "prettier"],
+  extends: ["preact", "eslint:recommended", "prettier"],
   plugins: ["prettier"],
   parserOptions: {
     ecmaVersion: 12,
   },
   rules: {
     "prettier/prettier": ["error"],
-  },
-  ecmaFeatures: {
-    jsx: true,
+    "no-console": ["error"],
   },
 };

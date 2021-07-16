@@ -87,17 +87,17 @@ function hslToRgb(hslArray) {
     hslArray[2] / 100,
   ];
   const [hue, saturation, lightness] = normalisedHSLArray;
-  var r, g, b;
+  let r, g, b;
 
   // is achromatic
   if (saturation === 0) {
     r = g = b = lightness;
   } else {
-    var q =
+    let q =
       lightness < 0.5
         ? lightness * (1 + saturation)
         : lightness + saturation - lightness * saturation;
-    var p = 2 * lightness - q;
+    let p = 2 * lightness - q;
 
     r = hue2rgb(p, q, hue + 1 / 3);
     g = hue2rgb(p, q, hue);

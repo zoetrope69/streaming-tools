@@ -80,7 +80,7 @@ async function getWebcamImage(sourceName) {
       embedPictureFormat: "png",
     });
   } catch (e) {
-    console.log("e", e);
+    logger.log("☢ OBS", e);
     throw new Error(e.error || e);
   }
 
@@ -166,7 +166,7 @@ async function handleTriggers({ triggers, itemVisible, itemName }) {
   try {
     return await triggerFunction({ isVisible: itemVisible });
   } catch (e) {
-    console.log(e);
+    logger.error("☢ OBS", e);
   }
 }
 

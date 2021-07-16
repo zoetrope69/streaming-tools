@@ -1,3 +1,4 @@
+const path = require("path");
 const fetch = require("node-fetch");
 const jimp = require("jimp");
 const { FONT_SANS_16_BLACK, FONT_SANS_16_WHITE } = jimp;
@@ -38,7 +39,7 @@ function randomNumberBetween(min, max) {
 function measureText(font, text) {
   let textWidth = 0;
 
-  for (var i = 0; i < text.length; i++) {
+  for (let i = 0; i < text.length; i++) {
     const textCharacter = text[i];
     const textCharacterAfter = text[i];
 
@@ -69,7 +70,7 @@ async function createImage(keyword, text) {
   keyword = keyword.toLowerCase();
 
   if (text.length > MAX_TEXT_LENGTH) {
-    text = text.substring(0, MAX_TEXT_LENGTH) + "...";
+    text = `${text.substring(0, MAX_TEXT_LENGTH)}...`;
   }
   text = text.toUpperCase();
 
@@ -91,7 +92,7 @@ async function createImage(keyword, text) {
   const defaultImage = await getImageFromURL(defaultImageURL);
   const loadedImage = await getImageFromURL(loadedImageURL);
   const goosebumpsImage = await jimp.read(
-    __dirname + "/assets/" + coverImagePath
+    path.join(__dirname, "/assets/", coverImagePath)
   );
   const font = await jimp.loadFont(fontPath);
 
@@ -140,7 +141,10 @@ async function createImage(keyword, text) {
   );
 
   await textOnImage.writeAsync(
-    __dirname + "/../../client/build/assets/goosebumps/book.jpg"
+    path.join(
+      __dirname,
+      "/../../client/build/assets/goosebumps/book.jpg"
+    )
   );
 }
 

@@ -76,9 +76,6 @@ const Music = ({ currentTrack }) => {
 
       <div className={styles.Music} style={MusicStyles}>
         <div className={MusicTextClassName} style={MusicTextStyles}>
-          <span className={styles["Music__text__label__command"]}>
-            !song
-          </span>
           <p
             className={styles["Music__text__label"]}
             style={MusicTextLabelStyles}

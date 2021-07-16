@@ -9,10 +9,10 @@
     "prestart": "npm run build",
     "start": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node main.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json nodemon --unhandled-rejections=strict --trace-warnings main.js",
-    "dev:client": "cd client && BROWSER=none npm start",
+    "dev:server": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings main.js",
+    "dev:client": "cd client && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src/"
+    "lint": "eslint"
   },
   "dependencies": {
     "@google-cloud/vision": "^2.3.3",
@@ -23,6 +23,7 @@
     "get-image-colors": "^4.0.0",
     "google-spreadsheet": "^3.1.15",
     "human-to-cron": "^0.3.1",
+    "image-type": "^4.1.0",
     "jimp": "^0.16.1",
     "memory-cache": "^0.2.0",
     "ngrok": "^4.0.0",
@@ -40,11 +41,11 @@
     "chalk": "4.1.1",
     "concurrently": "6.2.0",
     "dotenv": "^10.0.0",
+    "enquirer": "^2.3.6",
     "eslint": "7.29.0",
     "eslint-config-preact": "^1.1.4",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "3.4.0",
-    "nodemon": "2.0.12",
     "prettier": "2.3.2"
   }
 }

@@ -8,10 +8,9 @@ import styles from "./Axolotl.css";
 
 const getTextFromChildren = (children) => {
   let text = "";
-  console.log("children", children);
 
-  if (typeof child === "string") {
-    text += child;
+  if (typeof children === "string") {
+    text += children;
   }
 
   if (Array.isArray(children)) {
@@ -20,8 +19,8 @@ const getTextFromChildren = (children) => {
     });
   }
 
-  if (child?.props?.children) {
-    text += getTextFromChildren(child.props.children);
+  if (children?.props?.children) {
+    text += getTextFromChildren(children.props.children);
   }
 
   if (text.trim() === "") {
@@ -36,7 +35,6 @@ const Axolotl = ({ children, message, duration, containsHTML }) => {
     if (window.sayAnimalese) {
       setTimeout(() => {
         const text = message || getTextFromChildren(children);
-        console.log("text", text);
         window.sayAnimalese(text);
       }, duration / 4);
     }
@@ -83,6 +81,7 @@ const Axolotl = ({ children, message, duration, containsHTML }) => {
           {containsHTML ? (
             <p
               className={styles["Axolotl__speech-bubble__text"]}
+              // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{ __html: children }}
             />
           ) : (

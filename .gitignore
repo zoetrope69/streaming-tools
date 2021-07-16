@@ -4,3 +4,4 @@ node_modules
 public/*
 google-credentials.json
 temp-face-image.png
+spotify-refresh-token.json

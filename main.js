@@ -1,6 +1,8 @@
 // get process.env from .env
 require("dotenv").config();
 
+const path = require("path");
+
 const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
@@ -11,7 +13,7 @@ const { schedule } = require("./src/helpers/schedule");
 
 const logger = require("./src/helpers/logger");
 
-const LastFM = require("./src/last-fm");
+const Music = require("./src/music");
 const Twitch = require("./src/twitch");
 const KoFi = require("./src/ko-fi");
 const googleSheetCommands = require("./src/google-sheet-commands");
@@ -112,7 +114,9 @@ function removeAlertFromQueue(alertId) {
 app.use(express.static(CLIENT_FILE_PATH));
 
 app.get("/", (_request, response) => {
-  response.sendFile(__dirname + CLIENT_FILE_PATH + "/index.html");
+  response.sendFile(
+    path.join(__dirname, CLIENT_FILE_PATH, "/index.html")
+  );
 });
 
 function processAlert() {
@@ -187,15 +191,9 @@ async function turnOnOverlay(source, timeout) {
   }, 100); // wait 100 ms i guess
 }
 
-async function main() {
-  // reset lights for streaming
-  initialiseHueBulbs().catch((error) =>
-    logger.error("💡 Hue Bulbs", error)
-  );
-
-  // initialise various things
-  await obs.initialise();
+async function createNgrokUrl() {
   let ngrokUrl;
+
   try {
     ngrokUrl = await ngrok.connect({
       addr: PORT,
@@ -205,11 +203,29 @@ async function main() {
     });
   } catch (e) {
     logger.error("👽 Ngrok", e);
+  }
+
+  if (!ngrokUrl) {
+    logger.error("👽 Ngrok", "No Ngrok URL");
     process.exit(1); // can't do anything without ngrok
   }
+
   logger.info("👽 Ngrok", `URL: ${ngrokUrl}`);
+
+  return ngrokUrl;
+}
+
+async function main() {
+  // reset lights for streaming
+  initialiseHueBulbs().catch((error) =>
+    logger.error("💡 Hue Bulbs", error)
+  );
+
+  // initialise various things
+  await obs.initialise();
+  const ngrokUrl = await createNgrokUrl();
   const twitch = await Twitch({ ngrokUrl, app });
-  const lastFM = LastFM();
+  const music = Music();
   const kofi = KoFi({ ngrokUrl, app });
 
   kofi.on("payment", ({ type, isAnonymous, user }) => {
@@ -351,7 +367,7 @@ async function main() {
     sendAlertToClient({ type: "bits", ...data });
     const userName = data.isAnonymous
       ? "bill gates"
-      : "@" + data.user.username;
+      : `@${data.user.username}`;
     twitch.bot.say(`hi ${userName}, thanks for the bits!`);
   });
 
@@ -569,14 +585,15 @@ async function main() {
       user,
     }) => {
       if (command === "!song" || command === "!music") {
-        const currentTrack = await lastFM.getCurrentTrack();
+        const currentTrack = await music.getCurrentTrack();
 
         if (!currentTrack || !currentTrack.isNowPlaying) {
           twitch.bot.say(`SingsNote Nothing is playing...`);
           return;
         }
 
-        const { artistName, trackName, albumName } = currentTrack;
+        const { artistName, trackName, albumName, trackUrl } =
+          currentTrack;
 
         if (!artistName || !trackName || !albumName) {
           twitch.bot.say(`SingsNote Nothing is playing...`);
@@ -584,7 +601,7 @@ async function main() {
         }
 
         twitch.bot.say(
-          `SingsNote ${trackName} — ${artistName} — ${albumName}`
+          `SingsNote ${trackName} — ${artistName} — ${albumName} ${trackUrl}`.trim()
         );
       }
 
@@ -824,7 +841,7 @@ async function main() {
     }
   );
 
-  lastFM.on("track", (track) => {
+  music.on("track", (track) => {
     io.emit("data", { track });
   });
 
@@ -832,7 +849,7 @@ async function main() {
     logger.info("👽 Stream Client", "Connected");
 
     const followTotal = await twitch.getFollowTotal();
-    const currentTrack = await lastFM.getCurrentTrack();
+    const currentTrack = await music.getCurrentTrack();
     io.emit("data", {
       track: currentTrack,
       followTotal,

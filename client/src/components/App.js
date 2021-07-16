@@ -7,11 +7,21 @@ import Goosebumps from "./Goosebumps";
 // import DebugFace from "./DebugFace";
 import PopUpMessage from "./PopUpMessage";
 import PrideFlag from "./PrideFlag";
-import SongInfo from "./SongInfo";
+import Music from "./Music";
 
 import styles from "./App.css";
 
 const socket = io("/");
+
+async function loadImage(image) {
+  return new Promise((resolve) => {
+    const alertImage = new Image();
+    alertImage.addEventListener("load", () => {
+      resolve();
+    });
+    alertImage.src = image;
+  });
+}
 
 function App() {
   const [currentAlert, setCurrentAlert] = useState({});
@@ -26,7 +36,8 @@ function App() {
     useState(null);
 
   useEffect(() => {
-    const socketIOHandler = (data) => {
+    const socketIOHandler = async (data) => {
+      // eslint-disable-next-line no-console
       console.log("data", data);
 
       const {
@@ -39,18 +50,16 @@ function App() {
       } = data;
 
       if (alert) {
-        if (!alert.loadImage) {
-          setCurrentAlert(alert);
-        } else {
-          const alertImage = new Image();
-          alertImage.addEventListener("load", () => {
-            setCurrentAlert(alert);
-          });
-          alertImage.src = alert.loadImage;
+        if (alert.loadImage) {
+          await loadImage(alert.loadImage);
         }
+        setCurrentAlert(alert);
       }
 
-      if (track?.id !== currentTrack?.id) {
+      if (track) {
+        if (track.albumArtURL) {
+          await loadImage(track.albumArtURL);
+        }
         setCurrentTrack(track);
       }
 
@@ -76,7 +85,7 @@ function App() {
     return () => {
       socket.off("data", socketIOHandler);
     };
-  }, [currentTrack]);
+  }, []);
 
   return (
     <div className={styles.App}>
@@ -91,7 +100,7 @@ function App() {
       <Goosebumps bookTitle={currentGoosebumpsBookTitle} />
       <PopUpMessage currentMessage={currentPopUpMessage} />
       <PrideFlag name={currentPrideFlagName} />
-      <SongInfo currentTrack={currentTrack} />
+      <Music currentTrack={currentTrack} />
     </div>
   );
 }

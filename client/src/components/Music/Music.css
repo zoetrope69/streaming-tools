@@ -1,0 +1,66 @@
+.Music {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.Music__text {
+  position: absolute;
+  bottom: 0;
+  right: 2em;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-black);
+  color: var(--color-white);
+  clip-path: url(#Music-clip);
+  transform: translateY(0%);
+  transition: all ease-in 0.33s;
+}
+
+.Music__text.isHiding {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.Music__text__label {
+  font-size: 0.95em;
+  padding: 0 1em;
+  transform: translateY(5px) rotate(1deg);
+}
+
+.Music__text__label__second-line {
+  display: block;
+  font-size: 0.75em;
+}
+
+.Music__text__label__command {
+  display: flex;
+  align-items: center;
+  height: 3em;
+  padding: 0.5em;
+  padding-left: 1em;
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: 1em;
+  font-family: "Fredoka One", sans-serif;
+  font-weight: 400;
+}
+
+.Music__image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 6em;
+  border-radius: 5px;
+  transform: scale(1) rotate(-5deg) translate(-0.5em, -2.85em);
+  transition: all cubic-bezier(0.34, 1.46, 0.64, 1) 0.66s;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.Music__image.isHiding {
+  transform: scale(0.5) rotate(-40deg) translate(10%, 12em);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 1);
+}

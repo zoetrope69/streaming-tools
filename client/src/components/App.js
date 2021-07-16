@@ -3,8 +3,9 @@ import { useEffect, useState } from "preact/hooks";
 import { io } from "socket.io-client";
 
 import Alert from "./Alert";
-import Goosebumps from "./Goosebumps";
+import Dancers from "./Dancers";
 // import DebugFace from "./DebugFace";
+import Goosebumps from "./Goosebumps";
 import PopUpMessage from "./PopUpMessage";
 import PrideFlag from "./PrideFlag";
 import Music from "./Music";
@@ -34,6 +35,7 @@ function App() {
   );
   const [currentGoosebumpsBookTitle, setCurrentGoosebumpsBookTitle] =
     useState(null);
+  const [currentDancers, setCurrentDancers] = useState([]);
 
   useEffect(() => {
     const socketIOHandler = async (data) => {
@@ -47,6 +49,7 @@ function App() {
         popUpMessage,
         faceDetection,
         goosebumpsBookTitle,
+        dancers,
       } = data;
 
       if (alert) {
@@ -78,6 +81,10 @@ function App() {
       if (typeof goosebumpsBookTitle !== "undefined") {
         setCurrentGoosebumpsBookTitle(goosebumpsBookTitle);
       }
+
+      if (dancers) {
+        setCurrentDancers(dancers);
+      }
     };
 
     socket.on("data", socketIOHandler);
@@ -96,6 +103,7 @@ function App() {
         />
       )}
 
+      <Dancers currentTrack={currentTrack} dancers={currentDancers} />
       {/* <DebugFace currentFaceDetection={currentFaceDetection} /> */}
       <Goosebumps bookTitle={currentGoosebumpsBookTitle} />
       <PopUpMessage currentMessage={currentPopUpMessage} />

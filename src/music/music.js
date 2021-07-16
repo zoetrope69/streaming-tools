@@ -6,7 +6,7 @@ const logger = require("../helpers/logger");
 const { getAlbumArtColors } = require("./helpers");
 
 async function getCurrentTrack() {
-  let track;
+  let track = {};
 
   try {
     track = await getSpotifyRecentTrack();

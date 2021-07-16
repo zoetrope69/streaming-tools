@@ -1,0 +1,84 @@
+.Dancers {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition: opacity ease-in 1s;
+  opacity: 1;
+}
+
+.DancersHidden {
+  opacity: 0;
+}
+
+.Dancer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 400px;
+  width: 400px;
+  transform: scale(0.5);
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.85));
+  transition: opacity ease-in 1s;
+  animation: showAndHide 120s ease-out forwards;
+}
+
+@keyframes showAndHide {
+  0% {
+    opacity: 0;
+  }
+
+  1%,
+  99% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.DancerHead {
+  position: absolute;
+  left: 100px;
+  top: 100px;
+  background: white;
+  background-size: cover;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  border: 10px solid white;
+  animation: bop ease-in-out 1s infinite;
+}
+
+.DancerFoot,
+.DancerHand {
+  width: 15px;
+  height: 15px;
+}
+
+.DancerLimb {
+  stroke-width: 10px;
+}
+
+.DancerShadow {
+  z-index: -1;
+  position: absolute;
+  left: 100px;
+  bottom: -25px;
+  width: 200px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes bop {
+  from {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(25px);
+  }
+}

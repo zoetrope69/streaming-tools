@@ -198,6 +198,10 @@ async function callEndpoint(
     }
   );
 
+  if (response.status !== 200) {
+    throw new Error(response.statusText);
+  }
+
   const json = await response.json();
 
   if (json.error) {
@@ -261,11 +265,6 @@ async function getTrackAudioFeature(id) {
   return data;
 }
 
-// not using yet
-// async function getTrackAudioAnalysis(id) {
-//   return  callEndpoint(`/audio-analysis/${id}`);
-// }
-
 function startTimer() {
   return process.hrtime();
 }
@@ -290,9 +289,6 @@ async function getSpotifyRecentTrack() {
   const beatsDelay =
     beatsPerMillisecond -
     (timeTakenGettingData % beatsPerMillisecond);
-
-  // compensante for time to go to the apis
-  // are we half way through a beat?
 
   return {
     ...track,

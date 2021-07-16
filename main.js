@@ -46,6 +46,7 @@ let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 let CURRENT_GOOSEBUMP_BOOK = null;
 let CURRENT_PRIDE_FLAG_NAME = "gay";
+let CURRENT_DANCERS = [];
 
 const ALERT_TYPES = {
   "shout-out": {
@@ -447,6 +448,22 @@ async function main() {
 
       if (!title) {
         return;
+      }
+
+      if (title === "dance with zac") {
+        const newDancer = await twitch.getUser(user.username);
+        newDancer.id = randomID();
+        CURRENT_DANCERS.push(newDancer);
+
+        io.emit("data", { dancers: CURRENT_DANCERS });
+
+        setTimeout(() => {
+          // remove from array
+          CURRENT_DANCERS = CURRENT_DANCERS.filter((dancer) => {
+            dancer.id !== newDancer.id;
+          });
+          io.emit("data", { dancers: CURRENT_DANCERS });
+        }, 1000 * 60 * 2 + 5000); // 2 minutes (+ wait for it to fade out on client)
       }
 
       if (title === "pog") {
@@ -856,6 +873,7 @@ async function main() {
       popUpMessage: POPUP_MESSAGE,
       goosebumpsBookTitle: CURRENT_GOOSEBUMP_BOOK,
       prideFlagName: CURRENT_PRIDE_FLAG_NAME,
+      dancers: CURRENT_DANCERS,
     });
 
     socket.on("disconnect", () => {

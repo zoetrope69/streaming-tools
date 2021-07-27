@@ -463,7 +463,7 @@ async function main() {
             dancer.id !== newDancer.id;
           });
           io.emit("data", { dancers: CURRENT_DANCERS });
-        }, 1000 * 60 * 2 + 5000); // 2 minutes (+ wait for it to fade out on client)
+        }, 1000 * 60 * 3 + 5000); // 2 minutes (+ wait for it to fade out on client)
       }
 
       if (title === "pog") {

@@ -21,7 +21,7 @@
   transform: scale(0.5);
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.85));
   transition: opacity ease-in 1s;
-  animation: showAndHide 120s ease-out forwards;
+  animation: showAndHide 180s ease-out forwards;
 }
 
 @keyframes showAndHide {

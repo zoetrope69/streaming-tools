@@ -4,7 +4,6 @@ import { useEffect } from "preact/hooks";
 import Axolotl from "./Axolotl";
 import BexcHat from "./BexcHat";
 import BigData from "./BigData";
-import CylonRaider from "./CylonRaider";
 import ImmaBee from "./ImmaBee";
 import PenguinThrow from "./PenguinThrow";
 import PhilPunch from "./PhilPunch";
@@ -135,12 +134,6 @@ const Alert = ({ alert, currentFaceDetection }) => {
 
   if (type === "bigdata") {
     return <BigData duration={duration} />;
-  }
-
-  if (type === "cylon-raider") {
-    return (
-      <CylonRaider currentFaceDetection={currentFaceDetection} />
-    );
   }
 
   if (type === "immabee") {

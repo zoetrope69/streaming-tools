@@ -38,7 +38,6 @@ const { NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT } = process.env;
 const CLIENT_FILE_PATH = "client/build";
 let STEVE_HAS_TALKED = false;
 let BEX_HAS_TALKED = false;
-let BOVRIL_HAS_TALKED = false;
 let POPUP_MESSAGE = "";
 let PAUSE_FOLLOW_ALERT = false;
 let CURRENT_CHANNEL_INFO = {};
@@ -46,6 +45,7 @@ let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 let CURRENT_GOOSEBUMP_BOOK = null;
 let CURRENT_PRIDE_FLAG_NAME = "gay";
+let CURRENT_DANCERS = [];
 
 const ALERT_TYPES = {
   "shout-out": {
@@ -91,9 +91,6 @@ const ALERT_TYPES = {
   },
   bexchat: {
     audioUrl: "/assets/alerts/bexchat.mp3",
-    duration: 10000,
-  },
-  "cylon-raider": {
     duration: 10000,
   },
 };
@@ -236,8 +233,10 @@ async function main() {
     }
   });
 
-  async function detectFacesSendToClient(image) {
+  async function detectFacesSendToClient() {
     try {
+      const image = await obs.getWebcamImage();
+
       const faceDetection = await detectFaces(image);
 
       if (!faceDetection) {
@@ -249,14 +248,6 @@ async function main() {
       // didn't work
     }
   }
-  setInterval(async () => {
-    try {
-      const image = await obs.getWebcamImage();
-      detectFacesSendToClient(image);
-    } catch (e) {
-      // didn't find the image
-    }
-  }, 1000);
 
   obs.sourceVisibilityTriggers({
     "Joycon: A": async () => {
@@ -449,6 +440,22 @@ async function main() {
         return;
       }
 
+      if (title === "dance with zac") {
+        const newDancer = await twitch.getUser(user.username);
+        newDancer.id = randomID();
+        CURRENT_DANCERS.push(newDancer);
+
+        io.emit("data", { dancers: CURRENT_DANCERS });
+
+        setTimeout(() => {
+          // remove from array
+          CURRENT_DANCERS = CURRENT_DANCERS.filter((dancer) => {
+            dancer.id !== newDancer.id;
+          });
+          io.emit("data", { dancers: CURRENT_DANCERS });
+        }, 1000 * 60 * 3 + 5000); // 2 minutes (+ wait for it to fade out on client)
+      }
+
       if (title === "pog") {
         turnOnOverlay("Steve Pointing Group", 9 * 1000);
         twitch.bot.say("thanks twitch.tv/blgsteve for the pog audit");
@@ -537,6 +544,7 @@ async function main() {
 
       if (title === "snowball") {
         logger.log("❄ Snowball", "Triggered...");
+        await detectFacesSendToClient();
         sendAlertToClient({ type: "penguin-throw" });
       }
 
@@ -605,42 +613,18 @@ async function main() {
         );
       }
 
-      if (
+      const bexTalksForFirstTime =
         !BEX_HAS_TALKED &&
         user &&
-        user.username.toLowerCase() === "bexchat"
-      ) {
+        user.username.toLowerCase() === "bexchat";
+      const bexCommandUsed =
+        command === "!bex" || command === "!bexchat";
+      if (bexTalksForFirstTime) {
         BEX_HAS_TALKED = true;
+      }
+      if (bexTalksForFirstTime || bexCommandUsed) {
+        await detectFacesSendToClient();
         sendAlertToClient({ type: "bexchat" });
-      }
-      if (command === "!bex" || command === "!bexchat") {
-        sendAlertToClient({ type: "bexchat" });
-      }
-
-      function cylonRaiderAlert() {
-        obs.showSource({
-          scene: "Overlays",
-          source: "Cylon Raider",
-        });
-        sendAlertToClient({ type: "cylon-raider" });
-
-        setTimeout(() => {
-          obs.hideSource({
-            scene: "Overlays",
-            source: "Cylon Raider",
-          });
-        }, 8000);
-      }
-      if (
-        !BOVRIL_HAS_TALKED &&
-        user &&
-        user.username.toLowerCase() === "bovril_lavigne"
-      ) {
-        BOVRIL_HAS_TALKED = true;
-        cylonRaiderAlert();
-      }
-      if (command === "!bovril") {
-        cylonRaiderAlert();
       }
 
       if (
@@ -856,6 +840,7 @@ async function main() {
       popUpMessage: POPUP_MESSAGE,
       goosebumpsBookTitle: CURRENT_GOOSEBUMP_BOOK,
       prideFlagName: CURRENT_PRIDE_FLAG_NAME,
+      dancers: CURRENT_DANCERS,
     });
 
     socket.on("disconnect", () => {

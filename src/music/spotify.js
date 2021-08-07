@@ -198,6 +198,15 @@ async function callEndpoint(
     }
   );
 
+  // No Content
+  if (response.status === 204) {
+    return {};
+  }
+
+  if (response.status !== 200) {
+    throw new Error(response.statusText);
+  }
+
   const json = await response.json();
 
   if (json.error) {
@@ -224,6 +233,10 @@ function getArtistName(item) {
 async function getCurrentTrack() {
   const { timestamp, progress_ms, is_playing, item } =
     await callEndpoint("/me/player/currently-playing");
+
+  if (!item?.id) {
+    return null;
+  }
 
   const albumName = item?.album?.name;
   const albumArtURL = await getAlbumArtURL(item?.album?.id);
@@ -261,11 +274,6 @@ async function getTrackAudioFeature(id) {
   return data;
 }
 
-// not using yet
-// async function getTrackAudioAnalysis(id) {
-//   return  callEndpoint(`/audio-analysis/${id}`);
-// }
-
 function startTimer() {
   return process.hrtime();
 }
@@ -279,6 +287,11 @@ async function getSpotifyRecentTrack() {
   const timer = startTimer();
 
   const track = await getCurrentTrack();
+
+  if (!track) {
+    return null;
+  }
+
   const trackAudioFeatures = await getTrackAudioFeature(track.id);
 
   const progressThoughTrack =
@@ -290,9 +303,6 @@ async function getSpotifyRecentTrack() {
   const beatsDelay =
     beatsPerMillisecond -
     (timeTakenGettingData % beatsPerMillisecond);
-
-  // compensante for time to go to the apis
-  // are we half way through a beat?
 
   return {
     ...track,

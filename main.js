@@ -558,11 +558,6 @@ async function main() {
         turnOnOverlay("BroomyJagRace");
       }
 
-      if (title === "im not a cat") {
-        logger.log("🐈 I'm not a cat", "Triggered...");
-        turnOnOverlay("I'm not a cat", 8 * 1000);
-      }
-
       if (title === "goosebumpz book") {
         logger.log("📚 Goosebumps Book", "Triggered...");
         try {

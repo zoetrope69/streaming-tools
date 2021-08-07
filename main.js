@@ -233,8 +233,10 @@ async function main() {
     }
   });
 
-  async function detectFacesSendToClient(image) {
+  async function detectFacesSendToClient() {
     try {
+      const image = await obs.getWebcamImage();
+
       const faceDetection = await detectFaces(image);
 
       if (!faceDetection) {
@@ -246,14 +248,6 @@ async function main() {
       // didn't work
     }
   }
-  setInterval(async () => {
-    try {
-      const image = await obs.getWebcamImage();
-      detectFacesSendToClient(image);
-    } catch (e) {
-      // didn't find the image
-    }
-  }, 1000);
 
   obs.sourceVisibilityTriggers({
     "Joycon: A": async () => {
@@ -550,6 +544,7 @@ async function main() {
 
       if (title === "snowball") {
         logger.log("❄ Snowball", "Triggered...");
+        await detectFacesSendToClient();
         sendAlertToClient({ type: "penguin-throw" });
       }
 
@@ -618,15 +613,17 @@ async function main() {
         );
       }
 
-      if (
+      const bexTalksForFirstTime =
         !BEX_HAS_TALKED &&
         user &&
-        user.username.toLowerCase() === "bexchat"
-      ) {
+        user.username.toLowerCase() === "bexchat";
+      const bexCommandUsed =
+        command === "!bex" || command === "!bexchat";
+      if (bexTalksForFirstTime) {
         BEX_HAS_TALKED = true;
-        sendAlertToClient({ type: "bexchat" });
       }
-      if (command === "!bex" || command === "!bexchat") {
+      if (bexTalksForFirstTime || bexCommandUsed) {
+        await detectFacesSendToClient();
         sendAlertToClient({ type: "bexchat" });
       }
 

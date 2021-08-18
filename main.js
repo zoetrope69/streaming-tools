@@ -665,8 +665,20 @@ async function main() {
         }
       }
 
+      const chatCommand = GOOGLE_SHEET_COMMANDS.find(
+        (c) => command === `!${c.name}`
+      );
+      if (chatCommand) {
+        twitch.bot.say(chatCommand.value);
+      }
+
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
+        if (command === "!commands-update") {
+          GOOGLE_SHEET_COMMANDS =
+            await googleSheetCommands.getCommands();
+        }
+
         if (command === "!sign" || command === "!alert") {
           const newMessage = messageWithEmotes
             .replace("!sign", "")
@@ -804,13 +816,6 @@ async function main() {
             `shout out to ${nameString} doing something cool over at ${urlString} Squid1 Squid2 zactopUs Squid2 Squid4`
           );
         }
-      }
-
-      const chatCommand = GOOGLE_SHEET_COMMANDS.find(
-        (c) => command === `!${c.name}`
-      );
-      if (chatCommand) {
-        twitch.bot.say(chatCommand.value);
       }
 
       io.emit("data", {

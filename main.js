@@ -46,6 +46,7 @@ let ALERT_IS_RUNNING = false;
 let CURRENT_GOOSEBUMP_BOOK = null;
 let CURRENT_PRIDE_FLAG_NAME = "gay";
 let CURRENT_DANCERS = [];
+let GOOGLE_SHEET_COMMANDS = [];
 
 const ALERT_TYPES = {
   "shout-out": {
@@ -326,6 +327,7 @@ async function main() {
   });
 
   try {
+    GOOGLE_SHEET_COMMANDS = await googleSheetCommands.getCommands();
     const scheduledCommands =
       await googleSheetCommands.getScheduledCommands();
     scheduledCommands.forEach((scheduledCommand) => {
@@ -804,9 +806,7 @@ async function main() {
         }
       }
 
-      const commands = await googleSheetCommands.getCommands();
-
-      const chatCommand = commands.find(
+      const chatCommand = GOOGLE_SHEET_COMMANDS.find(
         (c) => command === `!${c.name}`
       );
       if (chatCommand) {

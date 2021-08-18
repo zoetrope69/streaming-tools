@@ -2,15 +2,19 @@ import { h } from "preact";
 
 import styles from "./BexcHat.css";
 
-const BexcHat = ({ currentFaceDetection }) => {
+function getPositionStyles(currentFaceDetection) {
   if (!currentFaceDetection || !currentFaceDetection.position) {
-    return null;
+    return {
+      transform: `translate(60vw, 20vh)`,
+      width: "10vw",
+      height: "10vw",
+    };
   }
 
   const { x, y, width } = currentFaceDetection.position;
   const height = width * 0.77;
 
-  const positionStyles = {
+  return {
     transform: `translate(
       ${x}px,
       ${y - height / 2}px
@@ -18,6 +22,10 @@ const BexcHat = ({ currentFaceDetection }) => {
     width: `${width}px`,
     height: `${height}px`,
   };
+}
+
+const BexcHat = ({ currentFaceDetection }) => {
+  const positionStyles = getPositionStyles(currentFaceDetection);
 
   return (
     <div className={styles.BexcHat}>

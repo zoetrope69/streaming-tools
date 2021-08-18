@@ -15,7 +15,7 @@ const getTextFromChildren = (children) => {
 
   if (Array.isArray(children)) {
     children.forEach((child) => {
-      text += getTextFromChildren(child.props.children);
+      text += getTextFromChildren(child);
     });
   }
 

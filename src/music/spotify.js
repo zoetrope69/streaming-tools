@@ -121,6 +121,11 @@ async function getAuth(code) {
       }),
     }
   );
+
+  if (response.status !== 200) {
+    throw new Error(response.statusText);
+  }
+
   return response.json();
 }
 
@@ -139,6 +144,11 @@ async function getAuthWithRefreshToken(refreshToken) {
       }),
     }
   );
+
+  if (response.status !== 200) {
+    throw new Error(response.statusText);
+  }
+
   return response.json();
 }
 

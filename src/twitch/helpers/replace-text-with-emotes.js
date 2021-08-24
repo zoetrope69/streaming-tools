@@ -91,7 +91,7 @@ function replaceEmotes(text, emotes) {
     );
   });
 
-  return replacedText;
+  return replacedText.trim();
 }
 
 async function replaceTextWithEmotes(text, emoteDataFromTwitchBot) {

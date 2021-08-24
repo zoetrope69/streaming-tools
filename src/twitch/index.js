@@ -13,12 +13,12 @@ async function Twitch({ ngrokUrl, app }) {
     twitchApi,
     eventEmitter,
   });
-  const { bot } = await TwitchBot({ eventEmitter });
+  const { chat } = await TwitchBot({ eventEmitter });
 
   return Object.assign(eventEmitter, {
     ...twitchApi,
     getCustomShoutOuts: twitchShoutOuts,
-    bot,
+    chat,
   });
 }
 

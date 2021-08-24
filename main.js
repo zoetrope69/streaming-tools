@@ -13,8 +13,9 @@ const { schedule } = require("./src/helpers/schedule");
 
 const logger = require("./src/helpers/logger");
 
-const Music = require("./src/music");
+const Glimesh = require("./src/glimesh");
 const Twitch = require("./src/twitch");
+const Music = require("./src/music");
 const KoFi = require("./src/ko-fi");
 const googleSheetCommands = require("./src/google-sheet-commands");
 const createBeeImage = require("./src/imma-bee/create-bee-image");
@@ -34,7 +35,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const { NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT } = process.env;
+const { NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT, STREAMING_SERVICE } =
+  process.env;
+const IS_GLIMESH = STREAMING_SERVICE === "glimesh";
 const CLIENT_FILE_PATH = "client/build";
 let STEVE_HAS_TALKED = false;
 let BEX_HAS_TALKED = false;
@@ -192,6 +195,11 @@ async function turnOnOverlay(source, timeout) {
 async function createNgrokUrl() {
   let ngrokUrl;
 
+  if (!(NGROK_AUTH_TOKEN && NGROK_SUBDOMAIN && PORT)) {
+    logger.error("👽 Ngrok", "No environment variables");
+    return null;
+  }
+
   try {
     ngrokUrl = await ngrok.connect({
       addr: PORT,
@@ -199,13 +207,13 @@ async function createNgrokUrl() {
       region: "eu",
       subdomain: NGROK_SUBDOMAIN,
     });
-  } catch (e) {
-    logger.error("👽 Ngrok", e);
+  } catch (error) {
+    logger.error("👽 Ngrok", error.message);
   }
 
   if (!ngrokUrl) {
     logger.error("👽 Ngrok", "No Ngrok URL");
-    process.exit(1); // can't do anything without ngrok
+    return null;
   }
 
   logger.info("👽 Ngrok", `URL: ${ngrokUrl}`);
@@ -213,16 +221,25 @@ async function createNgrokUrl() {
   return ngrokUrl;
 }
 
+function getStreamingService() {
+  if (IS_GLIMESH) {
+    return Glimesh;
+  }
+
+  return Twitch;
+}
+
 async function main() {
   // reset lights for streaming
   initialiseHueBulbs().catch((error) =>
-    logger.error("💡 Hue Bulbs", error)
+    logger.error("💡 Hue Bulbs", error.message)
   );
 
   // initialise various things
   await obs.initialise();
   const ngrokUrl = await createNgrokUrl();
-  const twitch = await Twitch({ ngrokUrl, app });
+  const StreamingService = getStreamingService();
+  const streamingService = await StreamingService({ ngrokUrl, app });
   const music = Music();
   const kofi = KoFi({ ngrokUrl, app });
 
@@ -230,7 +247,9 @@ async function main() {
     if (type === "Donation") {
       sendAlertToClient({ type: "donation", user, isAnonymous });
       const userName = isAnonymous ? "bill gates" : user.username;
-      twitch.bot.say(`hi ${userName}, thanks for the donation!`);
+      streamingService.chat.sendMessage(
+        `hi ${userName}, thanks for the donation!`
+      );
     }
   });
 
@@ -319,10 +338,9 @@ async function main() {
   });
 
   // set and update channel info
-  CURRENT_CHANNEL_INFO = await twitch.getChannelInfo();
-  logger.info("🤖 Twitch Bot", "Setting channel info");
-  twitch.on("channelInfo", async (channelInfo) => {
-    logger.info("🤖 Twitch Bot", "Updating channel info");
+  CURRENT_CHANNEL_INFO = await streamingService.getChannelInfo();
+  streamingService.on("channelInfo", async (channelInfo) => {
+    logger.info("🤖 Streaming Tools", "Updating channel info");
     CURRENT_CHANNEL_INFO = channelInfo;
   });
 
@@ -332,58 +350,71 @@ async function main() {
       await googleSheetCommands.getScheduledCommands();
     scheduledCommands.forEach((scheduledCommand) => {
       logger.info(
-        "🤖 Twitch Bot",
+        "🤖 Streaming Tools",
         `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
       );
       schedule(scheduledCommand.schedule, () => {
-        twitch.bot.say(scheduledCommand.value);
+        streamingService.chat.sendMessage(scheduledCommand.value);
       });
     });
   } catch (e) {
-    logger.info("🤖 Twitch Bot", "Couldn't run scheduled commands");
+    logger.info(
+      "🤖 Streaming Tools",
+      "Couldn't run scheduled commands"
+    );
   }
 
-  twitch.on("subscribe", (data) => {
+  streamingService.on("subscribe", (data) => {
     sendAlertToClient({ type: "subscribe", ...data });
 
     if (data.isGift) {
-      twitch.bot.say(
+      streamingService.chat.sendMessage(
         `thanks for gifting a sub to @${data.user.username}`
       );
       return;
     }
 
-    twitch.bot.say(`hi @${data.user.username}, thanks for the sub!`);
+    streamingService.chat.sendMessage(
+      `hi @${data.user.username}, thanks for the sub!`
+    );
   });
 
-  twitch.on("bits", (data) => {
+  streamingService.on("bits", (data) => {
     sendAlertToClient({ type: "bits", ...data });
     const userName = data.isAnonymous
       ? "bill gates"
       : `@${data.user.username}`;
-    twitch.bot.say(`hi ${userName}, thanks for the bits!`);
+    streamingService.chat.sendMessage(
+      `hi ${userName}, thanks for the bits!`
+    );
   });
 
-  twitch.on("follow", async (user) => {
+  streamingService.on("follow", async (user) => {
     if (PAUSE_FOLLOW_ALERT) {
       return;
     }
 
     sendAlertToClient({ type: "follow", user });
-    twitch.bot.say(`hi @${user.username}, thanks for following!`);
+    streamingService.chat.sendMessage(
+      `hi @${user.username}, thanks for following!`
+    );
 
     // update follow total
-    const followTotal = await twitch.getFollowTotal();
+    const followTotal = await streamingService.getFollowTotal();
     io.emit("data", { followTotal });
   });
 
-  twitch.on("raid", async (user) => {
+  streamingService.on("raid", async (user) => {
     if (user.viewers > 50) {
       PAUSE_FOLLOW_ALERT = true;
-      twitch.bot.say("big raid, follow alerts paused for 5 mins");
+      streamingService.chat.sendMessage(
+        "big raid, follow alerts paused for 5 mins"
+      );
       setTimeout(() => {
         PAUSE_FOLLOW_ALERT = false;
-        twitch.bot.say("follow alerts will happen again chief");
+        streamingService.chat.sendMessage(
+          "follow alerts will happen again chief"
+        );
       }, 5 * 60 * 1000); // after 5 minutes resume again
     }
 
@@ -397,42 +428,48 @@ async function main() {
     }
 
     sendAlertToClient({ type: "raid", user, audioUrl: raidAudioUrl });
-    twitch.bot.say(
+    streamingService.chat.sendMessage(
       `hi @${user.username}, thanks for the raid! hi to the ${user.viewers} raiders.`
     );
   });
 
-  twitch.on("channelPointRewardUnfulfilled", async ({ reward }) => {
-    const { title } = reward;
+  streamingService.on(
+    "channelPointRewardUnfulfilled",
+    async ({ reward }) => {
+      const { title } = reward;
 
-    if (!title) {
-      return;
+      if (!title) {
+        return;
+      }
+
+      if (title === "big drink") {
+        await obs.showSource({
+          scene: "Overlays",
+          source: "Amelia Water Loop",
+        });
+      }
     }
+  );
 
-    if (title === "big drink") {
-      await obs.showSource({
-        scene: "Overlays",
-        source: "Amelia Water Loop",
-      });
+  streamingService.on(
+    "channelPointRewardCancelled",
+    async ({ reward }) => {
+      const { title } = reward;
+
+      if (!title) {
+        return;
+      }
+
+      if (title === "big drink") {
+        await obs.hideSource({
+          scene: "Overlays",
+          source: "Amelia Water Loop",
+        });
+      }
     }
-  });
+  );
 
-  twitch.on("channelPointRewardCancelled", async ({ reward }) => {
-    const { title } = reward;
-
-    if (!title) {
-      return;
-    }
-
-    if (title === "big drink") {
-      await obs.hideSource({
-        scene: "Overlays",
-        source: "Amelia Water Loop",
-      });
-    }
-  });
-
-  twitch.on(
+  streamingService.on(
     "channelPointRewardFulfilled",
     async ({ reward, user }) => {
       const { title } = reward;
@@ -443,7 +480,9 @@ async function main() {
       }
 
       if (title === "dance with zac") {
-        const newDancer = await twitch.getUser(user.username);
+        const newDancer = await streamingService.getUser(
+          user.username
+        );
         newDancer.id = randomID();
         CURRENT_DANCERS.push(newDancer);
 
@@ -460,7 +499,9 @@ async function main() {
 
       if (title === "pog") {
         turnOnOverlay("Steve Pointing Group", 9 * 1000);
-        twitch.bot.say("thanks twitch.tv/blgsteve for the pog audit");
+        streamingService.chat.sendMessage(
+          "thanks twitch.tv/blgsteve for the pog audit"
+        );
       }
 
       if (title === "big drink") {
@@ -469,7 +510,7 @@ async function main() {
           source: "Amelia Water Loop",
         });
 
-        twitch.bot.say(
+        streamingService.chat.sendMessage(
           "Shout out to twitch.tv/ameliabayler the water singer"
         );
       }
@@ -479,8 +520,10 @@ async function main() {
 
         if (inputPrideFlagName === "straight") {
           const { username } = user;
-          twitch.bot.say("Ok mate... straight pride doesn't exist.");
-          twitch.bot.timeout({
+          streamingService.chat.sendMessage(
+            "Ok mate... straight pride doesn't exist."
+          );
+          streamingService.chat.timeout({
             username,
             lengthSeconds: 60,
             reason: "Trying to chat shit about straight pride",
@@ -495,11 +538,13 @@ async function main() {
           setLightsToPrideFlag(prideFlag.name);
           io.emit("data", { prideFlagName: prideFlag.name });
           if (prideFlag.twitchEmote) {
-            twitch.bot.say(`${prideFlag.twitchEmote} `.repeat(5));
+            streamingService.chat.sendMessage(
+              `${prideFlag.twitchEmote} `.repeat(5)
+            );
           }
         } else {
           const randomPrideFlagName = getRandomPrideFlag().name;
-          twitch.bot.say(
+          streamingService.chat.sendMessage(
             [
               inputPrideFlagName.length > 0
                 ? `Didn't find anything for "${inputPrideFlagName}". :-(`
@@ -519,7 +564,9 @@ async function main() {
           sendAlertToClient({ type: "immabee" });
         } catch (e) {
           logger.error("🐝 Imma bee", JSON.stringify(e));
-          twitch.bot.say(`Couldn't find Zac's face...`);
+          streamingService.chat.sendMessage(
+            `Couldn't find Zac's face...`
+          );
         }
       }
 
@@ -538,7 +585,7 @@ async function main() {
         turnOnOverlay("Star Trek Space Video", 103 * 1000);
         setTimeout(() => {
           turnOnOverlay("Star Trek Slideshow", 53 * 1000);
-          twitch.bot.say(
+          streamingService.chat.sendMessage(
             `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
           );
         }, 50 * 1000); // minute into the video
@@ -571,16 +618,19 @@ async function main() {
           await obs.switchToScene("Goosebumps");
         } catch (e) {
           logger.error("📚 Goosebumps Book", e);
-          twitch.bot.say(`Couldn't generate a book for ${message}`);
+          streamingService.chat.sendMessage(
+            `Couldn't generate a book for ${message}`
+          );
           CURRENT_GOOSEBUMP_BOOK = null;
         }
       }
     }
   );
 
-  twitch.on(
+  streamingService.chat.on(
     "message",
     async ({
+      id,
       isMod,
       isBroadcaster,
       message,
@@ -588,12 +638,15 @@ async function main() {
       command,
       commandArguments,
       user,
+      tokens = [],
     }) => {
-      if (command === "!song" || command === "!music") {
+      if (command === "song" || command === "music") {
         const currentTrack = await music.getCurrentTrack();
 
         if (!currentTrack || !currentTrack.isNowPlaying) {
-          twitch.bot.say(`SingsNote Nothing is playing...`);
+          streamingService.chat.sendMessage(
+            `SingsNote Nothing is playing...`
+          );
           return;
         }
 
@@ -601,21 +654,27 @@ async function main() {
           currentTrack;
 
         if (!artistName || !trackName || !albumName) {
-          twitch.bot.say(`SingsNote Nothing is playing...`);
+          streamingService.chat.sendMessage(
+            `SingsNote Nothing is playing...`
+          );
           return;
         }
 
-        twitch.bot.say(
+        streamingService.chat.sendMessage(
           `SingsNote ${trackName} — ${artistName} — ${albumName} ${trackUrl}`.trim()
         );
       }
 
       const bexTalksForFirstTime =
-        !BEX_HAS_TALKED &&
-        user &&
-        user.username.toLowerCase() === "bexchat";
+        (!BEX_HAS_TALKED &&
+          user &&
+          user.username.toLowerCase() === "bexchat") ||
+        (!BEX_HAS_TALKED &&
+          IS_GLIMESH &&
+          user &&
+          user.username.toLowerCase() === "bex");
       const bexCommandUsed =
-        command === "!bex" || command === "!bexchat";
+        command === "bex" || command === "bexchat";
       if (bexTalksForFirstTime) {
         BEX_HAS_TALKED = true;
       }
@@ -625,61 +684,75 @@ async function main() {
       }
 
       if (
-        !STEVE_HAS_TALKED &&
-        user &&
-        user.username.toLowerCase() === "blgsteve"
+        (!STEVE_HAS_TALKED &&
+          user &&
+          user.username.toLowerCase() === "blgsteve") ||
+        (IS_GLIMESH &&
+          !STEVE_HAS_TALKED &&
+          user &&
+          user.username.toLowerCase() === "bigsteve")
       ) {
         STEVE_HAS_TALKED = true;
         turnOnOverlay("octopussy", 12 * 1000);
       }
-      if (command === "!steve") {
+      if (command === "steve") {
         turnOnOverlay("octopussy", 12 * 1000);
       }
 
-      if (command === "!2020") {
+      if (command === "2020") {
         sendAlertToClient({ type: "fuck-2020" });
       }
 
-      if (command === "!game" || command === "!category") {
+      if (command === "game" || command === "category") {
         const { categoryName } = CURRENT_CHANNEL_INFO;
         if (categoryName) {
           if (categoryName === "Just Chatting") {
-            twitch.bot.say(`zac's farting about chatting`);
+            streamingService.chat.sendMessage(
+              `zac's farting about chatting`
+            );
           } else if (categoryName === "Makers & Crafting") {
-            twitch.bot.say(`zac's making something`);
+            streamingService.chat.sendMessage(
+              `zac's making something`
+            );
           } else {
-            twitch.bot.say(`zac's playing ${categoryName}`);
+            streamingService.chat.sendMessage(
+              `zac's playing ${categoryName}`
+            );
           }
         } else {
-          twitch.bot.say(`zac isn't doing anything... fuck all`);
+          streamingService.chat.sendMessage(
+            `zac isn't doing anything... fuck all`
+          );
         }
       }
 
-      if (command === "!title") {
+      if (command === "title") {
         if (CURRENT_CHANNEL_INFO.title) {
-          twitch.bot.say(
+          streamingService.chat.sendMessage(
             `stream title is "${CURRENT_CHANNEL_INFO.title}"`
           );
         } else {
-          twitch.bot.say(`there is no stream title`);
+          streamingService.chat.sendMessage(
+            `there is no stream title`
+          );
         }
       }
 
       const chatCommand = GOOGLE_SHEET_COMMANDS.find(
-        (c) => command === `!${c.name}`
+        ({ name }) => command === name
       );
       if (chatCommand) {
-        twitch.bot.say(chatCommand.value);
+        streamingService.chat.sendMessage(chatCommand.value);
       }
 
       // the mod/broadcaster zooone
       if (isMod || isBroadcaster) {
-        if (command === "!commands-update") {
+        if (command === "commands-update") {
           GOOGLE_SHEET_COMMANDS =
             await googleSheetCommands.getCommands();
         }
 
-        if (command === "!sign" || command === "!alert") {
+        if (command === "sign" || command === "alert") {
           const newMessage = messageWithEmotes
             .replace("!sign", "")
             .replace("!alert", "")
@@ -694,34 +767,38 @@ async function main() {
           POPUP_MESSAGE = newMessage;
         }
 
-        if (command === "!delete") {
+        if (command === "delete") {
           POPUP_MESSAGE = "";
           io.emit("data", { popUpMessage: "" });
         }
 
-        if (command === "!deletebook") {
+        if (command === "deletebook") {
           io.emit("data", { goosebumpsBookTitle: null });
           CURRENT_GOOSEBUMP_BOOK = null;
           await obs.switchToScene("Main Bigger Zac");
         }
 
-        if (command === "!follows") {
+        if (command === "follows") {
           if (PAUSE_FOLLOW_ALERT) {
             PAUSE_FOLLOW_ALERT = false;
-            twitch.bot.say(
+            streamingService.chat.sendMessage(
               "follow alerts will happen again now phew"
             );
           } else {
             PAUSE_FOLLOW_ALERT = true;
-            twitch.bot.say("follow alerts paused for 5 mins");
+            streamingService.chat.sendMessage(
+              "follow alerts paused for 5 mins"
+            );
             setTimeout(() => {
               PAUSE_FOLLOW_ALERT = false;
-              twitch.bot.say("follow alerts will happen again");
+              streamingService.chat.sendMessage(
+                "follow alerts will happen again"
+              );
             }, 5 * 60 * 1000); // after 5 minutes resume again
           }
         }
 
-        if (command === "!say") {
+        if (command === "say") {
           sendAlertToClient({
             type: "say",
             message: commandArguments,
@@ -731,24 +808,26 @@ async function main() {
           });
         }
 
-        if (command === "!brb") {
+        if (command === "brb") {
           await switchToBRBScene();
         }
 
-        if (command === "!title") {
+        if (command === "title") {
           const newTitle = commandArguments;
           if (!newTitle) {
             return;
           }
 
           try {
-            await twitch.setChannelInfo({ title: newTitle });
+            await streamingService.setChannelInfo({
+              title: newTitle,
+            });
           } catch (e) {
-            twitch.bot.say(e.message);
+            streamingService.chat.sendMessage(e.message);
           }
         }
 
-        if (command === "!test-follow") {
+        if (command === "test-follow") {
           sendAlertToClient({
             type: "follow",
             user: { username: "ninja" },
@@ -756,9 +835,9 @@ async function main() {
         }
 
         if (
-          command === "!so" ||
-          command === "!shoutout" ||
-          command === "!shout-out"
+          command === "so" ||
+          command === "shoutout" ||
+          command === "shout-out"
         ) {
           let shoutOutUsername = commandArguments;
           if (!shoutOutUsername) {
@@ -773,18 +852,13 @@ async function main() {
             return;
           }
 
-          const shoutOutUser = await twitch.getUser(shoutOutUsername);
+          const shoutOutUser = await streamingService.getUser(
+            shoutOutUsername
+          );
 
           if (!shoutOutUser) {
             return;
           }
-
-          const customShoutOuts = await twitch.getCustomShoutOuts();
-          const customShoutOut = customShoutOuts.find(
-            (shoutOut) =>
-              shoutOut.username ===
-              shoutOutUser.username.toLowerCase()
-          );
 
           let nameAudioUrl;
           try {
@@ -793,6 +867,14 @@ async function main() {
             // couldnt get name audio
           }
 
+          const customShoutOuts =
+            await streamingService.getCustomShoutOuts();
+          const customShoutOut = customShoutOuts.find(
+            (shoutOut) =>
+              shoutOut.username ===
+              shoutOutUser.username.toLowerCase()
+          );
+
           sendAlertToClient({
             type: "shout-out",
             user: shoutOutUser,
@@ -800,6 +882,14 @@ async function main() {
             customShoutOut,
             audioUrl: nameAudioUrl,
           });
+
+          if (IS_GLIMESH) {
+            const urlString = `https://glimesh.tv/${shoutOutUser.username.toLowerCase()}`;
+            streamingService.chat.sendMessage(
+              `:zactopog: shout out to ${shoutOutUser.username} at ${urlString} :zactopog:`
+            );
+            return;
+          }
 
           let nameString;
           if (customShoutOut) {
@@ -812,8 +902,22 @@ async function main() {
 
           const urlString = `twitch.tv/${shoutOutUser.username.toLowerCase()}`;
 
-          twitch.bot.say(
+          streamingService.chat.sendMessage(
             `shout out to ${nameString} doing something cool over at ${urlString} Squid1 Squid2 zactopUs Squid2 Squid4`
+          );
+        }
+      }
+
+      if (IS_GLIMESH) {
+        const hasMonkasEmote = tokens.some((token) => {
+          return (
+            token.type === "emote" && token.text === ":glimmonkas:"
+          );
+        });
+        if (hasMonkasEmote) {
+          streamingService.chat.deleteMessage(id);
+          streamingService.chat.sendMessage(
+            `@${user.username} no pepes please`
           );
         }
       }
@@ -832,7 +936,7 @@ async function main() {
   io.on("connection", async (socket) => {
     logger.info("👽 Stream Client", "Connected");
 
-    const followTotal = await twitch.getFollowTotal();
+    const followTotal = await streamingService.getFollowTotal();
     const currentTrack = await music.getCurrentTrack();
     io.emit("data", {
       track: currentTrack,

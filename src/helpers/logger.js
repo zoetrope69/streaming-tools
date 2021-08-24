@@ -18,6 +18,14 @@ function logToConsole(type) {
 
   const chalkWithType = chalk[LOG_TYPES_TO_COLOR[type]];
   return function (location, message) {
+    if (!message) return;
+
+    if (Array.isArray(message)) {
+      message = message.join(", ");
+    } else if (typeof message === "object") {
+      message = JSON.stringify(message);
+    }
+
     // eslint-disable-next-line no-console
     console[type](chalkWithType(`[${location}] ${message}`));
   };

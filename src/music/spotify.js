@@ -86,9 +86,8 @@ async function getAuthCodeFromCommandLineUrl() {
 async function getAuthManually() {
   logger.info(
     "🎶 Spotify",
-    "⚠ Can't authorize Spotify, go and update SPOTIFY_AUTH_TOKEN from this URL:"
+    `⚠ Can't authorize Spotify ${createAuthURL()}`
   );
-  logger.info("🎶 Spotify", createAuthURL());
 
   const authCode = await getAuthCodeFromCommandLineUrl();
 

@@ -143,7 +143,11 @@ async function goThroughColors(colors) {
 }
 
 async function setLightsToPrideFlag(name) {
-  await initialiseHueBulbs();
+  try {
+    await initialiseHueBulbs();
+  } catch (e) {
+    // ...
+  }
 
   const prideFlag = getPrideFlag(name);
 

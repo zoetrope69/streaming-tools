@@ -24,6 +24,10 @@ async function callHueBulbAPIBuilder() {
 let hueBulbsReady = false;
 let callHueBulbAPI = () => null;
 async function initialiseHueBulbs() {
+  if (!HUE_BULB_HUB_IP_ADDRESS && !HUE_BULB_USERNAME) {
+    return Promise.reject(new Error("No environment variables"));
+  }
+
   if (hueBulbsReady) {
     return Promise.resolve();
   }

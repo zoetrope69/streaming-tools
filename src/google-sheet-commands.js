@@ -8,6 +8,13 @@ const SPREADSHEET_ID = "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA";
 const CACHE_KEY = "COMMANDS";
 const CACHE_TIMEOUT_MS = 10 * 1000; // 10 seconds
 
+function hasCredentials() {
+  return (
+    googleCredentials["client_email"] &&
+    googleCredentials["private_key"]
+  );
+}
+
 async function getSpreadsheet() {
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 
@@ -41,6 +48,11 @@ async function getCommands() {
 }
 
 async function getCachedCommands() {
+  if (!hasCredentials()) {
+    logger.error("🐑 Google Sheet", "No environment variables");
+    return [];
+  }
+
   const cachedCommands = cache.get(CACHE_KEY);
 
   if (cachedCommands) {

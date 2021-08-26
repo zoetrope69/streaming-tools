@@ -8,6 +8,10 @@ const { KOFI_ENDPOINT_RANDOM_STRING } = process.env;
 function koFi({ ngrokUrl, app }) {
   const eventEmitter = new EventEmitter();
 
+  if (!ngrokUrl) {
+    return eventEmitter;
+  }
+
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }));
 

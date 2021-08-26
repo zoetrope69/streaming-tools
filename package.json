@@ -4,12 +4,16 @@
   "description": "some scripts for streaming",
   "main": "main.js",
   "scripts": {
+    "postinstall": "cd client && npm install",
     "build": "npm run build:client",
     "build:client": "cd client && npm run build",
     "prestart": "npm run build",
     "start": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node main.js",
+    "start-glimesh": "STREAMING_SERVICE=glimesh npm start",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev-glimesh": "STREAMING_SERVICE=glimesh npm run dev",
     "dev:server": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings main.js",
+    "dev-glimesh:server": "STREAMING_SERVICE=glimesh npm run dev:server",
     "dev:client": "cd client && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint"
@@ -46,6 +50,13 @@
     "eslint-config-preact": "1.1.4",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "3.4.1",
-    "prettier": "2.3.2"
+    "glimesh-chat": "^1.0.2",
+    "markdown-to-txt": "^1.0.1",
+    "prettier": "2.3.2",
+    "ws": "^7.4.6"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.3",
+    "utf-8-validate": "^5.0.5"
   }
 }

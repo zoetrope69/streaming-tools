@@ -5,6 +5,24 @@ const getLastFmRecentTrack = require("./last-fm");
 const logger = require("../helpers/logger");
 const { getAlbumArtColors } = require("./helpers");
 
+const {
+  SPOTIFY_AUTH_REDIRECT_URI,
+  SPOTIFY_CLIENT_ID,
+  SPOTIFY_CLIENT_SECRET,
+  LAST_FM_API_KEY,
+  LAST_FM_USERNAME,
+} = process.env;
+
+function areMusicAPIEnvironmentVariablesAvailable() {
+  return (
+    SPOTIFY_AUTH_REDIRECT_URI &&
+    SPOTIFY_CLIENT_ID &&
+    SPOTIFY_CLIENT_SECRET &&
+    LAST_FM_API_KEY &&
+    LAST_FM_USERNAME
+  );
+}
+
 async function getCurrentTrack() {
   let track = {};
 
@@ -39,6 +57,11 @@ async function emitCurrentTrack(eventEmitter) {
 
 function music() {
   const eventEmitter = new EventEmitter();
+
+  if (!areMusicAPIEnvironmentVariablesAvailable()) {
+    eventEmitter.getCurrentTrack = () => null;
+    return eventEmitter;
+  }
 
   logger.info("🎸 Music", "Checking for new now playing song...");
   // run as soon as we launch script

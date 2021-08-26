@@ -9,6 +9,21 @@ const {
   TWITCH_BROADCASTER_NAME,
 } = process.env;
 
+function getCommand(message) {
+  if (!message || !message.startsWith("!")) {
+    return {};
+  }
+
+  const [command, ...commandArguments] = message
+    .substring(1)
+    .split(" ");
+
+  return {
+    command: command.toLowerCase(),
+    commandArguments: commandArguments.join(" ").trim(),
+  };
+}
+
 async function waitForTwitchBotToBeReady(botClient) {
   return new Promise((resolve) => {
     botClient.on("connected", () => {
@@ -51,10 +66,7 @@ async function TwitchBot({ eventEmitter }) {
   });
 
   botClient.on("connected", () => {
-    logger.info(
-      "🤖 Twitch Bot",
-      `Connected to: ${TWITCH_BROADCASTER_NAME}`
-    );
+    logger.info("🤖 Twitch Bot", `Connected`);
   });
 
   botClient.on("join", (channel) => {
@@ -78,7 +90,7 @@ async function TwitchBot({ eventEmitter }) {
 
     logger.log("🤖 Twitch Bot", `Message from chat: ${message}`);
 
-    let [command, ...commandArguments] = message.split(" ");
+    const { command, commandArguments } = getCommand(message);
 
     const messageWithEmotes = await replaceTextWithEmotes(
       message,
@@ -90,8 +102,8 @@ async function TwitchBot({ eventEmitter }) {
       isBroadcaster,
       message: message.trim(),
       messageWithEmotes,
-      command: command.toLowerCase(),
-      commandArguments: commandArguments.join(" ").trim(),
+      command,
+      commandArguments,
       user: {
         username,
         color,
@@ -134,8 +146,8 @@ async function TwitchBot({ eventEmitter }) {
   await waitForTwitchBotToBeReady(botClient);
 
   return {
-    bot: {
-      say: (message) => {
+    chat: {
+      sendMessage: (message) => {
         return botClient.say(TWITCH_BROADCASTER_NAME, message);
       },
       timeout: ({ username, lengthSeconds, reason }) => {

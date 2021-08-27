@@ -8,7 +8,7 @@
     "build": "npm run build:client",
     "build:client": "cd client && npm run build",
     "prestart": "npm run build",
-    "start": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node main.js",
+    "start": "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node main.js --unhandled-rejections=strict",
     "start-glimesh": "STREAMING_SERVICE=glimesh npm start",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev-glimesh": "STREAMING_SERVICE=glimesh npm run dev",

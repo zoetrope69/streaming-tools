@@ -1,12 +1,13 @@
 const fs = require("fs");
+const bufferFromBase64 = require("./helpers/buffer-from-base64");
 
-async function saveScreenshot(image) {
-  const base64Data = image.replace("data:image/jpg;base64,", "");
+async function saveScreenshot(dataUri) {
+  const { buffer: imageBuffer, contentType } =
+    bufferFromBase64(dataUri);
   return new Promise((resolve, reject) => {
     fs.writeFile(
-      "/mnt/c/Users/Zac/Documents/Streaming/brb-image.jpg",
-      base64Data,
-      "base64",
+      `/mnt/c/Users/Zac/Documents/Streaming/brb-image.${contentType}`,
+      imageBuffer,
       (err) => {
         if (err) {
           return reject(err);

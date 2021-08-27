@@ -165,7 +165,7 @@ async function switchToBRBScene() {
     await saveScreenshotToBrbScreen(image);
     await obs.switchToScene("BRB");
   } catch (e) {
-    // didn't find the image
+    logger.error("🤖 Streaming Tools", e.message);
   }
 }
 

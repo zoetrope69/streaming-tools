@@ -124,7 +124,6 @@ function eventSubExpress(app) {
       switch (request.headers["twitch-eventsub-message-type"]) {
         case "notification":
           logger.log(
-            "🌯 EventSub",
             `Received notification for type ${request.body.subscription.type}`
           );
           RECENT_EVENTSUB_MESSAGES[messageId] = true;

@@ -1,5 +1,5 @@
 const fs = require("fs");
-const bufferFromBase64 = require("./helpers/buffer-from-base64");
+const bufferFromBase64 = require("../helpers/buffer-from-base64");
 
 async function saveScreenshot(dataUri) {
   const { buffer: imageBuffer, contentType } =

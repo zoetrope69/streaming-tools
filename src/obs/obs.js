@@ -1,6 +1,6 @@
 const OBSWebSocket = require("obs-websocket-js");
 
-const Logger = require("./helpers/logger");
+const Logger = require("../helpers/logger");
 const logger = new Logger("☢ OBS");
 
 const obs = new OBSWebSocket();
@@ -197,6 +197,29 @@ async function filterVisibilityTriggers(sourcesObject) {
   });
 }
 
+async function turnOnOverlay(source, timeout) {
+  await hideSource({
+    scene: "Overlays",
+    source,
+  });
+
+  setTimeout(() => {
+    showSource({
+      scene: "Overlays",
+      source,
+    });
+
+    if (timeout) {
+      setTimeout(() => {
+        hideSource({
+          scene: "Overlays",
+          source,
+        });
+      }, timeout);
+    }
+  }, 100); // wait 100 ms i guess
+}
+
 module.exports = {
   initialise,
   getWebcamImage,
@@ -208,4 +231,5 @@ module.exports = {
   showHideSource,
   showHideFilter,
   toggleFilter,
+  turnOnOverlay,
 };

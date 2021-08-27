@@ -271,10 +271,4 @@ async function GlimeshAPI() {
   };
 }
 
-// To implement:
-// await twitch.setChannelInfo({ title: newTitle });
-// twitch.on('channelInfo')
-// twitch.on('follow') <-
-// twitch.bot.timeout
-
 module.exports = GlimeshAPI;

@@ -44,7 +44,7 @@ async function main() {
   const ngrokUrl = await createNgrokUrl();
 
   const nodemonProcess = nodemon({
-    script: "./src/main",
+    script: "./src",
     exec: `NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
     // disable watch mode in production
     watch: NODE_ENV === "production" ? [".env"] : [".env", "src/"],

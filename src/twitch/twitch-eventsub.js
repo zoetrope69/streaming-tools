@@ -62,7 +62,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       eventEmitter.emit("channelPointRewardFulfilled", dataEmit);
     }
 
-    if (status === "cancelled") {
+    if (status === "canceled") {
       eventEmitter.emit("channelPointRewardCancelled", dataEmit);
     }
   };
@@ -110,13 +110,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         categoryName: category_name,
       });
     }),
-    // stream online/offline
-    await subscribeToTopic("stream.online", () =>
-      eventEmitter.emit("streamOnline", {})
-    ),
-    await subscribeToTopic("stream.offline", () =>
-      eventEmitter.emit("streamOffline", {})
-    ),
     await subscribeToTopic(
       "channel.channel_points_custom_reward_redemption.add",
       channelPointRedemptionHandler

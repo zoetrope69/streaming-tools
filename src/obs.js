@@ -1,6 +1,7 @@
 const OBSWebSocket = require("obs-websocket-js");
 
-const logger = require("./helpers/logger");
+const Logger = require("./helpers/logger");
+const logger = new Logger("☢ OBS");
 
 const obs = new OBSWebSocket();
 
@@ -11,13 +12,8 @@ let AVAILABLE_OBS_REQUESTS = [];
 
 function request(requestName, options) {
   if (!AVAILABLE_OBS_REQUESTS.includes(requestName)) {
+    logger.debug("AVAILABLE_OBS_REQUESTS", AVAILABLE_OBS_REQUESTS);
     logger.debug(
-      "☢ OBS",
-      "AVAILABLE_OBS_REQUESTS",
-      AVAILABLE_OBS_REQUESTS
-    );
-    logger.debug(
-      "☢ OBS",
       ["Available requests:", ...AVAILABLE_OBS_REQUESTS].join("\n")
     );
     return Promise.reject(
@@ -29,32 +25,30 @@ function request(requestName, options) {
 }
 
 function initialise() {
-  logger.info("☢ OBS", "Connecting...");
+  logger.info("Connecting...");
 
   return new Promise((resolve) => {
     if (OBS_INITIALISED) {
       return resolve();
     }
 
-    obs
-      .connect({
+    try {
+      obs.connect({
         address: OBS_WEBSOCKET_ADDRESS,
         password: OBS_WEBSOCKET_PASSWORD,
-      })
-      .catch((e) => logger.error("☢ OBS", e.error));
+      });
+    } catch (e) {
+      logger.error(e.error || e.message || e);
+    }
 
     obs.on("ConnectionOpened", () => {
       obs.send("GetVersion").then((versionInfo) => {
-        logger.info("☢ OBS", "Connected!");
+        logger.info("Connected!");
 
         AVAILABLE_OBS_REQUESTS =
           versionInfo.availableRequests.split(",");
+        logger.info(`Version ${versionInfo.obsStudioVersion}`);
         logger.info(
-          "☢ OBS",
-          `Version ${versionInfo.obsStudioVersion}`
-        );
-        logger.info(
-          "☢ OBS",
           `obs-websocket version ${versionInfo.obsWebsocketVersion}`
         );
 
@@ -80,7 +74,6 @@ async function getWebcamImage(sourceName) {
       embedPictureFormat: "png",
     });
   } catch (e) {
-    logger.log("☢ OBS", e);
     throw new Error(e.error || e);
   }
 
@@ -166,7 +159,7 @@ async function handleTriggers({ triggers, itemVisible, itemName }) {
   try {
     return await triggerFunction({ isVisible: itemVisible });
   } catch (e) {
-    logger.error("☢ OBS", e);
+    logger.error(e);
   }
 }
 

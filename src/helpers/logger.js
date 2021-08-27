@@ -11,33 +11,56 @@ const LOG_TYPES_TO_COLOR = {
   debug: "blue",
 };
 
-function logToConsole(type) {
-  // dont log when not in debug mode
-  if (type === "debug" && !DEBUG) {
-    return () => {};
+class Logger {
+  constructor(location) {
+    this.location = location;
   }
 
-  const chalkWithType = chalk[LOG_TYPES_TO_COLOR[type]];
-  return function (location, message) {
-    if (!message) return;
+  log(message) {
+    return this.logToConsole("log")(message);
+  }
 
-    if (Array.isArray(message)) {
-      message = message.join(", ");
-    } else if (typeof message === "object") {
-      message = JSON.stringify(message);
+  info(message) {
+    return this.logToConsole("info")(message);
+  }
+
+  error(message) {
+    return this.logToConsole("error")(message);
+  }
+
+  warn(message) {
+    return this.logToConsole("warn")(message);
+  }
+
+  debug(message) {
+    return this.logToConsole("debug")(message);
+  }
+
+  logToConsole(type) {
+    // dont log when not in debug mode
+    if (type === "debug" && !DEBUG) {
+      return () => {};
     }
 
-    // eslint-disable-next-line no-console
-    console[type](chalkWithType(`[${location}] ${message}`));
-  };
+    const chalkWithType = chalk[LOG_TYPES_TO_COLOR[type]];
+    return (message) => {
+      if (!message) return;
+
+      if (Array.isArray(message)) {
+        message = message.join(", ");
+      } else if (typeof message === "object") {
+        message = JSON.stringify(message);
+      }
+
+      let response = message;
+      if (this.location) {
+        response = `[${this.location}] ${message}`;
+      }
+
+      // eslint-disable-next-line no-console
+      console[type](chalkWithType(response));
+    };
+  }
 }
 
-const logger = {
-  log: logToConsole("log"),
-  info: logToConsole("info"),
-  error: logToConsole("error"),
-  warn: logToConsole("warn"),
-  debug: logToConsole("debug"),
-};
-
-module.exports = logger;
+module.exports = Logger;

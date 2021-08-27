@@ -4,7 +4,9 @@ require("dotenv").config();
 const ngrok = require("ngrok");
 const nodemon = require("nodemon");
 
-const logger = require("./src/helpers/logger");
+const Logger = require("./src/helpers/logger");
+const ngrokLogger = new Logger("👽 ngrok");
+const nodemonLogger = new Logger("😈 Nodemon");
 
 const { NODE_ENV, NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT } =
   process.env;
@@ -13,7 +15,7 @@ async function createNgrokUrl() {
   let ngrokUrl;
 
   if (!(NGROK_AUTH_TOKEN && NGROK_SUBDOMAIN && PORT)) {
-    logger.error("👽 ngrok", "No environment variables");
+    ngrokLogger.error("No environment variables");
     return null;
   }
 
@@ -25,15 +27,15 @@ async function createNgrokUrl() {
       subdomain: NGROK_SUBDOMAIN,
     });
   } catch (error) {
-    logger.error("👽 ngrok", error.message);
+    ngrokLogger.error(error.message);
   }
 
   if (!ngrokUrl) {
-    logger.error("👽 ngrok", "No Ngrok URL");
+    ngrokLogger.error("No Ngrok URL");
     return null;
   }
 
-  logger.info("👽 ngrok", `URL: ${ngrokUrl}`);
+  ngrokLogger.info(`URL: ${ngrokUrl}`);
 
   return ngrokUrl;
 }
@@ -49,15 +51,15 @@ async function main() {
   });
 
   if (NODE_ENV === "production") {
-    logger.debug("😈 Nodemon", "In production mode, no refreshing");
+    nodemonLogger.debug("In production mode, no refreshing");
   }
 
   nodemonProcess.on("start", () => {
-    logger.debug("😈 Nodemon", "The application has started");
+    nodemonLogger.debug("The application has started");
   });
 
   nodemonProcess.on("restart", (files) => {
-    logger.debug("😈 Nodemon", "Application restarted due to:");
+    nodemonLogger.debug("Application restarted due to:");
     /* eslint-disable no-console */
     console.group();
     files.forEach((file) => console.log(file));
@@ -66,8 +68,7 @@ async function main() {
   });
 
   nodemonProcess.on("quit", async () => {
-    logger.debug(
-      "😈 Nodemon",
+    nodemonLogger.debug(
       "The application has quit, closing ngrok tunnel"
     );
     await ngrok.kill();

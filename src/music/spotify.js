@@ -5,7 +5,8 @@ const { stringify: queryStringStringify } = require("qs");
 const { prompt } = require("enquirer");
 const cache = require("memory-cache");
 
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+const logger = new Logger("🎶 Spotify");
 
 const REFRESH_TOKEN_PATH = path.join(
   __dirname,
@@ -35,7 +36,7 @@ function saveRefreshTokenToFile(refreshToken) {
   const jsonString = JSON.stringify({ refreshToken }, null, 2);
   fs.writeFile(REFRESH_TOKEN_PATH, jsonString, (error) => {
     if (error) {
-      return logger.error("🎶 Spotify", error);
+      return logger.error(error);
     }
   });
 }
@@ -84,10 +85,7 @@ async function getAuthCodeFromCommandLineUrl() {
 }
 
 async function getAuthManually() {
-  logger.info(
-    "🎶 Spotify",
-    `⚠ Can't authorize Spotify ${createAuthURL()}`
-  );
+  logger.info(`⚠ Can't authorize Spotify ${createAuthURL()}`);
 
   const authCode = await getAuthCodeFromCommandLineUrl();
 
@@ -156,7 +154,7 @@ async function getAccessToken() {
   try {
     response = await getAuthWithRefreshToken(SPOTIFY_REFRESH_TOKEN);
   } catch (e) {
-    logger.error("🎶 Spotify", e.message);
+    logger.error(e.message);
     response = await getAuthManually();
   }
 

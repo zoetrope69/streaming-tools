@@ -1,7 +1,8 @@
 const { EventEmitter } = require("events");
 const bodyParser = require("body-parser");
 
-const logger = require("./helpers/logger");
+const Logger = require("./helpers/logger");
+const logger = new Logger("☕ Ko-fi Webhook");
 
 const { KOFI_ENDPOINT_RANDOM_STRING } = process.env;
 
@@ -16,10 +17,7 @@ function koFi({ ngrokUrl, app }) {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   const endpoint = `/koFiCallback-${KOFI_ENDPOINT_RANDOM_STRING}`;
-  logger.info(
-    "☕ Ko-fi Webhook",
-    `Created and listening on ${ngrokUrl}${endpoint}`
-  );
+  logger.info(`Created and listening on ${ngrokUrl}${endpoint}`);
   app.post(endpoint, (request, response) => {
     try {
       const { data } = request.body;
@@ -41,7 +39,7 @@ function koFi({ ngrokUrl, app }) {
         );
       }
 
-      logger.info("☕ Ko-fi Webhook", "Payment received");
+      logger.info("Payment received");
 
       eventEmitter.emit("payment", {
         id,
@@ -54,7 +52,7 @@ function koFi({ ngrokUrl, app }) {
         amount,
       });
     } catch (e) {
-      logger.error("☕ Ko-fi Webhook", e);
+      logger.error(e.message || e);
     }
 
     response.sendStatus(200);

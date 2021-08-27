@@ -2,7 +2,8 @@ const { EventEmitter } = require("events");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
 
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+const logger = new Logger("🌯 Twitch EventSub");
 
 let RECENT_EVENTSUB_MESSAGES = [];
 const IGNORE_DUPLICATE_EVENTSUB_MESSAGES = true;
@@ -10,7 +11,7 @@ const IGNORE_OLD_MESSAGES = true;
 const { TWITCH_EVENTSUB_SECRET } = process.env;
 
 function verifyEventSubSCallback(request, _response, buffer) {
-  logger.debug("🌯 Twitch EventSub", "Verifying webhook request");
+  logger.debug("Verifying webhook request");
   request.isFromTwitch = false;
 
   if (
@@ -21,7 +22,6 @@ function verifyEventSubSCallback(request, _response, buffer) {
     )
   ) {
     logger.debug(
-      "🌯 Twitch EventSub",
       "Request contains message signature, calculating verification signature"
     );
     request.isFromTwitch = true;
@@ -51,7 +51,6 @@ function eventSubExpress(app) {
     (request, response) => {
       if (!request.isFromTwitch) {
         logger.error(
-          "🌯 Twitch EventSub",
           "Received unauthorized request to webhooks endpoint"
         );
         response
@@ -62,7 +61,6 @@ function eventSubExpress(app) {
 
       if (request.twitchSignature !== request.calculatedSignature) {
         logger.error(
-          "🌯 Twitch EventSub",
           `Request message signature ${request.twitchSignature} does not match calculated signature ${request.calculatedSignature}`
         );
         response.status(403).send("Request signature mismatch");
@@ -78,7 +76,6 @@ function eventSubExpress(app) {
           "webhook_callback_verification"
       ) {
         logger.debug(
-          "🌯 Twitch EventSub",
           `Received challenge for ${request.body.subscription.type}, ${request.body.subscription.id}. Returning challenge.`
         );
         response
@@ -101,7 +98,6 @@ function eventSubExpress(app) {
         RECENT_EVENTSUB_MESSAGES[messageId]
       ) {
         logger.debug(
-          "🌯 Twitch EventSub",
           `Received duplicate notification with message id ${messageId}`
         );
         canFire = false;
@@ -115,7 +111,6 @@ function eventSubExpress(app) {
 
       if (IGNORE_OLD_MESSAGES && messageAge > 600000) {
         logger.debug(
-          "🌯 Twitch EventSub",
           `Received old notification with message id ${messageId}`
         );
         canFire = false;

@@ -1,10 +1,11 @@
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+const logger = new Logger("🌯 Twitch EventSub");
 
 const eventSubExpress = require("./twitch-eventsub-express");
 
 // https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types
 async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
-  logger.info("🌯 Twitch EventSub", "Starting...");
+  logger.info("Starting...");
   const expressEvents = eventSubExpress(app);
 
   async function subscribeToTopic(topic, callback) {
@@ -23,16 +24,12 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
 
       await twitchApi.eventSub.subscribe(topic);
 
-      logger.info(
-        "🌯 Twitch EventSub",
-        `${topic} subscription successful`
-      );
+      logger.info(`${topic} subscription successful`);
     } catch (e) {
       logger.error(
-        "🌯 Twitch EventSub",
         `${topic} failed: ${typeof e === "string" ? e : e.message}`
       );
-      logger.error("🌯 Twitch EventSub", e);
+      logger.error(e);
     }
   }
 

@@ -1,6 +1,9 @@
 const fetch = require("node-fetch");
 const cache = require("memory-cache");
 
+const Logger = require("../../helpers/logger");
+const logger = new Logger("🏷 Twitch Pronouns");
+
 const BASE_API_ENDPOINT = "https://pronouns.alejo.io/api";
 
 const CACHE_KEY = "PRONOUNS";
@@ -26,8 +29,23 @@ async function callAPI(endpoint) {
   return json;
 }
 
+let getAvailablePronounsRequestAttempts = 0;
 async function getAvailablePronouns() {
-  return callAPI("/pronouns");
+  getAvailablePronounsRequestAttempts += 1;
+
+  if (getAvailablePronounsRequestAttempts > 5) {
+    throw new Error("Couldn't get pronouns");
+  }
+
+  let pronouns;
+  try {
+    pronouns = await callAPI("/pronouns");
+  } catch (e) {
+    logger.warn("Couldn't get pronouns trying again...");
+    return getAvailablePronouns();
+  }
+
+  return pronouns;
 }
 
 async function getUserPronounsData(username = "") {
@@ -62,9 +80,15 @@ async function getUserPronouns(username) {
   return pronoun.display.toLowerCase();
 }
 
-// on file load get current pronouns available
-getAvailablePronouns().then((pronouns) => {
-  PRONOUNS = pronouns;
-});
+async function main() {
+  // on file load get current pronouns available
+  try {
+    PRONOUNS = await getAvailablePronouns();
+    logger.info("Got pronouns");
+  } catch (e) {
+    logger.error(e.message || e);
+  }
+}
+main();
 
 module.exports = getUserPronouns;

@@ -1,7 +1,8 @@
 const fetch = require("node-fetch");
 const { stringify: queryStringStringify } = require("qs");
 
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+const logger = new Logger("💩 Twitch API");
 
 const getUserPronouns = require("./helpers/pronouns");
 
@@ -64,7 +65,7 @@ function callTwitchAPIBuilder(oAuthToken) {
         ...fetchOptions,
       });
     } catch (e) {
-      logger.error("💩 Twitch API", e);
+      logger.error(e.message || e);
     }
 
     if (!response) {
@@ -78,7 +79,6 @@ function callTwitchAPIBuilder(oAuthToken) {
 
     if (rateLimitRemaining / rateLimit < 0.33) {
       logger.error(
-        "💩 Twitch API",
         `Twitch API Call Rate limit: ${rateLimitRemaining}/${rateLimit}`
       );
     }
@@ -91,11 +91,11 @@ function callTwitchAPIBuilder(oAuthToken) {
     const json = await response.json();
 
     if (json.error) {
-      logger.error("💩 Twitch API", json.message);
+      logger.error(json.message);
     }
 
     if (!json) {
-      logger.error("💩 Twitch API", `No data for: ${url}`);
+      logger.error(`No data for: ${url}`);
       return;
     }
 

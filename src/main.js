@@ -25,9 +25,12 @@ const obs = require("./obs");
 const createGoosebumpsBookImage = require("./goosebumps");
 
 const { schedule } = require("./helpers/schedule");
-const logger = require("./helpers/logger");
+const Logger = require("./helpers/logger");
 const { initialiseHueBulbs } = require("./helpers/hue-bulbs");
 const detectFaces = require("./helpers/detect-faces");
+
+const logger = new Logger("🛸 Streaming Tools Server");
+const clientLogger = new Logger("👽 Streaming Tools Client");
 
 const app = express();
 const server = http.createServer(app);
@@ -156,13 +159,13 @@ function sendAlertToClient(options) {
 }
 
 async function switchToBRBScene() {
-  logger.info("🗺 Scene change", "BRB");
+  logger.info("🗺 Scene change: BRB");
   try {
     const image = await obs.getWebcamImage();
     await saveScreenshotToBrbScreen(image);
     await obs.switchToScene("BRB");
   } catch (e) {
-    logger.error("🤖 Streaming Tools", e.message);
+    logger.error(e.message || e);
   }
 }
 
@@ -199,9 +202,11 @@ function getStreamingService() {
 
 async function main() {
   // reset lights for streaming
-  initialiseHueBulbs().catch((error) =>
-    logger.error("💡 Hue Bulbs", error.message)
-  );
+  try {
+    await initialiseHueBulbs();
+  } catch (e) {
+    logger.error(`💡 Hue Bulbs errored ${e.message || e}`);
+  }
 
   // initialise various things
   await obs.initialise();
@@ -310,7 +315,7 @@ async function main() {
   // set and update channel info
   CURRENT_CHANNEL_INFO = await streamingService.getChannelInfo();
   streamingService.on("channelInfo", async (channelInfo) => {
-    logger.info("🤖 Streaming Tools", "Updating channel info");
+    logger.info("Updating channel info");
     CURRENT_CHANNEL_INFO = channelInfo;
   });
 
@@ -320,7 +325,6 @@ async function main() {
       await googleSheetCommands.getScheduledCommands();
     scheduledCommands.forEach((scheduledCommand) => {
       logger.info(
-        "🤖 Streaming Tools",
         `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
       );
       schedule(scheduledCommand.schedule, () => {
@@ -328,10 +332,7 @@ async function main() {
       });
     });
   } catch (e) {
-    logger.info(
-      "🤖 Streaming Tools",
-      "Couldn't run scheduled commands"
-    );
+    logger.info("Couldn't run scheduled commands");
   }
 
   streamingService.on("subscribe", (data) => {
@@ -528,14 +529,14 @@ async function main() {
       }
 
       if (title === "imma bee") {
-        logger.log("🐝 Imma bee", "Triggered...");
+        logger.log("🐝 Imma bee triggered...");
 
         try {
           const image = await obs.getWebcamImage();
           await createBeeImage(image);
           sendAlertToClient({ type: "immabee" });
         } catch (e) {
-          logger.error("🐝 Imma bee", JSON.stringify(e));
+          logger.error(`🐝 Imma bee ${JSON.stringify(e)}`);
           streamingService.chat.sendMessage(
             `Couldn't find Zac's face...`
           );
@@ -543,17 +544,17 @@ async function main() {
       }
 
       if (title === "big data") {
-        logger.log("😎 Big Data", "Triggered...");
+        logger.log("😎 Big Data triggered...");
         sendAlertToClient({ type: "bigdata" });
       }
 
       if (title === "ally phil") {
-        logger.log("🥊 Phil Punch", "Triggered...");
+        logger.log("🥊 Phil Punch triggered...");
         sendAlertToClient({ type: "philpunch", message });
       }
 
       if (title === "SPACE") {
-        logger.log("🌌 SPACE", "Triggered...");
+        logger.log("🌌 SPACE triggered...");
         turnOnOverlay("Star Trek Space Video", 103 * 1000);
         setTimeout(() => {
           turnOnOverlay("Star Trek Slideshow", 53 * 1000);
@@ -564,23 +565,23 @@ async function main() {
       }
 
       if (title === "snowball") {
-        logger.log("❄ Snowball", "Triggered...");
+        logger.log("❄ Snowball triggered...");
         await detectFacesSendToClient();
         sendAlertToClient({ type: "penguin-throw" });
       }
 
       if (title === "barry") {
-        logger.log(" Barry", "Triggered...");
+        logger.log(" Barry triggered...");
         turnOnOverlay("Barry Singing", 104 * 1000);
       }
 
       if (title === "BroomyJagRace") {
-        logger.log("🚗 BroomyJagRace", "Triggered...");
+        logger.log("🚗 BroomyJagRace triggered...");
         turnOnOverlay("BroomyJagRace");
       }
 
       if (title === "goosebumpz book") {
-        logger.log("📚 Goosebumps Book", "Triggered...");
+        logger.log("📚 Goosebumps Book triggered...");
         try {
           const { bookTitle } = await createGoosebumpsBookImage(
             message
@@ -589,7 +590,7 @@ async function main() {
           CURRENT_GOOSEBUMP_BOOK = bookTitle;
           await obs.switchToScene("Goosebumps");
         } catch (e) {
-          logger.error("📚 Goosebumps Book", e);
+          logger.error(`📚 Goosebumps Book ${e.message || e}`);
           streamingService.chat.sendMessage(
             `Couldn't generate a book for ${message}`
           );
@@ -910,7 +911,7 @@ async function main() {
   });
 
   io.on("connection", async (socket) => {
-    logger.info("👽 Stream Client", "Connected");
+    clientLogger.info("Connected");
 
     const followTotal = await streamingService.getFollowTotal();
     const currentTrack = await music.getCurrentTrack();
@@ -924,7 +925,7 @@ async function main() {
     });
 
     socket.on("disconnect", () => {
-      logger.info("👽 Stream Client", "Disconnected");
+      clientLogger.info("Disconnected");
     });
   });
 }
@@ -932,8 +933,5 @@ async function main() {
 main();
 
 server.listen(PORT, () => {
-  logger.info(
-    "🛸 Stream Server",
-    `Listening on http://localhost:${PORT}`
-  );
+  logger.info(`Listening on http://localhost:${PORT}`);
 });

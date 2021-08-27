@@ -1,6 +1,8 @@
 const { EventEmitter } = require("events");
 const WebSocket = require("ws");
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+
+const logger = new Logger("▶️ Glimesh");
 
 const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
 
@@ -195,7 +197,7 @@ async function GlimeshEvents({ accessToken, moderators }) {
   }
 
   connection.on("message", async (data) => {
-    logger.debug("💎 Glimesh", data);
+    logger.debug(data);
     const message = getMessage(data);
 
     if (!message) {
@@ -223,7 +225,7 @@ async function GlimeshEvents({ accessToken, moderators }) {
       try {
         await handleChatMessage(message.result.data.chatMessage);
       } catch (error) {
-        logger.error("💎 Glimesh", error.message);
+        logger.error(error.message);
       }
     }
 
@@ -234,7 +236,7 @@ async function GlimeshEvents({ accessToken, moderators }) {
       try {
         await handleFollows(message.result.data.follows);
       } catch (error) {
-        logger.error("💎 Glimesh", error.message);
+        logger.error(error.message);
       }
     }
   });

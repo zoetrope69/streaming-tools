@@ -5,7 +5,8 @@ const { EventEmitter } = require("events");
 const GlimeshAPI = require("./glimesh-api");
 const GlimeshEvents = require("./glimesh-events");
 
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+const logger = new Logger("▶️ Glimesh");
 
 async function Glimesh() {
   const eventEmitter = new EventEmitter();
@@ -25,12 +26,12 @@ async function Glimesh() {
   });
 
   chat.on("join", () => {
-    logger.info("💎 Glimesh", "Bot connected");
+    logger.info("Bot connected");
   });
 
   // debug testing
   eventEmitter.on("follow", (user) => {
-    logger.info("✅ Glimesh User Followed", user);
+    logger.log(user);
   });
 
   return Object.assign(eventEmitter, glimeshAPI, {

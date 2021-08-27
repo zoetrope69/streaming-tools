@@ -6,7 +6,8 @@ const {
   markdownToTxt: markdownToPlainText,
 } = require("markdown-to-txt");
 
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
+const logger = new Logger("▶️ Glimesh");
 
 const BASE_URL = "https://glimesh.tv/api";
 const REFRESH_TOKEN_PATH = path.join(
@@ -42,7 +43,7 @@ function saveRefreshTokenToFile(refreshToken) {
   const jsonString = JSON.stringify({ refreshToken }, null, 2);
   fs.writeFile(REFRESH_TOKEN_PATH, jsonString, (error) => {
     if (error) {
-      return logger.error("▶️ Glimesh", error);
+      return logger.error(error.message || error);
     }
   });
 }
@@ -133,10 +134,7 @@ async function getAccessTokenWithRefreshToken() {
 
   if (json.error) {
     if (json.error === "invalid_refresh_token") {
-      logger.info(
-        "▶️ Glimesh",
-        `⚠ Can't authorize Glimesh ${createAuthURL()}`
-      );
+      logger.info(`⚠ Can't authorize Glimesh ${createAuthURL()}`);
 
       const authCode = await getAuthCodeFromCommandLineUrl();
       const newJson = await getRefreshTokenFromAuthCode({ authCode });

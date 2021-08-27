@@ -2,7 +2,9 @@ const { EventEmitter } = require("events");
 const tmi = require("tmi.js");
 
 const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
-const logger = require("../helpers/logger");
+
+const Logger = require("../helpers/logger");
+const logger = new Logger("🤖 Twitch Bot");
 
 const {
   TWITCH_CLIENT_ID,
@@ -53,36 +55,38 @@ async function TwitchBot({ eventEmitter }) {
     },
     channels: [TWITCH_BROADCASTER_NAME],
     logger: {
-      info: (message) => logger.info("🤖 Twitch Bot", message),
-      warn: (message) => logger.warn("🤖 Twitch Bot", message),
-      error: (message) => logger.error("🤖 Twitch Bot", message),
+      info: (message) => logger.info(message),
+      warn: (message) => logger.warn(message),
+      error: (message) => logger.error(message),
     },
   });
 
-  botClient.connect().catch((e) => {
-    logger.error("🤖 Twitch Bot", e);
-  });
+  try {
+    botClient.connect();
+  } catch (e) {
+    logger.error(e.message || e);
+  }
 
-  logger.info("🤖 Twitch Bot", "Starting...");
+  logger.info("Starting...");
 
   botClient.on("part", (channel) => {
-    logger.info("🤖 Twitch Bot", `Left: ${channel}`);
+    logger.info(`Left: ${channel}`);
   });
 
   botClient.on("connected", () => {
-    logger.info("🤖 Twitch Bot", `Connected`);
+    logger.info(`Connected`);
   });
 
   botClient.on("join", (channel) => {
-    logger.info("🤖 Twitch Bot", `Joined channel: ${channel}`);
+    logger.info(`Joined channel: ${channel}`);
   });
 
   botClient.on("error", (err) => {
-    logger.error("🤖 Twitch Bot", err);
+    logger.error(err);
   });
 
   botClient.on("close", () => {
-    logger.info("🤖 Twitch Bot", "Closed bot IRC connection");
+    logger.info("Closed bot IRC connection");
   });
 
   botClient.on("message", async (_channel, data, message, self) => {
@@ -92,7 +96,7 @@ async function TwitchBot({ eventEmitter }) {
       username === TWITCH_BROADCASTER_NAME ||
       badges?.broadcaster === 1;
 
-    logger.log("🤖 Twitch Bot", `Message from chat: ${message}`);
+    logger.log(`Message from chat: ${message}`);
 
     const { command, commandArguments } = getCommand(message);
 

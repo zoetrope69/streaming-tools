@@ -2,8 +2,10 @@ const { EventEmitter } = require("events");
 const getSpotifyRecentTrack = require("./spotify");
 const getLastFmRecentTrack = require("./last-fm");
 
-const logger = require("../helpers/logger");
+const Logger = require("../helpers/logger");
 const { getAlbumArtColors } = require("./helpers");
+
+const logger = new Logger("🎸 Music");
 
 const {
   SPOTIFY_AUTH_REDIRECT_URI,
@@ -44,7 +46,7 @@ async function getCurrentTrack() {
       );
     }
   } catch (e) {
-    logger.error("🎸 Music", e.message);
+    logger.error(e.message);
   }
 
   return track;
@@ -63,7 +65,7 @@ function music() {
     return eventEmitter;
   }
 
-  logger.info("🎸 Music", "Checking for new now playing song...");
+  logger.info("Checking for new now playing song...");
   // run as soon as we launch script
   // run every 3 seconds after that
   emitCurrentTrack(eventEmitter);

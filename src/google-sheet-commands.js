@@ -2,7 +2,8 @@ const cache = require("memory-cache");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 
 const googleCredentials = require("../google-credentials.json");
-const logger = require("./helpers/logger");
+const Logger = require("./helpers/logger");
+const logger = new Logger("🐑 Google Sheet");
 
 const SPREADSHEET_ID = "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA";
 const CACHE_KEY = "COMMANDS";
@@ -31,7 +32,7 @@ async function getSpreadsheet() {
 }
 
 async function getCommands() {
-  logger.info("🐑 Google Sheet", "Getting commands...");
+  logger.info("Getting commands...");
 
   const sheet = await getSpreadsheet();
   const rows = await sheet.getRows();
@@ -49,7 +50,7 @@ async function getCommands() {
 
 async function getCachedCommands() {
   if (!hasCredentials()) {
-    logger.error("🐑 Google Sheet", "No environment variables");
+    logger.error("No environment variables");
     return [];
   }
 
@@ -73,13 +74,10 @@ async function getScheduledCommands() {
       (command) => command.schedule
     );
 
-    logger.info(
-      "🐑 Google Sheet",
-      `${scheduledCommands.length} commands`
-    );
+    logger.info(`${scheduledCommands.length} commands`);
     return scheduledCommands;
   } catch (e) {
-    logger.error("🐑 Google Sheet", e.message || e);
+    logger.error(e.message || e);
   }
 }
 

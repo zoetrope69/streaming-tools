@@ -50,7 +50,7 @@
     "markdown-to-txt": "^1.0.1",
     "nodemon": "^2.0.12",
     "prettier": "2.3.2",
-    "ws": "^7.4.6"
+    "ws": "7.5.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.3",

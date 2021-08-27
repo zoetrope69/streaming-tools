@@ -36,14 +36,6 @@ let GOOGLE_SHEET_COMMANDS = [];
 const logger = new Logger("🛸 Streaming Tools Server");
 const clientLogger = new Logger("👽 Streaming Tools Client");
 
-// To implement:
-// glimesh twitch.on('channelInfo')
-// glimesh twitch.on('follow') <-
-// glimesh twitch.bot.timeout
-// TODO mute spotify ability when doing goosebumps, barry, space, amelia drink
-// random crashes what
-// too long axolotl botl chatting. i think its reading out the wrong thing
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);

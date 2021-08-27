@@ -7,36 +7,33 @@ const { v4: randomID } = require("uuid");
 const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
-const ngrok = require("ngrok");
 
-const { schedule } = require("./src/helpers/schedule");
-
-const logger = require("./src/helpers/logger");
-
-const Glimesh = require("./src/glimesh");
-const Twitch = require("./src/twitch");
-const Music = require("./src/music");
-const KoFi = require("./src/ko-fi");
-const googleSheetCommands = require("./src/google-sheet-commands");
-const createBeeImage = require("./src/imma-bee/create-bee-image");
-const detectFaces = require("./src/helpers/detect-faces");
-const saveScreenshotToBrbScreen = require("./src/save-screenshot-to-brb-screen");
-const textToSpeech = require("./src/text-to-speech");
-const { initialiseHueBulbs } = require("./src/helpers/hue-bulbs");
+const Glimesh = require("./glimesh");
+const Twitch = require("./twitch");
+const Music = require("./music");
+const KoFi = require("./ko-fi");
+const googleSheetCommands = require("./google-sheet-commands");
+const createBeeImage = require("./imma-bee/create-bee-image");
+const saveScreenshotToBrbScreen = require("./save-screenshot-to-brb-screen");
+const textToSpeech = require("./text-to-speech");
 const {
   getPrideFlag,
   getRandomPrideFlag,
   setLightsToPrideFlag,
-} = require("./src/pride-flags");
-const obs = require("./src/obs");
-const createGoosebumpsBookImage = require("./src/goosebumps");
+} = require("./pride-flags");
+const obs = require("./obs");
+const createGoosebumpsBookImage = require("./goosebumps");
+
+const { schedule } = require("./helpers/schedule");
+const logger = require("./helpers/logger");
+const { initialiseHueBulbs } = require("./helpers/hue-bulbs");
+const detectFaces = require("./helpers/detect-faces");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const { NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT, STREAMING_SERVICE } =
-  process.env;
+const { NGROK_URL, PORT, STREAMING_SERVICE } = process.env;
 const IS_GLIMESH = STREAMING_SERVICE === "glimesh";
 const CLIENT_FILE_PATH = "client/build";
 let STEVE_HAS_TALKED = false;
@@ -192,35 +189,6 @@ async function turnOnOverlay(source, timeout) {
   }, 100); // wait 100 ms i guess
 }
 
-async function createNgrokUrl() {
-  let ngrokUrl;
-
-  if (!(NGROK_AUTH_TOKEN && NGROK_SUBDOMAIN && PORT)) {
-    logger.error("👽 Ngrok", "No environment variables");
-    return null;
-  }
-
-  try {
-    ngrokUrl = await ngrok.connect({
-      addr: PORT,
-      authtoken: NGROK_AUTH_TOKEN,
-      region: "eu",
-      subdomain: NGROK_SUBDOMAIN,
-    });
-  } catch (error) {
-    logger.error("👽 Ngrok", error.message);
-  }
-
-  if (!ngrokUrl) {
-    logger.error("👽 Ngrok", "No Ngrok URL");
-    return null;
-  }
-
-  logger.info("👽 Ngrok", `URL: ${ngrokUrl}`);
-
-  return ngrokUrl;
-}
-
 function getStreamingService() {
   if (IS_GLIMESH) {
     return Glimesh;
@@ -237,11 +205,13 @@ async function main() {
 
   // initialise various things
   await obs.initialise();
-  const ngrokUrl = await createNgrokUrl();
   const StreamingService = getStreamingService();
-  const streamingService = await StreamingService({ ngrokUrl, app });
+  const streamingService = await StreamingService({
+    ngrokUrl: NGROK_URL,
+    app,
+  });
   const music = Music();
-  const kofi = KoFi({ ngrokUrl, app });
+  const kofi = KoFi({ ngrokUrl: NGROK_URL, app });
 
   kofi.on("payment", ({ type, isAnonymous, user }) => {
     if (type === "Donation") {

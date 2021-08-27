@@ -10,4 +10,9 @@ module.exports = function (config) {
       },
     ];
   }
+
+  // don't warn about big files
+  config.performance = {
+    hints: false,
+  };
 };

@@ -3,7 +3,7 @@
   "name": "streaming-tools-client",
   "version": "0.0.0",
   "scripts": {
-    "build": "preact build --no-prerender --no-sw --no-esm --no-json --no-inline-css --verbose",
+    "build": "preact build --no-prerender --no-sw --no-esm --no-json --no-inline-css",
     "dev": "preact watch",
     "lint": "eslint src"
   },

@@ -2,9 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const fetch = require("node-fetch");
 const { prompt } = require("enquirer");
-const {
-  markdownToTxt: markdownToPlainText,
-} = require("markdown-to-txt");
 
 const Logger = require("../helpers/logger");
 const logger = new Logger("▶️ Glimesh");
@@ -204,20 +201,15 @@ async function GlimeshAPI() {
           user(username: "${username}") {
             avatarUrl
             displayname
-            profileContentMd
           }
         }
       `
     );
 
-    const { avatarUrl, displayname, profileContentMd } =
-      query.data.user;
+    const { avatarUrl, displayname } = query.data.user;
 
     return {
       username: displayname,
-      description: profileContentMd
-        ? markdownToPlainText(profileContentMd).trim()
-        : null,
       image: avatarUrl,
       pronouns: null, // No way to get these yet
     };

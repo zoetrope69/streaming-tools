@@ -113,11 +113,10 @@ async function getUser(callTwitchAPI, username) {
   }
 
   const [userData] = response.data;
-  const { description, display_name, profile_image_url } = userData;
+  const { display_name, profile_image_url } = userData;
 
   return {
     username: display_name,
-    description,
     image: profile_image_url,
   };
 }

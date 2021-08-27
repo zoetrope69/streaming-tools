@@ -13,7 +13,7 @@ async function createNgrokUrl() {
   let ngrokUrl;
 
   if (!(NGROK_AUTH_TOKEN && NGROK_SUBDOMAIN && PORT)) {
-    logger.error("👽 Ngrok", "No environment variables");
+    logger.error("👽 ngrok", "No environment variables");
     return null;
   }
 
@@ -25,15 +25,15 @@ async function createNgrokUrl() {
       subdomain: NGROK_SUBDOMAIN,
     });
   } catch (error) {
-    logger.error("👽 Ngrok", error.message);
+    logger.error("👽 ngrok", error.message);
   }
 
   if (!ngrokUrl) {
-    logger.error("👽 Ngrok", "No Ngrok URL");
+    logger.error("👽 ngrok", "No Ngrok URL");
     return null;
   }
 
-  logger.info("👽 Ngrok", `URL: ${ngrokUrl}`);
+  logger.info("👽 ngrok", `URL: ${ngrokUrl}`);
 
   return ngrokUrl;
 }
@@ -43,21 +43,21 @@ async function main() {
 
   const nodemonProcess = nodemon({
     script: "./src/main",
-    exec: `NGROK_URL=${ngrokUrl} node`,
+    exec: `NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
     // disable watch mode in production
     watch: NODE_ENV === "production" ? [".env"] : [".env", "src/"],
   });
 
   if (NODE_ENV === "production") {
-    logger.info("😈 Nodemon", "In production mode, no refreshing");
+    logger.debug("😈 Nodemon", "In production mode, no refreshing");
   }
 
   nodemonProcess.on("start", () => {
-    logger.info("😈 Nodemon", "The application has started");
+    logger.debug("😈 Nodemon", "The application has started");
   });
 
   nodemonProcess.on("restart", (files) => {
-    logger.info("😈 Nodemon", "Application restarted due to:");
+    logger.debug("😈 Nodemon", "Application restarted due to:");
     /* eslint-disable no-console */
     console.group();
     files.forEach((file) => console.log(file));
@@ -66,7 +66,7 @@ async function main() {
   });
 
   nodemonProcess.on("quit", async () => {
-    logger.info(
+    logger.debug(
       "😈 Nodemon",
       "The application has quit, closing ngrok tunnel"
     );

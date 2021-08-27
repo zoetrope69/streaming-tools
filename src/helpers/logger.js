@@ -1,6 +1,7 @@
 const chalk = require("chalk");
 
-const DEBUG = false;
+const { NODE_ENV } = process.env;
+const DEBUG = NODE_ENV !== "production";
 
 const LOG_TYPES_TO_COLOR = {
   log: "yellow",

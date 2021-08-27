@@ -195,7 +195,7 @@ async function GlimeshEvents({ accessToken, moderators }) {
   }
 
   connection.on("message", async (data) => {
-    logger.info("💎 Glimesh", data);
+    logger.debug("💎 Glimesh", data);
     const message = getMessage(data);
 
     if (!message) {

@@ -8,12 +8,10 @@
     "build": "npm run build:client",
     "build:client": "cd client && npm run build",
     "prestart": "npm run build",
-    "start": "NODE_ENV=production GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node entry.js --unhandled-rejections=strict",
+    "start": "NODE_ENV=production node entry.js --unhandled-rejections=strict --trace-warnings",
     "start-glimesh": "STREAMING_SERVICE=glimesh npm start",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "NODE_ENV=development node entry.js --unhandled-rejections=strict --trace-warnings",
     "dev-glimesh": "STREAMING_SERVICE=glimesh npm run dev",
-    "dev:server": "NODE_ENV=development GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings entry.js",
-    "dev-glimesh:server": "STREAMING_SERVICE=glimesh npm run dev:server",
     "dev:client": "cd client && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint"
@@ -43,7 +41,6 @@
   },
   "devDependencies": {
     "chalk": "4.1.2",
-    "concurrently": "6.2.1",
     "dotenv": "10.0.0",
     "enquirer": "2.3.6",
     "eslint": "7.32.0",

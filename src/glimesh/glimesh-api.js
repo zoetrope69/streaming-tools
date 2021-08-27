@@ -11,7 +11,7 @@ const logger = require("../helpers/logger");
 const BASE_URL = "https://glimesh.tv/api";
 const REFRESH_TOKEN_PATH = path.join(
   __dirname,
-  "/glimesh-refresh-token.json"
+  "/../../glimesh-refresh-token.json"
 );
 
 async function queryAPI(accessToken, query) {

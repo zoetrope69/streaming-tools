@@ -43,8 +43,8 @@ async function getCurrentTrack() {
         track.albumArtURL
       );
     }
-  } catch (exception) {
-    logger.error("🎸 Music", exception);
+  } catch (e) {
+    logger.error("🎸 Music", e.message);
   }
 
   return track;

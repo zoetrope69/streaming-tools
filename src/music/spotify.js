@@ -152,13 +152,21 @@ async function getAuthWithRefreshToken(refreshToken) {
 }
 
 async function getAccessToken() {
-  let response = await getAuthWithRefreshToken(SPOTIFY_REFRESH_TOKEN);
+  let response;
+  try {
+    response = await getAuthWithRefreshToken(SPOTIFY_REFRESH_TOKEN);
+  } catch (e) {
+    logger.error("🎶 Spotify", e.message);
+    response = await getAuthManually();
+  }
 
   if (response.error) {
     if (response.error === "invalid_grant") {
       response = await getAuthManually();
     } else {
-      throw new Error(response.error_description);
+      throw new Error(
+        `${response.error} ${response.error_description}`
+      );
     }
   }
 

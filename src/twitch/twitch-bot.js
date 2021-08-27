@@ -1,4 +1,6 @@
+const { EventEmitter } = require("events");
 const tmi = require("tmi.js");
+
 const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
 const logger = require("../helpers/logger");
 
@@ -33,6 +35,8 @@ async function waitForTwitchBotToBeReady(botClient) {
 }
 
 async function TwitchBot({ eventEmitter }) {
+  const chatEventEmitter = new EventEmitter();
+
   const botClient = new tmi.Client({
     options: {
       clientId: TWITCH_CLIENT_ID,
@@ -96,7 +100,8 @@ async function TwitchBot({ eventEmitter }) {
       message,
       emotes
     );
-    eventEmitter.emit("message", {
+
+    chatEventEmitter.emit("message", {
       isBot: self,
       isMod,
       isBroadcaster,
@@ -146,7 +151,7 @@ async function TwitchBot({ eventEmitter }) {
   await waitForTwitchBotToBeReady(botClient);
 
   return {
-    chat: {
+    chat: Object.assign(chatEventEmitter, {
       sendMessage: (message) => {
         return botClient.say(TWITCH_BROADCASTER_NAME, message);
       },
@@ -158,8 +163,7 @@ async function TwitchBot({ eventEmitter }) {
           reason
         );
       },
-    },
-    eventEmitter,
+    }),
   };
 }
 

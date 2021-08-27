@@ -914,7 +914,7 @@ async function main() {
 
     const followTotal = await streamingService.getFollowTotal();
     const currentTrack = await music.getCurrentTrack();
-    io.emit("data", {
+    socket.emit("data", {
       track: currentTrack,
       followTotal,
       popUpMessage: POPUP_MESSAGE,

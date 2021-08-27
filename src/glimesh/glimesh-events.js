@@ -52,8 +52,8 @@ async function GlimeshEvents({ accessToken, moderators }) {
     ]);
   }
 
-  function getMessage(data) {
-    let message;
+  function getMessage(data, isBinary) {
+    let message = isBinary ? data : data.toString();
     try {
       const json = JSON.parse(data);
       message = json[json.length - 1];
@@ -196,9 +196,9 @@ async function GlimeshEvents({ accessToken, moderators }) {
     });
   }
 
-  connection.on("message", async (data) => {
-    logger.debug(data);
-    const message = getMessage(data);
+  connection.on("message", async (data, isBinary) => {
+    const message = getMessage(data, isBinary);
+    logger.debug(message);
 
     if (!message) {
       return;

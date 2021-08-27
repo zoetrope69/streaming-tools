@@ -9,9 +9,7 @@
     "build:client": "cd client && npm run build",
     "prestart": "npm run build",
     "start": "NODE_ENV=production node entry.js --unhandled-rejections=strict --trace-warnings",
-    "start-glimesh": "STREAMING_SERVICE=glimesh npm start",
-    "dev": "NODE_ENV=development node entry.js --unhandled-rejections=strict --trace-warnings",
-    "dev-glimesh": "STREAMING_SERVICE=glimesh npm run dev",
+    "dev": "NODE_EN1V=development node entry.js --unhandled-rejections=strict --trace-warnings",
     "dev:client": "cd client && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint"

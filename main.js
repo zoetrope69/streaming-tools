@@ -469,6 +469,22 @@ async function main() {
     }
   );
 
+  async function danceWithMe(username) {
+    const newDancer = await streamingService.getUser(username);
+    newDancer.id = randomID();
+    CURRENT_DANCERS.push(newDancer);
+
+    io.emit("data", { dancers: CURRENT_DANCERS });
+
+    setTimeout(() => {
+      // remove from array
+      CURRENT_DANCERS = CURRENT_DANCERS.filter((dancer) => {
+        dancer.id !== newDancer.id;
+      });
+      io.emit("data", { dancers: CURRENT_DANCERS });
+    }, 1000 * 60 * 3 + 5000); // 2 minutes (+ wait for it to fade out on client)
+  }
+
   streamingService.on(
     "channelPointRewardFulfilled",
     async ({ reward, user }) => {
@@ -480,21 +496,7 @@ async function main() {
       }
 
       if (title === "dance with zac") {
-        const newDancer = await streamingService.getUser(
-          user.username
-        );
-        newDancer.id = randomID();
-        CURRENT_DANCERS.push(newDancer);
-
-        io.emit("data", { dancers: CURRENT_DANCERS });
-
-        setTimeout(() => {
-          // remove from array
-          CURRENT_DANCERS = CURRENT_DANCERS.filter((dancer) => {
-            dancer.id !== newDancer.id;
-          });
-          io.emit("data", { dancers: CURRENT_DANCERS });
-        }, 1000 * 60 * 3 + 5000); // 2 minutes (+ wait for it to fade out on client)
+        await danceWithMe(user.username);
       }
 
       if (title === "pog") {
@@ -640,6 +642,10 @@ async function main() {
       user,
       tokens = [],
     }) => {
+      if (command === "dance") {
+        await danceWithMe(user.username);
+      }
+
       if (command === "song" || command === "music") {
         const currentTrack = await music.getCurrentTrack();
 

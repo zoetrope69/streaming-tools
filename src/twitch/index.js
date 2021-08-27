@@ -1,8 +1,9 @@
-const { EventEmitter } = require("events");
-const TwitchAPI = require("./twitch-api");
-const TwitchEventSub = require("./twitch-eventsub");
-const TwitchBot = require("./twitch-bot");
-const twitchShoutOuts = require("./helpers/shout-outs");
+import { EventEmitter } from "events";
+
+import TwitchAPI from "./twitch-api.js";
+import TwitchEventSub from "./twitch-eventsub.js";
+import TwitchBot from "./twitch-bot.js";
+import twitchShoutOuts from "./helpers/shout-outs.js";
 
 async function Twitch({ ngrokUrl, app }) {
   const eventEmitter = new EventEmitter();
@@ -22,4 +23,4 @@ async function Twitch({ ngrokUrl, app }) {
   });
 }
 
-module.exports = Twitch;
+export default Twitch;

@@ -1,7 +1,7 @@
-const Logger = require("../helpers/logger");
-const logger = new Logger("🌯 Twitch EventSub");
+import eventSubExpress from "./twitch-eventsub-express.js";
 
-const eventSubExpress = require("./twitch-eventsub-express");
+import Logger from "../helpers/logger.js";
+const logger = new Logger("🌯 Twitch EventSub");
 
 // https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types
 async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
@@ -123,4 +123,4 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   return eventEmitter;
 }
 
-module.exports = TwitchEventSub;
+export default TwitchEventSub;

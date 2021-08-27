@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
 const VOICES = [
   "Brian",
@@ -52,4 +52,4 @@ async function getAudioURLs(text) {
   return getAudioURL({ voice: randomVoice, text });
 }
 
-module.exports = getAudioURLs;
+export default getAudioURLs;

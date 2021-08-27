@@ -53,6 +53,7 @@ const PopUpMessage = ({ currentMessage }) => {
       />
       <p
         className={styles["PopUpMessage__sign"]}
+        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: message }}
       />
     </div>

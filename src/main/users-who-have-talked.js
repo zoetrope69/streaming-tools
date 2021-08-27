@@ -17,6 +17,4 @@ function firstTimeTalking(username, callback) {
   callback();
 }
 
-module.exports = {
-  firstTimeTalking,
-};
+export { firstTimeTalking };

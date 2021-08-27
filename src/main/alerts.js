@@ -1,4 +1,4 @@
-const { v4: randomID } = require("uuid");
+import { v4 as randomID } from "uuid";
 
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
@@ -103,4 +103,4 @@ class Alerts {
   }
 }
 
-module.exports = Alerts;
+export default Alerts;

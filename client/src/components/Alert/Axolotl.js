@@ -2,7 +2,7 @@ import { h, Fragment } from "preact";
 import { useEffect } from "preact/hooks";
 import classNames from "classnames";
 
-import SVGClipPath from "../helpers/SVGClipPath";
+import SVGClipPath from "../helpers/SVGClipPath.js";
 
 import styles from "./Axolotl.css";
 

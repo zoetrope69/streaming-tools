@@ -1,5 +1,5 @@
-const humanToCron = require("human-to-cron");
-const cron = require("node-cron");
+import humanToCron from "human-to-cron";
+import cron from "node-cron";
 
 const { TIMEZONE } = process.env;
 
@@ -9,6 +9,4 @@ function schedule(humanReadibleSchedule, callback) {
   });
 }
 
-module.exports = {
-  schedule,
-};
+export { schedule };

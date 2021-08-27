@@ -1,12 +1,12 @@
 import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
-import Axolotl from "./Axolotl";
-import BexcHat from "./BexcHat";
-import BigData from "./BigData";
-import ImmaBee from "./ImmaBee";
-import PenguinThrow from "./PenguinThrow";
-import PhilPunch from "./PhilPunch";
+import Axolotl from "./Axolotl.js";
+import BexcHat from "./BexcHat.js";
+import BigData from "./BigData.js";
+import ImmaBee from "./ImmaBee.js";
+import PenguinThrow from "./PenguinThrow.js";
+import PhilPunch from "./PhilPunch.js";
 
 import axolotlStyles from "./Axolotl.css";
 

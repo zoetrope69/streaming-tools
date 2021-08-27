@@ -1,6 +1,7 @@
-const path = require("path");
-const fetch = require("node-fetch");
-const jimp = require("jimp");
+import path from "path";
+import fetch from "node-fetch";
+import jimp from "jimp";
+
 const { FONT_SANS_16_BLACK, FONT_SANS_16_WHITE } = jimp;
 
 const WIDTH = 339;
@@ -148,4 +149,4 @@ async function createImage(keyword, text) {
   );
 }
 
-module.exports = createImage;
+export default createImage;

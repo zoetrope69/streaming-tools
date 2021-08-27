@@ -1,11 +1,9 @@
-require("dotenv").config();
+import { EventEmitter } from "events";
 
-const { EventEmitter } = require("events");
+import GlimeshAPI from "./glimesh-api.js";
+import GlimeshEvents from "./glimesh-events.js";
 
-const GlimeshAPI = require("./glimesh-api");
-const GlimeshEvents = require("./glimesh-events");
-
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("▶️ Glimesh");
 
 async function Glimesh() {
@@ -39,4 +37,4 @@ async function Glimesh() {
   });
 }
 
-module.exports = Glimesh;
+export default Glimesh;

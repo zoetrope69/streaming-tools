@@ -1,2 +1,3 @@
-const Glimesh = require("./glimesh");
-module.exports = Glimesh;
+import Glimesh from "./glimesh.js";
+
+export default Glimesh;

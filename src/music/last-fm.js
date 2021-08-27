@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
-const hash = require("object-hash");
-const { stringify: stringifyQueryString } = require("qs");
+import fetch from "node-fetch";
+import hash from "object-hash";
+import { stringify as stringifyQueryString } from "qs";
 
 const { LAST_FM_API_KEY, LAST_FM_USERNAME } = process.env;
 
@@ -56,4 +56,4 @@ async function getLastFmRecentTrack() {
   };
 }
 
-module.exports = getLastFmRecentTrack;
+export default getLastFmRecentTrack;

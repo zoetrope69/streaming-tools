@@ -2,8 +2,8 @@ import { h, Fragment } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import classNames from "classnames";
 
-import truncate from "../helpers/truncate";
-import SVGClipPath from "../helpers/SVGClipPath";
+import truncate from "../helpers/truncate.js";
+import SVGClipPath from "../helpers/SVGClipPath.js";
 
 import styles from "./Music.css";
 

@@ -2,13 +2,13 @@ import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { io } from "socket.io-client";
 
-import Alert from "./Alert";
-import Dancers from "./Dancers";
-// import DebugFace from "./DebugFace";
-import Goosebumps from "./Goosebumps";
-import PopUpMessage from "./PopUpMessage";
-import PrideFlag from "./PrideFlag";
-import Music from "./Music";
+import Alert from "./Alert/index.js";
+import Dancers from "./Dancers/index.js";
+// import DebugFace from "./DebugFace/index.js";
+import Goosebumps from "./Goosebumps/index.js";
+import PopUpMessage from "./PopUpMessage/index.js";
+import PrideFlag from "./PrideFlag/index.js";
+import Music from "./Music/index.js";
 
 import styles from "./App.css";
 

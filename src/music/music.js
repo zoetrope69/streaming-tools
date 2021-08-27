@@ -1,10 +1,10 @@
-const { EventEmitter } = require("events");
-const getSpotifyRecentTrack = require("./spotify");
-const getLastFmRecentTrack = require("./last-fm");
+import { EventEmitter } from "events";
 
-const Logger = require("../helpers/logger");
-const { getAlbumArtColors } = require("./helpers");
+import getSpotifyRecentTrack from "./spotify.js";
+import getLastFmRecentTrack from "./last-fm.js";
+import { getAlbumArtColors } from "./helpers.js";
 
+import Logger from "../helpers/logger.js";
 const logger = new Logger("🎸 Music");
 
 const {
@@ -79,4 +79,4 @@ function music() {
   return eventEmitter;
 }
 
-module.exports = music;
+export default music;

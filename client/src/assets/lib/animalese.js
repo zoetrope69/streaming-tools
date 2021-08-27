@@ -1,3 +1,4 @@
+/* eslint-disable */
 // animalese.js
 // (C) 2014 Josh Simmons
 // http://github.com/acedio/animalese.js

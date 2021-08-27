@@ -2,8 +2,8 @@ import { h } from "preact";
 
 import styles from "./Goosebumps.css";
 
-import GoosebumpsOverlay from "./GoosebumpsOverlay";
-import GoosebumpsBook from "./GoosebumpsBook";
+import GoosebumpsOverlay from "./GoosebumpsOverlay.js";
+import GoosebumpsBook from "./GoosebumpsBook.js";
 
 const Goosebumps = ({ bookTitle }) => {
   if (!bookTitle) {

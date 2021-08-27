@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-commonjs
 module.exports = function (config) {
   if (process.env.NODE_ENV === "development" && config.devServer) {
     config.devServer.proxy = [

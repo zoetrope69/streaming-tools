@@ -1,3 +1,3 @@
-const main = require("./main");
+import main from "./main/index.js";
 
-module.exports = main;
+export default main;

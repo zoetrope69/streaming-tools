@@ -1,7 +1,8 @@
-const path = require("path");
-const jimp = require("jimp");
-const detectFaces = require("../helpers/detect-faces");
-const bufferFromBase64 = require("../helpers/buffer-from-base64");
+import path from "path";
+import jimp from "jimp";
+
+import detectFaces from "../helpers/detect-faces.js";
+import bufferFromBase64 from "../helpers/buffer-from-base64.js";
 
 const { BLEND_MULTIPLY } = jimp;
 
@@ -40,4 +41,4 @@ async function createBeeImage(dataUri) {
   return Promise.resolve();
 }
 
-module.exports = createBeeImage;
+export default createBeeImage;

@@ -1,5 +1,6 @@
-const fetch = require("node-fetch");
-const { colorNameToXY, hexToXY } = require("./color-converting");
+import fetch from "node-fetch";
+
+import { colorNameToXY, hexToXY } from "./color-converting.js";
 
 const { HUE_BULB_USERNAME, HUE_BULB_HUB_IP_ADDRESS } = process.env;
 
@@ -142,7 +143,7 @@ async function resetLights() {
   });
 }
 
-module.exports = {
+export {
   initialiseHueBulbs,
   getLights,
   setLightsColor,

@@ -1,7 +1,7 @@
-const { EventEmitter } = require("events");
-const bodyParser = require("body-parser");
+import { EventEmitter } from "events";
+import bodyParser from "body-parser";
 
-const Logger = require("./helpers/logger");
+import Logger from "./helpers/logger.js";
 const logger = new Logger("☕ Ko-fi Webhook");
 
 const { KOFI_ENDPOINT_RANDOM_STRING } = process.env;
@@ -61,4 +61,4 @@ function koFi({ ngrokUrl, app }) {
   return eventEmitter;
 }
 
-module.exports = koFi;
+export default koFi;

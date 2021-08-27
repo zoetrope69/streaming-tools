@@ -1,3 +1,3 @@
-import Goosebumps from "./Goosebumps";
+import Goosebumps from "./Goosebumps.js";
 
 export default Goosebumps;

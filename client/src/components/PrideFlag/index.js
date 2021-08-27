@@ -1,3 +1,3 @@
-import PrideFlag from "./PrideFlag";
+import PrideFlag from "./PrideFlag.js";
 
 export default PrideFlag;

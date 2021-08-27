@@ -1,3 +1,3 @@
-import PopUpMessage from "./PopUpMessage";
+import PopUpMessage from "./PopUpMessage.js";
 
 export default PopUpMessage;

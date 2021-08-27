@@ -1,5 +1,6 @@
-const cv = require("opencv4nodejs");
-const bufferFromBase64 = require("./buffer-from-base64");
+import cv from "opencv4nodejs";
+
+import bufferFromBase64 from "./buffer-from-base64.js";
 
 async function detectFaces(dataUri) {
   const { buffer: imageBuffer } = bufferFromBase64(dataUri);
@@ -33,4 +34,4 @@ async function detectFaces(dataUri) {
   };
 }
 
-module.exports = detectFaces;
+export default detectFaces;

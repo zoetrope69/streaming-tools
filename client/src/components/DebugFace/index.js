@@ -1,3 +1,3 @@
-import DebugFace from "./DebugFace";
+import DebugFace from "./DebugFace.js";
 
 export default DebugFace;

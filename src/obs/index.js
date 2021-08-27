@@ -1,3 +1,3 @@
-const obs = require("./obs");
+import obs from "./obs.js";
 
-module.exports = obs;
+export default obs;

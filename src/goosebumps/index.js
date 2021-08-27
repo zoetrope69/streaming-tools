@@ -1,5 +1,5 @@
-const getBookTitle = require("./get-book-title");
-const createImage = require("./create-image");
+import getBookTitle from "./get-book-title.js";
+import createImage from "./create-image.js";
 
 async function createGoosebumpsBookImage(keyword) {
   const bookTitle = getBookTitle(keyword);
@@ -7,4 +7,4 @@ async function createGoosebumpsBookImage(keyword) {
   return { bookTitle };
 }
 
-module.exports = createGoosebumpsBookImage;
+export default createGoosebumpsBookImage;

@@ -1,8 +1,8 @@
-const { EventEmitter } = require("events");
-const bodyParser = require("body-parser");
-const crypto = require("crypto");
+import { EventEmitter } from "events";
+import bodyParser from "body-parser";
+import crypto from "crypto";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("🌯 Twitch EventSub");
 
 let RECENT_EVENTSUB_MESSAGES = [];
@@ -162,4 +162,4 @@ function eventSubExpress(app) {
   return eventEmitter;
 }
 
-module.exports = eventSubExpress;
+export default eventSubExpress;

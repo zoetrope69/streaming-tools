@@ -1,11 +1,10 @@
-const obs = require("../obs");
-const textToSpeech = require("../text-to-speech");
+import obs from "../obs/index.js";
+import textToSpeech from "../text-to-speech.js";
+import sendFaceDataToClient from "./send-face-data-to-client.js";
+import saveScreenshotToBrbScreen from "./save-screenshot-to-brb-screen.js";
+import Alerts from "./alerts.js";
 
-const sendFaceDataToClient = require("./send-face-data-to-client");
-const saveScreenshotToBrbScreen = require("./save-screenshot-to-brb-screen");
-const Alerts = require("./alerts");
-
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
 
 const { IS_GLIMESH } = process.env;
@@ -200,4 +199,4 @@ class Commands {
   }
 }
 
-module.exports = Commands;
+export default Commands;

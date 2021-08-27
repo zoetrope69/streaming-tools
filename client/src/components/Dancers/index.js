@@ -1,3 +1,3 @@
-import Dancers from "./Dancers";
+import Dancers from "./Dancers.js";
 
 export default Dancers;

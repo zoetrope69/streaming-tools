@@ -1,16 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const fetch = require("node-fetch");
-const { prompt } = require("enquirer");
+import fs from "fs";
+import fetch from "node-fetch";
+import enquirer from "enquirer";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("▶️ Glimesh");
 
 const BASE_URL = "https://glimesh.tv/api";
-const REFRESH_TOKEN_PATH = path.join(
-  __dirname,
-  "/../../glimesh-refresh-token.json"
-);
+const REFRESH_TOKEN_PATH = "/../../glimesh-refresh-token.json";
+
+import tokenFile from "../../glimesh-refresh-token.json";
+let GLIMESH_REFRESH_TOKEN = tokenFile.refreshToken;
 
 async function queryAPI(accessToken, query) {
   const response = await fetch(`${BASE_URL}/graph`, {
@@ -30,10 +29,6 @@ const AUTH_SCOPES = [
   "chat",
   // "streamkey"
 ];
-
-let {
-  refreshToken: GLIMESH_REFRESH_TOKEN,
-} = require(REFRESH_TOKEN_PATH);
 
 function saveRefreshTokenToFile(refreshToken) {
   GLIMESH_REFRESH_TOKEN = refreshToken;
@@ -65,7 +60,7 @@ function createAuthURL() {
 }
 
 async function getAuthCodeFromCommandLineUrl() {
-  const response = await prompt({
+  const response = await enquirer.prompt({
     type: "input",
     name: "url",
     message: "Redirected URL",
@@ -263,4 +258,4 @@ async function GlimeshAPI() {
   };
 }
 
-module.exports = GlimeshAPI;
+export default GlimeshAPI;

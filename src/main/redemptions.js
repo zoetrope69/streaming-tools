@@ -1,20 +1,18 @@
-const obs = require("../obs");
-const createBeeImage = require("../imma-bee/create-bee-image");
-const createGoosebumpsBookImage = require("../goosebumps");
+import { v4 as randomID } from "uuid";
 
-const {
+import obs from "../obs/index.js";
+import createBeeImage from "../imma-bee/create-bee-image.js";
+import createGoosebumpsBookImage from "../goosebumps/index.js";
+import {
   getPrideFlag,
   getRandomPrideFlag,
   setLightsToPrideFlag,
-} = require("./pride-flags");
-const sendFaceDataToClient = require("./send-face-data-to-client");
+} from "./pride-flags.js";
+import sendFaceDataToClient from "./send-face-data-to-client.js";
+import Alerts from "./alerts.js";
 
-const Alerts = require("./alerts");
-
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
-
-const { v4: randomID } = require("uuid");
 
 class Redemptions {
   constructor({ io, streamingService }) {
@@ -209,4 +207,4 @@ class Redemptions {
   }
 }
 
-module.exports = Redemptions;
+export default Redemptions;

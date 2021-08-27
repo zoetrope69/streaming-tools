@@ -1,7 +1,7 @@
-const fetch = require("node-fetch");
-const cache = require("memory-cache");
+import fetch from "node-fetch";
+import cache from "memory-cache";
 
-const Logger = require("../../helpers/logger");
+import Logger from "../../helpers/logger.js";
 const logger = new Logger("🏷 Twitch Pronouns");
 
 const BASE_API_ENDPOINT = "https://pronouns.alejo.io/api";
@@ -91,4 +91,4 @@ async function main() {
 }
 main();
 
-module.exports = getUserPronouns;
+export default getUserPronouns;

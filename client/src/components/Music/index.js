@@ -1,3 +1,3 @@
-import Music from "./Music";
+import Music from "./Music.js";
 
 export default Music;

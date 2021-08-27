@@ -7,5 +7,5 @@ export default function truncate(text, amount = 100) {
     return text;
   }
 
-  return text.substring(0, amount) + "...";
+  return `${text.substring(0, amount)}...`;
 }

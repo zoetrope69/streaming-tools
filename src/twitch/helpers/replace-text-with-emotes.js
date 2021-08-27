@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
-const cache = require("memory-cache");
-const replaceAll = require("replaceall");
+import fetch from "node-fetch";
+import cache from "memory-cache";
+import replaceAll from "replaceall";
 
 const { TWITCH_BROADCASTER_ID } = process.env;
 
@@ -106,4 +106,4 @@ async function replaceTextWithEmotes(text, emoteDataFromTwitchBot) {
   return replaceEmotes(text, emotes);
 }
 
-module.exports = replaceTextWithEmotes;
+export default replaceTextWithEmotes;

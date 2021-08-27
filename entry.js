@@ -1,10 +1,10 @@
 // get process.env from .env
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const ngrok = require("ngrok");
-const nodemon = require("nodemon");
-
-const Logger = require("./src/helpers/logger");
+import ngrok from "ngrok";
+import nodemon from "nodemon";
+import Logger from "./src/helpers/logger.js";
 const ngrokLogger = new Logger("👽 ngrok");
 const nodemonLogger = new Logger("😈 Nodemon");
 
@@ -44,8 +44,8 @@ async function main() {
   const ngrokUrl = await createNgrokUrl();
 
   const nodemonProcess = nodemon({
-    script: "./src",
-    exec: `NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
+    script: "./src/index.js",
+    exec: `NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings --experimental-json-modules`,
     // disable watch mode in production
     watch: NODE_ENV === "production" ? [".env"] : [".env", "src/"],
   });

@@ -1,4 +1,5 @@
-const namedColors = require("color-name-list");
+// ripped from 'color-name-list';
+import namedColors from "./color-name-list.json";
 
 const LIGHT_XY_COLOR_MAP = {
   red: [0.4575, 0.4099],
@@ -15,7 +16,7 @@ const LIGHT_XY_COLOR_MAP = {
   warm: [0.4575, 0.4099],
 };
 
-function getDefinedXYFromColorName(name) {
+export function getDefinedXYFromColorName(name) {
   if (!name) {
     return;
   }
@@ -23,7 +24,7 @@ function getDefinedXYFromColorName(name) {
   return LIGHT_XY_COLOR_MAP[name];
 }
 
-function colorNameToHex(name) {
+export function colorNameToHex(name) {
   if (!name) {
     return;
   }
@@ -42,7 +43,7 @@ function colorNameToHex(name) {
 const RGB_HEX =
   /^#?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/i;
 
-function hexToRgb(str) {
+export function hexToRgb(str) {
   if (!str) {
     return;
   }
@@ -71,7 +72,7 @@ function hexToRgb(str) {
  * returns r, g, and b in an array [0, 255].
  */
 
-function hue2rgb(p, q, t) {
+export function hue2rgb(p, q, t) {
   if (t < 0) t += 1;
   if (t > 1) t -= 1;
   if (t < 1 / 6) return p + (q - p) * 6 * t;
@@ -80,7 +81,7 @@ function hue2rgb(p, q, t) {
   return p;
 }
 
-function hslToRgb(hslArray) {
+export function hslToRgb(hslArray) {
   const normalisedHSLArray = [
     hslArray[0] / 360,
     hslArray[1] / 100,
@@ -123,7 +124,7 @@ function hslToRgb(hslArray) {
  * + green: 0.4091, 0.518
  * + blue: 0.167, 0.04
  */
-function rgbToXY(rgbArray) {
+export function rgbToXY(rgbArray) {
   if (!rgbArray) {
     return;
   }
@@ -174,12 +175,12 @@ function rgbToXY(rgbArray) {
   return [roundTo4DecimalPlaces(x), roundTo4DecimalPlaces(y)];
 }
 
-function hslToXY(hsl) {
+export function hslToXY(hsl) {
   const rgb = hslToRgb(hsl);
   return rgbToXY(rgb);
 }
 
-function colorNameToXY(name) {
+export function colorNameToXY(name) {
   if (!name) {
     return;
   }
@@ -194,16 +195,7 @@ function colorNameToXY(name) {
   return rgbToXY(rgb);
 }
 
-function hexToXY(hex) {
+export function hexToXY(hex) {
   const rgb = hexToRgb(hex);
   return rgbToXY(rgb);
 }
-
-module.exports = {
-  colorNameToXY,
-  hexToRgb,
-  hslToXY,
-  hslToRgb,
-  rgbToXY,
-  hexToXY,
-};

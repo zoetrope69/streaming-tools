@@ -1,5 +1,6 @@
-const fs = require("fs");
-const bufferFromBase64 = require("../helpers/buffer-from-base64");
+import fs from "fs";
+
+import bufferFromBase64 from "../helpers/buffer-from-base64.js";
 
 async function saveScreenshot(dataUri) {
   const { buffer: imageBuffer, contentType } =
@@ -19,4 +20,4 @@ async function saveScreenshot(dataUri) {
   });
 }
 
-module.exports = saveScreenshot;
+export default saveScreenshot;

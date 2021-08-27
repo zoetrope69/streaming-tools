@@ -1,10 +1,9 @@
-const { EventEmitter } = require("events");
-const WebSocket = require("ws");
-const Logger = require("../helpers/logger");
+import { EventEmitter } from "events";
+import WebSocket from "ws";
 
+import replaceTextWithEmotes from "./helpers/replace-text-with-emotes.js";
+import Logger from "../helpers/logger.js";
 const logger = new Logger("▶️ Glimesh");
-
-const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
 
 let IS_CONNECTED = false;
 const SUBSCRIPTIONS = {};
@@ -287,4 +286,4 @@ async function GlimeshEvents({ accessToken, moderators }) {
   };
 }
 
-module.exports = GlimeshEvents;
+export default GlimeshEvents;

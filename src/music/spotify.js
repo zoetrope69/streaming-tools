@@ -1,17 +1,16 @@
-const fs = require("fs");
-const path = require("path");
-const fetch = require("node-fetch");
-const { stringify: queryStringStringify } = require("qs");
-const { prompt } = require("enquirer");
-const cache = require("memory-cache");
+import fs from "fs";
+import fetch from "node-fetch";
+import { stringify as queryStringStringify } from "qs";
+import enquirer from "enquirer";
+import cache from "memory-cache";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("🎶 Spotify");
 
-const REFRESH_TOKEN_PATH = path.join(
-  __dirname,
-  "/../../spotify-refresh-token.json"
-);
+const REFRESH_TOKEN_PATH = "/../../spotify-refresh-token.json";
+
+import tokenFile from "../../spotify-refresh-token.json";
+let SPOTIFY_REFRESH_TOKEN = tokenFile.refreshToken;
 
 const BASE_URL = "https://api.spotify.com/v1";
 const {
@@ -26,10 +25,6 @@ const SCOPES = [
 ];
 
 const CACHE_KEY = "SPOTIFY";
-
-let {
-  refreshToken: SPOTIFY_REFRESH_TOKEN,
-} = require(REFRESH_TOKEN_PATH);
 
 function saveRefreshTokenToFile(refreshToken) {
   SPOTIFY_REFRESH_TOKEN = refreshToken;
@@ -59,7 +54,7 @@ function createAuthURL() {
 }
 
 async function getAuthCodeFromCommandLineUrl() {
-  const response = await prompt({
+  const response = await enquirer.prompt({
     type: "input",
     name: "url",
     message: "Redirected URL",
@@ -328,4 +323,4 @@ async function getSpotifyRecentTrack() {
   };
 }
 
-module.exports = getSpotifyRecentTrack;
+export default getSpotifyRecentTrack;

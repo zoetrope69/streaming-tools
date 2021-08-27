@@ -1,32 +1,29 @@
-// get process.env from .env
-require("dotenv").config();
+import path from "path";
+import express from "express";
+import http from "http";
+import * as socketio from "socket.io";
 
-const path = require("path");
-
-const express = require("express");
-const http = require("http");
-const socketIO = require("socket.io");
-
-const Glimesh = require("../glimesh");
-const Twitch = require("../twitch");
-const Music = require("../music");
-const KoFi = require("../ko-fi");
-const googleSheetCommands = require("../google-sheet-commands");
-const textToSpeech = require("../text-to-speech");
-const obs = require("../obs");
-const {
+import Glimesh from "../glimesh/index.js";
+import Twitch from "../twitch/index.js";
+import Music from "../music/index.js";
+import KoFi from "../ko-fi.js";
+import googleSheetCommands from "../google-sheet-commands.js";
+import textToSpeech from "../text-to-speech.js";
+import obs from "../obs/index.js";
+import {
   createFilterVisibilityTriggers,
   createSourceVisibilityTriggers,
-} = require("../obs/helpers");
-const ChannelInfo = require("./channel-info");
-const Alerts = require("./alerts");
-const Redemptions = require("./redemptions");
-const Commands = require("./commands");
-const { firstTimeTalking } = require("./users-who-have-talked");
+} from "../obs/helpers.js";
+import ChannelInfo from "./channel-info.js";
+import Alerts from "./alerts.js";
+import Redemptions from "./redemptions.js";
+import Commands from "./commands.js";
 
-const { schedule } = require("../helpers/schedule");
-const Logger = require("../helpers/logger");
-const { initialiseHueBulbs } = require("./helpers/hue-bulbs");
+import { firstTimeTalking } from "./users-who-have-talked.js";
+import { schedule } from "../helpers/schedule.js";
+import Logger from "../helpers/logger.js";
+import { initialiseHueBulbs } from "./helpers/hue-bulbs.js";
+
 const { NGROK_URL, PORT, STREAMING_SERVICE } = process.env;
 const IS_GLIMESH = STREAMING_SERVICE === "glimesh";
 const CLIENT_FILE_PATH = "client/build";
@@ -38,7 +35,7 @@ const clientLogger = new Logger("👽 Streaming Tools Client");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = new socketio.Server(server);
 
 const alerts = new Alerts({ io });
 
@@ -492,3 +489,5 @@ main();
 server.listen(PORT, () => {
   logger.info(`Listening on http://localhost:${PORT}`);
 });
+
+export default main;

@@ -1,8 +1,8 @@
-const fetch = require("node-fetch");
-const getColors = require("get-image-colors");
-const chroma = require("chroma-js");
-const imageType = require("image-type");
-const cache = require("memory-cache");
+import fetch from "node-fetch";
+import getColors from "get-image-colors";
+import chroma from "chroma-js";
+import imageType from "image-type";
+import cache from "memory-cache";
 
 const CACHE_KEY = "MUSIC";
 
@@ -59,6 +59,4 @@ async function getCachedAlbumArtColors(albumArtURL) {
   return albumArtColors;
 }
 
-module.exports = {
-  getAlbumArtColors: getCachedAlbumArtColors,
-};
+export { getCachedAlbumArtColors as getAlbumArtColors };

@@ -1,9 +1,10 @@
-const cache = require("memory-cache");
-const { GoogleSpreadsheet } = require("google-spreadsheet");
+import cache from "memory-cache";
+import { GoogleSpreadsheet } from "google-spreadsheet";
 
-const googleCredentials = require("../google-credentials.json");
-const Logger = require("./helpers/logger");
+import Logger from "./helpers/logger.js";
 const logger = new Logger("🐑 Google Sheet");
+
+import GOOGLE_CREDENTIALS from "../google-credentials.json";
 
 const SPREADSHEET_ID = "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA";
 const CACHE_KEY = "COMMANDS";
@@ -11,8 +12,8 @@ const CACHE_TIMEOUT_MS = 10 * 1000; // 10 seconds
 
 function hasCredentials() {
   return (
-    googleCredentials["client_email"] &&
-    googleCredentials["private_key"]
+    GOOGLE_CREDENTIALS["client_email"] &&
+    GOOGLE_CREDENTIALS["private_key"]
   );
 }
 
@@ -20,8 +21,8 @@ async function getSpreadsheet() {
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 
   await doc.useServiceAccountAuth({
-    client_email: googleCredentials["client_email"],
-    private_key: googleCredentials["private_key"],
+    client_email: GOOGLE_CREDENTIALS["client_email"],
+    private_key: GOOGLE_CREDENTIALS["private_key"],
   });
 
   await doc.loadInfo(); // loads document properties and worksheets
@@ -81,7 +82,7 @@ async function getScheduledCommands() {
   }
 }
 
-module.exports = {
+export default {
   getCommands: getCachedCommands,
   getScheduledCommands,
 };

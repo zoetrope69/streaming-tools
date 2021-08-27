@@ -1,6 +1,6 @@
-const OBSWebSocket = require("obs-websocket-js");
+import OBSWebSocket from "obs-websocket-js";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("☢ OBS");
 
 const obs = new OBSWebSocket();
@@ -220,7 +220,7 @@ async function turnOnOverlay(source, timeout) {
   }, 100); // wait 100 ms i guess
 }
 
-module.exports = {
+export default {
   initialise,
   getWebcamImage,
   switchToScene,

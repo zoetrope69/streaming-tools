@@ -1,4 +1,4 @@
-const replaceAll = require("replaceall");
+import replaceAll from "replaceall";
 
 function replaceTextWithEmotes(text, tokens) {
   const emotes = tokens.filter((token) => token.type === "emote");
@@ -23,4 +23,4 @@ function replaceTextWithEmotes(text, tokens) {
   return replacedText.trim();
 }
 
-module.exports = replaceTextWithEmotes;
+export default replaceTextWithEmotes;

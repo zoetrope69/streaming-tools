@@ -1,5 +1,5 @@
-const fetch = require("node-fetch");
-const cache = require("memory-cache");
+import fetch from "node-fetch";
+import cache from "memory-cache";
 
 const CACHE_KEY = "TWITCH_SHOUT_OUTS";
 const CACHE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
@@ -47,4 +47,4 @@ async function getCachedShoutOuts() {
   return shoutOuts;
 }
 
-module.exports = getCachedShoutOuts;
+export default getCachedShoutOuts;

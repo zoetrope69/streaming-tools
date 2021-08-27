@@ -1,4 +1,4 @@
-const obs = require("./index");
+import obs from "./index.js";
 
 function createSourceVisibilityTriggers({ commands, redemptions }) {
   obs.sourceVisibilityTriggers({
@@ -72,7 +72,7 @@ function createFilterVisibilityTriggers() {
   });
 }
 
-module.exports = {
+export {
   createFilterVisibilityTriggers,
   createSourceVisibilityTriggers,
 };

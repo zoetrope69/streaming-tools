@@ -1,7 +1,5 @@
-const {
-  insertionString,
-  titles,
-} = require("./assets/book-titles.json");
+import bookTitlesFile from "./assets/book-titles.json";
+const { insertionString, titles } = bookTitlesFile;
 
 function getRandomBookTitle() {
   return titles[Math.floor(Math.random() * titles.length)];
@@ -12,4 +10,4 @@ function getBookTitle(keyword) {
   return randomTitle.replace(insertionString, keyword);
 }
 
-module.exports = getBookTitle;
+export default getBookTitle;

@@ -1,10 +1,10 @@
-const fetch = require("node-fetch");
-const { stringify: queryStringStringify } = require("qs");
+import fetch from "node-fetch";
+import { stringify as queryStringStringify } from "qs";
 
-const Logger = require("../helpers/logger");
+import getUserPronouns from "./helpers/pronouns.js";
+
+import Logger from "../helpers/logger.js";
 const logger = new Logger("💩 Twitch API");
-
-const getUserPronouns = require("./helpers/pronouns");
 
 const {
   TWITCH_CLIENT_ID,
@@ -339,4 +339,4 @@ async function TwitchAPI({ ngrokUrl }) {
   };
 }
 
-module.exports = TwitchAPI;
+export default TwitchAPI;

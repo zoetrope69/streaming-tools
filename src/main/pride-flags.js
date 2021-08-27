@@ -1,8 +1,8 @@
-const {
+import {
   initialiseHueBulbs,
   setLightsColor,
   resetLights,
-} = require("./helpers/hue-bulbs");
+} from "./helpers/hue-bulbs.js";
 
 const PRIDE_FLAGS = [
   {
@@ -158,8 +158,4 @@ async function setLightsToPrideFlag(name) {
   return goThroughColors(prideFlag.lightColors);
 }
 
-module.exports = {
-  getPrideFlag,
-  getRandomPrideFlag,
-  setLightsToPrideFlag,
-};
+export { getPrideFlag, getRandomPrideFlag, setLightsToPrideFlag };

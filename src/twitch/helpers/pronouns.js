@@ -8,8 +8,7 @@ const BASE_API_ENDPOINT = "https://pronouns.alejo.io/api";
 
 const CACHE_KEY = "PRONOUNS";
 const CACHE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
-
-let PRONOUNS = [];
+const CACHE_AVAILABLE_PRONOUNS_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
 
 async function callAPI(endpoint) {
   const response = await fetch(`${BASE_API_ENDPOINT}${endpoint}`, {
@@ -48,6 +47,30 @@ async function getAvailablePronouns() {
   return pronouns;
 }
 
+async function getCachedAvailablePronouns() {
+  const cacheKey = `${CACHE_KEY}_AVAILABLE_PRONOUNS`;
+  const cachedAvailablePronouns = cache.get(cacheKey);
+  if (cachedAvailablePronouns) {
+    return cachedAvailablePronouns;
+  }
+
+  let availablePronouns = [];
+
+  try {
+    availablePronouns = await getAvailablePronouns();
+
+    cache.put(
+      cacheKey,
+      availablePronouns,
+      CACHE_AVAILABLE_PRONOUNS_TIMEOUT_MS
+    );
+  } catch (e) {
+    logger.error(e.message || e);
+  }
+
+  return availablePronouns;
+}
+
 async function getUserPronounsData(username = "") {
   return callAPI(`/users/${username.toLowerCase()}`);
 }
@@ -67,9 +90,10 @@ async function getCachedUserPronounsData(username) {
 }
 
 async function getUserPronouns(username) {
+  const availablePronouns = await getCachedAvailablePronouns();
   const [userPronounData] = await getCachedUserPronounsData(username);
 
-  const pronoun = PRONOUNS.find((pronoun) => {
+  const pronoun = availablePronouns.find((pronoun) => {
     return pronoun.name === userPronounData?.pronoun_id;
   });
 
@@ -79,16 +103,5 @@ async function getUserPronouns(username) {
 
   return pronoun.display.toLowerCase();
 }
-
-async function main() {
-  // on file load get current pronouns available
-  try {
-    PRONOUNS = await getAvailablePronouns();
-    logger.info("Got pronouns");
-  } catch (e) {
-    logger.error(e.message || e);
-  }
-}
-main();
 
 module.exports = getUserPronouns;

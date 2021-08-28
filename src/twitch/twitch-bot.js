@@ -77,10 +77,6 @@ async function TwitchBot({ eventEmitter }) {
     logger.info(`Connected`);
   });
 
-  botClient.on("join", (channel) => {
-    logger.info(`Joined channel: ${channel}`);
-  });
-
   botClient.on("error", (err) => {
     logger.error(err);
   });

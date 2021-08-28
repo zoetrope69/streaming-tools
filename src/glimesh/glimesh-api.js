@@ -123,7 +123,6 @@ async function getAccessTokenWithRefreshToken() {
       redirect_url: GLIMESH_REDIRECT_URL,
       client_id: GLIMESH_CLIENT_ID,
       client_secret: GLIMESH_CLIENT_SECRET,
-      scope: AUTH_SCOPES.join(" "),
     }),
   });
 

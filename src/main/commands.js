@@ -1,12 +1,14 @@
 const obs = require("../obs");
 const textToSpeech = require("../text-to-speech");
+const googleSheet = require("../google-sheet");
 
 const sendFaceDataToClient = require("./send-face-data-to-client");
 const saveScreenshotToBrbScreen = require("./save-screenshot-to-brb-screen");
 const Alerts = require("./alerts");
 
+const { schedule } = require("../helpers/schedule");
 const Logger = require("../helpers/logger");
-const logger = new Logger("👾 Redemptions");
+const logger = new Logger("🚀 Commands");
 
 const { IS_GLIMESH } = process.env;
 
@@ -18,8 +20,46 @@ class Commands {
     this.channelInfo = channelInfo;
 
     this.alerts = new Alerts({ io });
+    this.googleSheetCommands = [];
+
+    this.handleRecurringGoogleSheetCommands({ streamingService });
 
     this.popUpMessage = "";
+  }
+
+  async handleRecurringGoogleSheetCommands({ streamingService }) {
+    try {
+      this.googleSheetCommands = await googleSheet.getCommands();
+      const scheduledCommands =
+        await googleSheet.getScheduledCommands();
+      scheduledCommands.forEach((scheduledCommand) => {
+        logger.info(
+          `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
+        );
+        schedule(scheduledCommand.schedule, () => {
+          streamingService.chat.sendMessage(scheduledCommand.value);
+        });
+      });
+    } catch (e) {
+      logger.info("Couldn't run scheduled commands");
+    }
+  }
+
+  async updateGoogleSheetCommands() {
+    this.googleSheetCommands = await googleSheet.getCommands();
+  }
+
+  async handleGoogleSheetCommands({ command }) {
+    if (!command) {
+      return;
+    }
+
+    const chatCommand = this.googleSheetCommands.find(
+      ({ name }) => command === name
+    );
+    if (chatCommand) {
+      this.streamingService.chat.sendMessage(chatCommand.value);
+    }
   }
 
   async song() {

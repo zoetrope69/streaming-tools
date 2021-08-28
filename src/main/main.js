@@ -11,7 +11,6 @@ const Glimesh = require("../glimesh");
 const Twitch = require("../twitch");
 const Music = require("../music");
 const KoFi = require("../ko-fi");
-const googleSheetCommands = require("../google-sheet-commands");
 const textToSpeech = require("../text-to-speech");
 const obs = require("../obs");
 const {
@@ -24,13 +23,10 @@ const Redemptions = require("./redemptions");
 const Commands = require("./commands");
 const { firstTimeTalking } = require("./users-who-have-talked");
 
-const { schedule } = require("../helpers/schedule");
 const Logger = require("../helpers/logger");
 const { NGROK_URL, PORT, STREAMING_SERVICE } = process.env;
 const IS_GLIMESH = STREAMING_SERVICE === "glimesh";
 const CLIENT_FILE_PATH = "client/build";
-
-let GOOGLE_SHEET_COMMANDS = [];
 
 const logger = new Logger("🛸 Streaming Tools Server");
 const clientLogger = new Logger("👽 Streaming Tools Client");
@@ -86,24 +82,6 @@ async function handleChannelInfo({ channelInfo, streamingService }) {
       channelInfo.setTitle(title);
     }
   );
-}
-
-async function handleRecurringCommands({ streamingService }) {
-  try {
-    GOOGLE_SHEET_COMMANDS = await googleSheetCommands.getCommands();
-    const scheduledCommands =
-      await googleSheetCommands.getScheduledCommands();
-    scheduledCommands.forEach((scheduledCommand) => {
-      logger.info(
-        `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
-      );
-      schedule(scheduledCommand.schedule, () => {
-        streamingService.chat.sendMessage(scheduledCommand.value);
-      });
-    });
-  } catch (e) {
-    logger.info("Couldn't run scheduled commands");
-  }
 }
 
 async function handleSubscription({ streamingService }) {
@@ -314,12 +292,7 @@ async function handleChatMessages({
       messageWithEmotes,
     });
 
-    const chatCommand = GOOGLE_SHEET_COMMANDS.find(
-      ({ name }) => command === name
-    );
-    if (chatCommand) {
-      streamingService.chat.sendMessage(chatCommand.value);
-    }
+    await commands.handleGoogleSheetCommands({ command });
 
     if (command === "song" || command === "music") {
       await commands.song();
@@ -396,7 +369,7 @@ async function handleModsChatMessages({
     }
 
     if (command === "commands-update") {
-      GOOGLE_SHEET_COMMANDS = await googleSheetCommands.getCommands();
+      await commands.updateGoogleSheetCommands();
     }
 
     if (command === "sign" || command === "alert") {
@@ -485,7 +458,6 @@ async function main() {
 
   handleKofi({ streamingService });
   handleChannelInfo({ channelInfo, streamingService });
-  handleRecurringCommands({ streamingService });
   handleSubscription({ streamingService });
   handleBits({ streamingService });
   handleFollows({ streamingService });

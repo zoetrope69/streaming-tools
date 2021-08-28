@@ -180,6 +180,10 @@ async function GlimeshAPI() {
       `
     );
 
+    if (!query.data.channel) {
+      return null;
+    }
+
     const { category, language, title } = query.data.channel;
 
     return {
@@ -204,6 +208,10 @@ async function GlimeshAPI() {
         }
       `
     );
+
+    if (!query.data.user) {
+      return null;
+    }
 
     const { avatarUrl, displayname } = query.data.user;
 

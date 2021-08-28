@@ -24,7 +24,7 @@ const getTextFromChildren = (children) => {
   }
 
   if (text.trim() === "") {
-    return null;
+    return "";
   }
 
   return text;

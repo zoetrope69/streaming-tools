@@ -1,7 +1,12 @@
 const fetch = require("node-fetch");
 const { colorNameToXY, hexToXY } = require("./color-converting");
 
+const Logger = require("../../helpers/logger");
+const logger = new Logger("💡 Hue Bulbs");
+
 const { HUE_BULB_USERNAME, HUE_BULB_HUB_IP_ADDRESS } = process.env;
+
+const BASE_URI = `http://${HUE_BULB_HUB_IP_ADDRESS}/api/${HUE_BULB_USERNAME}/`;
 
 const LIGHTS = {
   "00:17:88:01:04:6e:b3:85-0b": "ceiling",
@@ -9,31 +14,27 @@ const LIGHTS = {
   "00:17:88:01:08:d8:72:cc-0b": "fairy-lights",
 };
 
-async function callHueBulbAPIBuilder() {
-  const BASE_URI = `http://${HUE_BULB_HUB_IP_ADDRESS}/api/${HUE_BULB_USERNAME}/`;
-  return async function (uri, { method, body } = {}) {
+function hasValidEnvironmentVariables() {
+  return HUE_BULB_HUB_IP_ADDRESS && HUE_BULB_USERNAME;
+}
+
+async function callHueBulbAPI(uri, { method, body } = {}) {
+  if (!hasValidEnvironmentVariables()) {
+    logger.error("Invalid enivornment variables");
+    return null;
+  }
+
+  let json = null;
+  try {
     const response = await fetch(`${BASE_URI}${uri}`, {
       method,
       body: JSON.stringify(body),
     });
-    const json = await response.json();
-    return json;
-  };
-}
-
-let hueBulbsReady = false;
-let callHueBulbAPI = () => null;
-async function initialiseHueBulbs() {
-  if (!HUE_BULB_HUB_IP_ADDRESS && !HUE_BULB_USERNAME) {
-    return Promise.reject(new Error("No environment variables"));
+    json = await response.json();
+  } catch (e) {
+    logger.error(e.message || e);
   }
-
-  if (hueBulbsReady) {
-    return Promise.resolve();
-  }
-
-  hueBulbsReady = true;
-  callHueBulbAPI = await callHueBulbAPIBuilder();
+  return json;
 }
 
 function getColorState(colorInput) {
@@ -143,7 +144,6 @@ async function resetLights() {
 }
 
 module.exports = {
-  initialiseHueBulbs,
   getLights,
   setLightsColor,
   setFairyLights,

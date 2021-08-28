@@ -1,5 +1,4 @@
 const {
-  initialiseHueBulbs,
   setLightsColor,
   resetLights,
 } = require("./helpers/hue-bulbs");
@@ -143,12 +142,6 @@ async function goThroughColors(colors) {
 }
 
 async function setLightsToPrideFlag(name) {
-  try {
-    await initialiseHueBulbs();
-  } catch (e) {
-    // ...
-  }
-
   const prideFlag = getPrideFlag(name);
 
   if (!prideFlag) {

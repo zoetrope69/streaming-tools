@@ -26,7 +26,6 @@ const { firstTimeTalking } = require("./users-who-have-talked");
 
 const { schedule } = require("../helpers/schedule");
 const Logger = require("../helpers/logger");
-const { initialiseHueBulbs } = require("./helpers/hue-bulbs");
 const { NGROK_URL, PORT, STREAMING_SERVICE } = process.env;
 const IS_GLIMESH = STREAMING_SERVICE === "glimesh";
 const CLIENT_FILE_PATH = "client/build";
@@ -459,13 +458,6 @@ async function handleClientConnections({
 }
 
 async function main() {
-  // reset lights for streaming
-  try {
-    await initialiseHueBulbs();
-  } catch (e) {
-    logger.error(`💡 Hue Bulbs errored ${e.message || e}`);
-  }
-
   const music = Music();
   music.on("track", (track) => {
     io.emit("data", { track });

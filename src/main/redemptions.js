@@ -49,13 +49,21 @@ class Redemptions {
       start: async () => {
         await obs.showSource({
           scene: "Overlays",
-          source: "Amelia Water Loop",
+          source: "Amelia Water Loop Music",
+        });
+        await obs.showSource({
+          scene: "Overlays",
+          source: "Amelia Water Loop Video",
         });
       },
       stop: async () => {
         await obs.hideSource({
           scene: "Overlays",
-          source: "Amelia Water Loop",
+          source: "Amelia Water Loop Music",
+        });
+        await obs.hideSource({
+          scene: "Overlays",
+          source: "Amelia Water Loop Video",
         });
 
         this.streamingService.chat.sendMessage(
@@ -66,13 +74,16 @@ class Redemptions {
   }
 
   pog() {
-    const timeout = 9 * 1000;
-    obs.turnOnOverlay("Steve Pointing Group", timeout);
-    setTimeout(() => {
-      this.streamingService.chat.sendMessage(
-        "!so blgsteve for the pog audit"
-      );
-    }, timeout);
+    return new Promise((resolve) => {
+      const timeout = 9 * 1000;
+      obs.turnOnOverlay("Steve Pointing Group", timeout);
+      setTimeout(() => {
+        this.streamingService.chat.sendMessage(
+          "!so blgsteve for the pog audit"
+        );
+        resolve();
+      }, timeout);
+    });
   }
 
   async showYourPride({ message, username }) {
@@ -141,14 +152,17 @@ class Redemptions {
   }
 
   space() {
-    logger.log("🌌 SPACE triggered...");
-    obs.turnOnOverlay("Star Trek Space Video", 103 * 1000);
-    setTimeout(() => {
-      obs.turnOnOverlay("Star Trek Slideshow", 53 * 1000);
-      this.streamingService.chat.sendMessage(
-        `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
-      );
-    }, 50 * 1000); // minute into the video
+    return new Promise((resolve) => {
+      logger.log("🌌 SPACE triggered...");
+      obs.turnOnOverlay("Star Trek Space Video", 103 * 1000);
+      setTimeout(() => {
+        obs.turnOnOverlay("Star Trek Slideshow", 53 * 1000);
+        this.streamingService.chat.sendMessage(
+          `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
+        );
+        resolve();
+      }, 50 * 1000); // minute into the video
+    });
   }
 
   async snowball() {
@@ -158,8 +172,14 @@ class Redemptions {
   }
 
   barry() {
-    logger.log(" Barry triggered...");
-    obs.turnOnOverlay("Barry Singing", 104 * 1000);
+    return new Promise((resolve) => {
+      logger.log(" Barry triggered...");
+      const timeout = 104 * 1000;
+      obs.turnOnOverlay("Barry Singing", timeout);
+      setTimeout(() => {
+        resolve();
+      }, timeout);
+    });
   }
 
   get broomyJagRace() {

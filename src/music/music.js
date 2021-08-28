@@ -1,6 +1,6 @@
 const { EventEmitter } = require("events");
-const getSpotifyRecentTrack = require("./spotify");
-const getLastFmRecentTrack = require("./last-fm");
+const spotify = require("./spotify");
+const lastFm = require("./last-fm");
 
 const Logger = require("../helpers/logger");
 const { getAlbumArtColors } = require("./helpers");
@@ -29,11 +29,11 @@ async function getCurrentTrack() {
   let track = {};
 
   try {
-    track = await getSpotifyRecentTrack();
+    track = await spotify.getRecentTrack();
 
     // fallback to lastfm if we cant find spotify
     if (!track) {
-      track = await getLastFmRecentTrack();
+      track = await lastFm.getRecentTrack();
     }
 
     if (!track) {
@@ -57,6 +57,11 @@ async function emitCurrentTrack(eventEmitter) {
   eventEmitter.emit("track", track);
 }
 
+async function isSpotifyPlaying() {
+  const track = await spotify.getRecentTrack();
+  return track && track.isNowPlaying;
+}
+
 function music() {
   const eventEmitter = new EventEmitter();
 
@@ -73,10 +78,12 @@ function music() {
     emitCurrentTrack(eventEmitter);
   }, 1000 * 3);
 
-  // again gross, should be returning a class or something
-  eventEmitter.getCurrentTrack = getCurrentTrack;
-
-  return eventEmitter;
+  return Object.assign(eventEmitter, {
+    isSpotifyPlaying,
+    spotify,
+    lastFm,
+    getCurrentTrack,
+  });
 }
 
 module.exports = music;

@@ -170,7 +170,10 @@ async function handleRaid({ streamingService }) {
 async function handleChannelPointRedemptions({
   streamingService,
   redemptions,
+  music,
 }) {
+  let wasSpotifyPlayingMusic = false;
+
   function isValidReward(reward) {
     if (!reward || !reward.title) {
       return false;
@@ -189,6 +192,8 @@ async function handleChannelPointRedemptions({
       const { title } = reward;
 
       if (title === "big drink") {
+        wasSpotifyPlayingMusic = await music.isSpotifyPlaying();
+        if (wasSpotifyPlayingMusic) await music.spotify.pauseTrack();
         await redemptions.bigDrink.start();
       }
     }
@@ -205,6 +210,10 @@ async function handleChannelPointRedemptions({
 
       if (title === "big drink") {
         await redemptions.bigDrink.stop();
+        if (wasSpotifyPlayingMusic) {
+          await music.spotify.playTrack();
+          wasSpotifyPlayingMusic = false;
+        }
       }
     }
   );
@@ -229,6 +238,10 @@ async function handleChannelPointRedemptions({
 
       if (title === "big drink") {
         await redemptions.bigDrink.stop();
+        if (wasSpotifyPlayingMusic) {
+          await music.spotify.playTrack();
+          wasSpotifyPlayingMusic = false;
+        }
       }
 
       if (title === "show your pride") {
@@ -248,7 +261,11 @@ async function handleChannelPointRedemptions({
       }
 
       if (title === "SPACE") {
+        const isSpotifyPlaying = await music.isSpotifyPlaying();
+
+        if (isSpotifyPlaying) await music.spotify.pauseTrack();
         await redemptions.space();
+        if (isSpotifyPlaying) await music.spotify.playTrack();
       }
 
       if (title === "snowball") {
@@ -256,14 +273,22 @@ async function handleChannelPointRedemptions({
       }
 
       if (title === "barry") {
+        const isSpotifyPlaying = await music.isSpotifyPlaying();
+
+        if (isSpotifyPlaying) await music.spotify.pauseTrack();
         await redemptions.barry();
+        if (isSpotifyPlaying) await music.spotify.playTrack();
       }
 
       if (title === "BroomyJagRace") {
+        const isSpotifyPlaying = await music.isSpotifyPlaying();
+        if (isSpotifyPlaying) await music.spotify.pauseTrack();
         await redemptions.broomyJagRace.start();
       }
 
       if (title === "goosebumpz book") {
+        const isSpotifyPlaying = await music.isSpotifyPlaying();
+        if (isSpotifyPlaying) await music.spotify.pauseTrack();
         await redemptions.goosebumps.start({ message });
       }
     }
@@ -476,8 +501,13 @@ async function main() {
   handleChannelPointRedemptions({
     streamingService,
     redemptions,
+    music,
   });
-  handleChatMessages({ streamingService, commands, redemptions });
+  handleChatMessages({
+    streamingService,
+    commands,
+    redemptions,
+  });
   handleModsChatMessages({ streamingService, commands, redemptions });
   handleClientConnections({
     streamingService,

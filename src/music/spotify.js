@@ -23,6 +23,7 @@ const {
 const SCOPES = [
   "user-read-currently-playing",
   "user-read-playback-state",
+  "user-modify-playback-state",
 ];
 
 const CACHE_KEY = "SPOTIFY";
@@ -298,7 +299,19 @@ function elapsedTime(timer) {
   return process.hrtime(timer)[1] / 1000000;
 }
 
-async function getSpotifyRecentTrack() {
+async function playTrack() {
+  return await callEndpoint("/me/player/play", {}, { method: "PUT" });
+}
+
+async function pauseTrack() {
+  return await callEndpoint(
+    "/me/player/pause",
+    {},
+    { method: "PUT" }
+  );
+}
+
+async function getRecentTrack() {
   const timer = startTimer();
 
   const track = await getCurrentTrack();
@@ -328,4 +341,8 @@ async function getSpotifyRecentTrack() {
   };
 }
 
-module.exports = getSpotifyRecentTrack;
+module.exports = {
+  playTrack,
+  pauseTrack,
+  getRecentTrack,
+};

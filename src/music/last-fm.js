@@ -6,7 +6,7 @@ const { LAST_FM_API_KEY, LAST_FM_USERNAME } = process.env;
 
 const BASE_URL = `http://ws.audioscrobbler.com/2.0/`;
 
-async function getLastFmRecentTrack() {
+async function getRecentTrack() {
   const queryString = stringifyQueryString({
     api_key: LAST_FM_API_KEY,
     format: "json",
@@ -56,4 +56,6 @@ async function getLastFmRecentTrack() {
   };
 }
 
-module.exports = getLastFmRecentTrack;
+module.exports = {
+  getRecentTrack,
+};

@@ -29,6 +29,7 @@ class Redemptions {
   }
 
   async danceWithMe(username) {
+    logger.log("🕺 Dance With Me triggered...");
     const newDancer = await this.streamingService.getUser(username);
     newDancer.id = randomID();
     this.dancers.push(newDancer);
@@ -45,6 +46,7 @@ class Redemptions {
   }
 
   get bigDrink() {
+    logger.log("🚰 Big Drink triggered...");
     return {
       start: async () => {
         await obs.showSource({
@@ -75,6 +77,7 @@ class Redemptions {
 
   pog() {
     return new Promise((resolve) => {
+      logger.log("😮 Pog triggered...");
       const timeout = 9 * 1000;
       obs.turnOnOverlay("Steve Pointing Group", timeout);
       setTimeout(() => {
@@ -87,6 +90,8 @@ class Redemptions {
   }
 
   async showYourPride({ message, username }) {
+    logger.log("🌈 Pride flag triggered...");
+
     const [inputPrideFlagName] = message.split(" ");
 
     if (inputPrideFlagName === "straight") {
@@ -224,6 +229,32 @@ class Redemptions {
         this.io.emit("data", { goosebumpsBookTitle: null });
         this.goosebumpBook = null;
         await obs.switchToScene("Main Bigger Zac");
+      },
+    };
+  }
+
+  get brendanTakeover() {
+    return {
+      start: async () => {
+        logger.log("☠ Brendan Takeover triggered...");
+        await obs.showSource({
+          scene: "Raw Webcam",
+          source: "Brendan On His Switch",
+        });
+        await obs.hideSource({
+          scene: "Raw Webcam",
+          source: "NVIDIA Broadcast Camera",
+        });
+      },
+      stop: async () => {
+        await obs.hideSource({
+          scene: "Raw Webcam",
+          source: "Brendan On His Switch",
+        });
+        await obs.showSource({
+          scene: "Raw Webcam",
+          source: "NVIDIA Broadcast Camera",
+        });
       },
     };
   }

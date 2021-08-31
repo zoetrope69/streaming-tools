@@ -173,6 +173,10 @@ async function handleChannelPointRedemptions({
         if (wasSpotifyPlayingMusic) await music.spotify.pauseTrack();
         await redemptions.bigDrink.start();
       }
+
+      if (title === "brendan takeover") {
+        await redemptions.brendanTakeover.start();
+      }
     }
   );
 
@@ -191,6 +195,10 @@ async function handleChannelPointRedemptions({
           await music.spotify.playTrack();
           wasSpotifyPlayingMusic = false;
         }
+      }
+
+      if (title === "brendan takeover") {
+        await redemptions.brendanTakeover.stop();
       }
     }
   );
@@ -267,6 +275,10 @@ async function handleChannelPointRedemptions({
         const isSpotifyPlaying = await music.isSpotifyPlaying();
         if (isSpotifyPlaying) await music.spotify.pauseTrack();
         await redemptions.goosebumps.start({ message });
+      }
+
+      if (title === "brendan takeover") {
+        await redemptions.brendanTakeover.stop();
       }
     }
   );

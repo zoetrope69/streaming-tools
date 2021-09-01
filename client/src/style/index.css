@@ -33,7 +33,6 @@ body {
 
 .emote {
   display: inline-block;
-  width: 1em;
   height: 1em;
   transform: translateY(0.15em) scale(1.5);
   margin: 0 0.45em;

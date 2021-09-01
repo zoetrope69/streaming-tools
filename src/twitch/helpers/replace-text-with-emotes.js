@@ -8,10 +8,18 @@ const CACHE_KEY = "BETTER_TTV_EMOTES";
 const CACHE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
 async function getBetterTTVEmotes() {
+  if (!TWITCH_BROADCASTER_ID) {
+    return [];
+  }
+
   const response = await fetch(
     `https://api.betterttv.net/3/cached/users/twitch/${TWITCH_BROADCASTER_ID}`
   );
   const json = await response.json();
+
+  if (!json.channelEmotes || !json.sharedEmotes) {
+    return [];
+  }
 
   return [...json.channelEmotes, ...json.sharedEmotes].map(
     (emote) => ({

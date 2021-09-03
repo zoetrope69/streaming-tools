@@ -17,9 +17,6 @@ const ALERT_TYPES = {
   donation: {
     duration: 5000,
   },
-  follow: {
-    duration: 5000,
-  },
   say: {
     duration: 5000,
   },

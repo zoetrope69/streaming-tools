@@ -93,14 +93,6 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         amount: bits,
       });
     }),
-    // recieves a follow
-    await subscribeToTopic("channel.follow", (data) => {
-      const { user_id, user_name } = data;
-      eventEmitter.emit("follow", {
-        id: user_id,
-        username: user_name,
-      });
-    }),
     // updates the category, title
     await subscribeToTopic("channel.update", (data) => {
       const { title, category_id, category_name } = data;

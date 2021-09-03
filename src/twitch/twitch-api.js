@@ -121,31 +121,6 @@ async function getUser(callTwitchAPI, username) {
   };
 }
 
-async function getFollowers(callTwitchAPI) {
-  const response = await callTwitchAPI("users/follows", {
-    to_id: TWITCH_BROADCASTER_ID,
-  });
-
-  const { data, total } = response;
-
-  if (!data || data.length === 0) {
-    return { total: null, followers: [] };
-  }
-
-  const followers = data.map(
-    ({ from_id, from_name, followed_at }) => ({
-      id: from_id,
-      username: from_name,
-      followed_at,
-    })
-  );
-
-  return {
-    total,
-    followers,
-  };
-}
-
 async function getChannelInfo(callTwitchAPI) {
   const response = await callTwitchAPI("channels", {
     broadcaster_id: TWITCH_BROADCASTER_ID,
@@ -310,11 +285,6 @@ async function TwitchAPI({ ngrokUrl }) {
         ...user,
         pronouns,
       };
-    },
-
-    getFollowTotal: async () => {
-      const { total } = await getFollowers(callTwitchAPI);
-      return total;
     },
 
     getChannelInfo: async () => getChannelInfo(callTwitchAPI),

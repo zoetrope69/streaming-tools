@@ -76,15 +76,6 @@ const Alert = ({ alert, currentFaceDetection }) => {
     );
   }
 
-  if (type === "follow") {
-    return (
-      <Axolotl duration={duration}>
-        hi <strong>{user.username}</strong> <br />
-        thanks for following!
-      </Axolotl>
-    );
-  }
-
   if (type === "raid") {
     return (
       <Axolotl duration={duration}>

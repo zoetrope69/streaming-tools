@@ -15,23 +15,13 @@ async function Glimesh() {
 
   const moderators = await glimeshAPI.getModerators();
   const accessToken = await glimeshAPI.getAccessToken();
-  const { follows, chat } = await GlimeshEvents({
+  const { chat } = await GlimeshEvents({
     accessToken,
     moderators,
   });
 
-  // move this event to the main glimesh to match twitch
-  follows.on("follow", (data) => {
-    eventEmitter.emit("follow", data);
-  });
-
   chat.on("join", () => {
     logger.info("Bot connected");
-  });
-
-  // debug testing
-  eventEmitter.on("follow", (user) => {
-    logger.log(user);
   });
 
   return Object.assign(eventEmitter, glimeshAPI, {

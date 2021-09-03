@@ -113,19 +113,6 @@ async function handleBits({ streamingService }) {
   });
 }
 
-async function handleFollows({ streamingService }) {
-  streamingService.on("follow", async (user) => {
-    alerts.send({ type: "follow", user });
-    streamingService.chat.sendMessage(
-      `hi @${user.username}, thanks for following!`
-    );
-
-    // update follow total
-    const followTotal = await streamingService.getFollowTotal();
-    io.emit("data", { followTotal });
-  });
-}
-
 async function handleRaid({ streamingService }) {
   streamingService.on("raid", async (user) => {
     let raidAudioUrl;
@@ -416,7 +403,6 @@ async function handleModsChatMessages({
 }
 
 async function handleClientConnections({
-  streamingService,
   music,
   redemptions,
   commands,
@@ -424,12 +410,10 @@ async function handleClientConnections({
   io.on("connection", async (socket) => {
     clientLogger.info("Connected");
 
-    const followTotal = await streamingService.getFollowTotal();
     const currentTrack = await music.getCurrentTrack();
 
     socket.emit("data", {
       track: currentTrack,
-      followTotal,
       popUpMessage: commands.popUpMessage,
       goosebumpsBookTitle: redemptions.goosebumpBook,
       prideFlagName: redemptions.prideFlagName,
@@ -472,7 +456,6 @@ async function main() {
   handleChannelInfo({ channelInfo, streamingService });
   handleSubscription({ streamingService });
   handleBits({ streamingService });
-  handleFollows({ streamingService });
   handleRaid({ streamingService });
   handleChannelPointRedemptions({
     streamingService,
@@ -486,7 +469,6 @@ async function main() {
   });
   handleModsChatMessages({ streamingService, commands, redemptions });
   handleClientConnections({
-    streamingService,
     music,
     redemptions,
     commands,

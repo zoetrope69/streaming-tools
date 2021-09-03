@@ -29,7 +29,6 @@ const { GLIMESH_BROADCASTER_ID, GLIMESH_BROADCASTER_NAME } =
 
 async function GlimeshEvents({ accessToken, moderators }) {
   const eventEmitterChat = new EventEmitter();
-  const eventEmitterFollows = new EventEmitter();
 
   const connection = new WebSocket(
     `wss://glimesh.tv/api/socket/websocket?vsn=2.0.0&token=${accessToken}`
@@ -123,23 +122,6 @@ async function GlimeshEvents({ accessToken, moderators }) {
     );
   }
 
-  function subscribeToFollows() {
-    sendQuery(
-      "follows",
-      `
-        subscription{
-          followers(streamerId: ${GLIMESH_BROADCASTER_ID}) {
-            user {
-              id
-              username
-              avatarUrl
-            }
-          }
-        }
-      `
-    );
-  }
-
   function checkForSuccessfulSend(message) {
     if (IS_CONNECTED) {
       return;
@@ -150,7 +132,6 @@ async function GlimeshEvents({ accessToken, moderators }) {
 
       startHeartbeat();
       subscribeToChatMessages();
-      subscribeToFollows();
     }
   }
 
@@ -185,17 +166,6 @@ async function GlimeshEvents({ accessToken, moderators }) {
     });
   }
 
-  async function handleFollows({ user }) {
-    const { id, username, avatarUrl } = user;
-    eventEmitterFollows.emit("follow", {
-      user: {
-        id,
-        username,
-        image: avatarUrl,
-      },
-    });
-  }
-
   connection.on("message", async (data, isBinary) => {
     const message = getMessage(data, isBinary);
     logger.debug(message);
@@ -214,27 +184,12 @@ async function GlimeshEvents({ accessToken, moderators }) {
       eventEmitterChat.emit("join");
     });
 
-    checkHasSubscribedTo("follows", message, () => {
-      eventEmitterFollows.emit("ready");
-    });
-
     if (
       SUBSCRIPTIONS["chat"] &&
       SUBSCRIPTIONS["chat"] === message.subscriptionId
     ) {
       try {
         await handleChatMessage(message.result.data.chatMessage);
-      } catch (error) {
-        logger.error(error.message);
-      }
-    }
-
-    if (
-      SUBSCRIPTIONS["follows"] &&
-      SUBSCRIPTIONS["follows"] === message.subscriptionId
-    ) {
-      try {
-        await handleFollows(message.result.data.follows);
       } catch (error) {
         logger.error(error.message);
       }
@@ -279,7 +234,6 @@ async function GlimeshEvents({ accessToken, moderators }) {
   }
 
   return {
-    follows: eventEmitterFollows,
     chat: Object.assign(eventEmitterChat, {
       sendMessage,
       deleteMessage,

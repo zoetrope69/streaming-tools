@@ -7,7 +7,7 @@ function replaceTextWithEmotes(text, tokens) {
     return text;
   }
 
-  let replacedText = `${text} `; // add some padding to right
+  let replacedText = ` ${text} `; // add some padding
   emotes.forEach(({ src: image, text: code }) => {
     // adding padding so we don't replace emote code inside of text
     const paddedCode = ` ${code} `;

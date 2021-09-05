@@ -267,6 +267,10 @@ async function handleChannelPointRedemptions({
       if (title === "brendan takeover") {
         await redemptions.brendanTakeover.stop();
       }
+
+      if (title === "norty devil") {
+        await redemptions.nortyDevil();
+      }
     }
   );
 }
@@ -295,6 +299,12 @@ async function handleChatMessages({
 
     if (command === "song" || command === "music") {
       await commands.song();
+    }
+
+    if (user.username === "EggEllie") {
+      firstTimeTalking("EggEllie", async () => {
+        await redemptions.nortyDevil();
+      });
     }
 
     if (user.username === "bexchat") {

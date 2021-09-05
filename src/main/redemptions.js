@@ -258,6 +258,23 @@ class Redemptions {
       },
     };
   }
+
+  nortyDevil() {
+    return new Promise((resolve) => {
+      logger.log("👿 Norty Devil triggered...");
+      const timeout = 20 * 1000;
+      obs.turnOnOverlay("Stop Look At My Giant Ass", timeout);
+      setTimeout(() => {
+        this.streamingService.chat.sendMessage(
+          `!so EggEllie the creator of the norty devils`
+        );
+        this.streamingService.chat.sendMessage(
+          `!so Broomyjag for the voice of the devil`
+        );
+        resolve();
+      }, timeout);
+    });
+  }
 }
 
 module.exports = Redemptions;

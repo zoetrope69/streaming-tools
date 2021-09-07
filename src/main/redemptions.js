@@ -156,20 +156,6 @@ class Redemptions {
     this.alerts.send({ type: "philpunch", message });
   }
 
-  space() {
-    return new Promise((resolve) => {
-      logger.log("🌌 SPACE triggered...");
-      obs.turnOnOverlay("Star Trek Space Video", 103 * 1000);
-      setTimeout(() => {
-        obs.turnOnOverlay("Star Trek Slideshow", 53 * 1000);
-        this.streamingService.chat.sendMessage(
-          `hip hop star trek by d-train https://www.youtube.com/watch?v=oTRKrzgVe6Y`
-        );
-        resolve();
-      }, 50 * 1000); // minute into the video
-    });
-  }
-
   async snowball() {
     logger.log("❄ Snowball triggered...");
     await sendFaceDataToClient({ io: this.io });

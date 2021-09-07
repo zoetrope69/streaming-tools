@@ -10,7 +10,6 @@ const socketIO = require("socket.io");
 const Glimesh = require("../glimesh");
 const Twitch = require("../twitch");
 const Music = require("../music");
-const KoFi = require("../ko-fi");
 const textToSpeech = require("../text-to-speech");
 const obs = require("../obs");
 const {
@@ -52,20 +51,6 @@ function getStreamingService() {
   }
 
   return Twitch;
-}
-
-function handleKofi({ streamingService }) {
-  const kofi = KoFi({ ngrokUrl: NGROK_URL, app });
-
-  kofi.on("payment", ({ type, isAnonymous, user }) => {
-    if (type === "Donation") {
-      alerts.send({ type: "donation", user, isAnonymous });
-      const userName = isAnonymous ? "bill gates" : user.username;
-      streamingService.chat.sendMessage(
-        `hi ${userName}, thanks for the donation!`
-      );
-    }
-  });
 }
 
 async function handleChannelInfo({ channelInfo, streamingService }) {
@@ -462,7 +447,6 @@ async function main() {
   createSourceVisibilityTriggers({ commands, redemptions });
   createFilterVisibilityTriggers();
 
-  handleKofi({ streamingService });
   handleChannelInfo({ channelInfo, streamingService });
   handleSubscription({ streamingService });
   handleBits({ streamingService });

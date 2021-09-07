@@ -63,19 +63,6 @@ const Alert = ({ alert, currentFaceDetection }) => {
     );
   }
 
-  if (type === "donation") {
-    return (
-      <Axolotl duration={duration}>
-        thanks for the donation <br />
-        {alert.isAnonymous ? (
-          "bill gates"
-        ) : (
-          <strong>{user.username}</strong>
-        )}
-      </Axolotl>
-    );
-  }
-
   if (type === "raid") {
     return (
       <Axolotl duration={duration}>

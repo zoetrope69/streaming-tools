@@ -14,9 +14,6 @@ const ALERT_TYPES = {
   subscribe: {
     duration: 5000,
   },
-  donation: {
-    duration: 5000,
-  },
   say: {
     duration: 5000,
   },

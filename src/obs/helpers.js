@@ -30,6 +30,10 @@ function createSourceVisibilityTriggers({ commands, redemptions }) {
       await obs.switchToScene("Dance everywhere");
     },
     "Joycon: Right Analog In": async () => {
+      obs.toggleFilter({
+        source: "Raw Webcam",
+        filter: "Webcam: Fill Colour",
+      });
       return obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Rainbow",

@@ -10,8 +10,6 @@ const { schedule } = require("../helpers/schedule");
 const Logger = require("../helpers/logger");
 const logger = new Logger("🚀 Commands");
 
-const { IS_GLIMESH } = process.env;
-
 class Commands {
   constructor({ io, music, streamingService, channelInfo }) {
     this.io = io;
@@ -186,14 +184,6 @@ class Commands {
       customShoutOut,
       audioUrl: nameAudioUrl,
     });
-
-    if (IS_GLIMESH) {
-      const urlString = `https://glimesh.tv/${user.username.toLowerCase()}`;
-      this.streamingService.chat.sendMessage(
-        `:zactopog: shout out to ${user.username} at ${urlString} :zactopog:`
-      );
-      return;
-    }
 
     let nameString;
     if (customShoutOut) {

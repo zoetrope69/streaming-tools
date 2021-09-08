@@ -3,7 +3,6 @@ require("dotenv").config();
 
 const ngrok = require("ngrok");
 const nodemon = require("nodemon");
-const enquirer = require("enquirer");
 
 const Logger = require("./src/helpers/logger");
 const ngrokLogger = new Logger("👽 ngrok");
@@ -41,25 +40,12 @@ async function createNgrokUrl() {
   return ngrokUrl;
 }
 
-async function getStreamingService() {
-  const prompt = new enquirer.Confirm({
-    name: "question",
-    message: "Twitch?",
-    initial: true,
-  });
-
-  const response = await prompt.run();
-
-  return response ? "twitch" : "glimesh";
-}
-
 async function main() {
-  const streamingService = await getStreamingService();
   const ngrokUrl = await createNgrokUrl();
 
   const nodemonProcess = nodemon({
     script: "./src",
-    exec: `NGROK_URL=${ngrokUrl} STREAMING_SERVICE=${streamingService} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
+    exec: `NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
     // disable watch mode in production
     watch: NODE_ENV === "production" ? [".env"] : [".env", "src/"],
   });

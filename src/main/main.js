@@ -7,7 +7,6 @@ const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
 
-const Glimesh = require("../glimesh");
 const Twitch = require("../twitch");
 const Music = require("../music");
 const textToSpeech = require("../text-to-speech");
@@ -23,8 +22,7 @@ const Commands = require("./commands");
 const { firstTimeTalking } = require("./users-who-have-talked");
 
 const Logger = require("../helpers/logger");
-const { NGROK_URL, PORT, STREAMING_SERVICE } = process.env;
-const IS_GLIMESH = STREAMING_SERVICE === "glimesh";
+const { NGROK_URL, PORT } = process.env;
 const CLIENT_FILE_PATH = "client/build";
 
 const logger = new Logger("🛸 Streaming Tools Server");
@@ -44,14 +42,6 @@ app.get("/", (_request, response) => {
     path.join(__dirname, CLIENT_FILE_PATH, "/index.html")
   );
 });
-
-function getStreamingService() {
-  if (IS_GLIMESH) {
-    return Glimesh;
-  }
-
-  return Twitch;
-}
 
 async function handleChannelInfo({ channelInfo, streamingService }) {
   const { categoryName, title } =
@@ -258,14 +248,7 @@ async function handleChatMessages({
   redemptions,
 }) {
   streamingService.chat.on("message", async (data) => {
-    const {
-      id,
-      message,
-      messageWithEmotes,
-      command,
-      user,
-      tokens = [],
-    } = data;
+    const { message, messageWithEmotes, command, user } = data;
 
     io.emit("data", {
       message,
@@ -302,36 +285,6 @@ async function handleChatMessages({
 
     if (command === "title") {
       await commands.title();
-    }
-
-    if (IS_GLIMESH) {
-      if (user.username === "bex") {
-        firstTimeTalking("bex", async () => {
-          await commands.bex();
-        });
-      }
-
-      if (user.username === "bigsteve") {
-        firstTimeTalking("bigsteve", async () => {
-          await commands.octopussy();
-        });
-      }
-
-      const hasMonkasEmote = tokens.some((token) => {
-        return (
-          token.type === "emote" && token.text === ":glimmonkas:"
-        );
-      });
-      if (hasMonkasEmote) {
-        streamingService.chat.deleteMessage(id);
-        streamingService.chat.sendMessage(
-          `@${user.username} no pepes please`
-        );
-      }
-
-      if (command === "dance") {
-        await redemptions.danceWithMe(user.username);
-      }
     }
   });
 }
@@ -419,8 +372,7 @@ async function main() {
     io.emit("data", { track });
   });
 
-  const StreamingService = getStreamingService();
-  const streamingService = await StreamingService({
+  const streamingService = await Twitch({
     ngrokUrl: NGROK_URL,
     app,
   });

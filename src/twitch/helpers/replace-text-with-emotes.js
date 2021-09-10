@@ -1,6 +1,5 @@
 const fetch = require("node-fetch");
 const cache = require("memory-cache");
-const replaceAll = require("replaceall");
 
 const { TWITCH_BROADCASTER_ID } = process.env;
 
@@ -86,20 +85,25 @@ function replaceEmotes(text, emotes) {
     return text;
   }
 
-  let replacedText = ` ${text} `; // add some padding
-  emotes.forEach(({ type, image, code }) => {
-    // adding padding so we don't replace emote code inside of text
-    const paddedCode = ` ${code} `;
-    const emoteImageElement = ` <img class="emote emote--${type}" src="${image}" alt="${code}" /> `;
+  const textTokens = text.split(" ");
 
-    replacedText = replaceAll(
-      paddedCode,
-      emoteImageElement,
-      replacedText
-    );
+  const newTokens = textTokens.map((textToken) => {
+    const emote = emotes.find(({ code }) => code === textToken);
+    if (emote) {
+      const { type, code, image } = emote;
+      return `
+        <img
+          class="emote emote--${type}" 
+          src="${image}"
+          alt="${code}"
+          />
+      `.trim();
+    }
+
+    return textToken;
   });
 
-  return replacedText.trim();
+  return newTokens.join(" ").trim();
 }
 
 async function replaceTextWithEmotes(text, emoteDataFromTwitchBot) {

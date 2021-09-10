@@ -69,7 +69,7 @@ class Redemptions {
         });
 
         this.streamingService.chat.sendMessage(
-          "!so ameliabayler the water singer"
+          "shout-out to twitch.tv/ameliabayler the water singer"
         );
       },
     };
@@ -82,7 +82,7 @@ class Redemptions {
       obs.turnOnOverlay("Steve Pointing Group", timeout);
       setTimeout(() => {
         this.streamingService.chat.sendMessage(
-          "!so blgsteve for the pog audit"
+          "shout-out to twitch.tv/blgsteve for the pog audit"
         );
         resolve();
       }, timeout);
@@ -252,10 +252,10 @@ class Redemptions {
       obs.turnOnOverlay("Stop Look At My Giant Ass", timeout);
       setTimeout(() => {
         this.streamingService.chat.sendMessage(
-          `!so EggEllie the creator of the norty devils`
+          `shout-out to twitch.tv/EggEllie the creator of the norty devils`
         );
         this.streamingService.chat.sendMessage(
-          `!so Broomyjag for the voice of the devil`
+          `shout-out to twitch.tv/Broomyjag for the voice of the devil`
         );
         resolve();
       }, timeout);

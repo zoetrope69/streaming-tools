@@ -50,7 +50,7 @@ function createSourceVisibilityTriggers({ commands, redemptions }) {
 
 function createFilterVisibilityTriggers() {
   obs.filterVisibilityTriggers({
-    "TONOR Microphone": {
+    "Main Microphone": {
       "Mic: Deep Voice": async ({ isVisible }) => {
         return await obs.showHideSource({
           scene: "Overlays",

@@ -24,7 +24,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
 
       await twitchApi.eventSub.subscribe(topic);
 
-      logger.info(`${topic} subscription successful`);
+      logger.info(`${topic} subscription created`);
     } catch (e) {
       logger.error(
         `${topic} failed: ${typeof e === "string" ? e : e.message}`

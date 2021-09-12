@@ -93,10 +93,12 @@ async function getAuthManually() {
   const response = await getAuth(authCode);
 
   if (response.error) {
+    logger.error(response);
     throw new Error(response.error_description);
   }
 
   if (!response.refresh_token) {
+    logger.error(response);
     throw new Error("No refresh token...");
   }
 

@@ -10,18 +10,37 @@ const { OBS_WEBSOCKET_ADDRESS, OBS_WEBSOCKET_PASSWORD } = process.env;
 let OBS_INITIALISED = false;
 let AVAILABLE_OBS_REQUESTS = [];
 
-function request(requestName, options) {
+async function request(requestName, options) {
+  if (!OBS_INITIALISED) {
+    logger.error(`Error for ${requestName} request`);
+    throw new Error("OBS isn't ready");
+  }
+
   if (!AVAILABLE_OBS_REQUESTS.includes(requestName)) {
     logger.debug("AVAILABLE_OBS_REQUESTS", AVAILABLE_OBS_REQUESTS);
     logger.debug(
       ["Available requests:", ...AVAILABLE_OBS_REQUESTS].join("\n")
     );
-    return Promise.reject(
-      new Error(`"${requestName}" is not an available request.`)
+    const requestError = new Error(
+      `"${requestName}" is not an available request.`
     );
+    logger.error(requestError);
+    return Promise.reject(requestError);
   }
 
-  return obs.send(requestName, options);
+  let response = {};
+  try {
+    response = await obs.send(requestName, options);
+  } catch (exception) {
+    logger.error(`Error for ${requestName} request`);
+    logger.error(exception || exception.message);
+
+    if (exception.error === "specified source doesn't exist") {
+      logger.error(`"${options?.sourceName}" doesn't exist`);
+    }
+  }
+
+  return response;
 }
 
 function initialise() {
@@ -41,8 +60,27 @@ function initialise() {
       logger.error(e.error || e.message || e);
     }
 
-    obs.on("ConnectionOpened", () => {
-      obs.send("GetVersion").then((versionInfo) => {
+    obs.on("ConnectionClosed", (data) =>
+      logger.debug("OBS connection closed", data)
+    );
+
+    obs.on("AuthenticationFailure", (data) =>
+      logger.error("OBS Failed to authenticate", data)
+    );
+
+    obs.on("ConnectionOpened", async () => {
+      obs.on("AuthenticationSuccess", async () => {
+        let versionInfo;
+        try {
+          versionInfo = await obs.send("GetVersion");
+        } catch (e) {
+          logger.error(e.error || e.message || e);
+        }
+
+        if (!versionInfo) {
+          return logger.error("No version info");
+        }
+
         logger.info("Connected!");
 
         AVAILABLE_OBS_REQUESTS =
@@ -52,10 +90,11 @@ function initialise() {
           `obs-websocket version ${versionInfo.obsWebsocketVersion}`
         );
 
+        OBS_INITIALISED = true;
+
         // reset any triggers
         resetTriggers();
 
-        OBS_INITIALISED = true;
         return resolve();
       });
     });
@@ -93,10 +132,6 @@ async function resetTriggers() {
 }
 
 async function showHideSource({ scene, source, isVisible }) {
-  if (!OBS_INITIALISED) {
-    throw new Error("OBS isn't ready");
-  }
-
   return await request("SetSceneItemRender", {
     "scene-name": scene,
     source,
@@ -105,26 +140,14 @@ async function showHideSource({ scene, source, isVisible }) {
 }
 
 async function showSource({ scene, source }) {
-  if (!OBS_INITIALISED) {
-    throw new Error("OBS isn't ready");
-  }
-
   return await showHideSource({ scene, source, isVisible: true });
 }
 
 async function hideSource({ scene, source }) {
-  if (!OBS_INITIALISED) {
-    throw new Error("OBS isn't ready");
-  }
-
   return await showHideSource({ scene, source, isVisible: false });
 }
 
 async function showHideFilter({ source, filter, filterEnabled }) {
-  if (!OBS_INITIALISED) {
-    throw new Error("OBS isn't ready");
-  }
-
   return await request("SetSourceFilterVisibility", {
     sourceName: source,
     filterName: filter,
@@ -133,10 +156,6 @@ async function showHideFilter({ source, filter, filterEnabled }) {
 }
 
 async function toggleFilter({ source, filter }) {
-  if (!OBS_INITIALISED) {
-    throw new Error("OBS isn't ready");
-  }
-
   const result = await request("GetSourceFilterInfo", {
     sourceName: source,
     filterName: filter,
@@ -150,16 +169,16 @@ async function toggleFilter({ source, filter }) {
 }
 
 async function handleTriggers({ triggers, itemVisible, itemName }) {
-  if (!Object.prototype.hasOwnProperty.call(triggers, itemName)) {
-    return;
-  }
-
-  const triggerFunction = triggers[itemName];
-
   try {
+    if (!Object.prototype.hasOwnProperty.call(triggers, itemName)) {
+      return;
+    }
+
+    const triggerFunction = triggers[itemName];
+
     return await triggerFunction({ isVisible: itemVisible });
   } catch (e) {
-    logger.error(e);
+    logger.error(e.message);
   }
 }
 
@@ -177,6 +196,11 @@ async function filterVisibilityTriggers(sourcesObject) {
       sourceName: source,
     });
 
+    if (!filters || filters.length === 0) {
+      logger.debug("No filters found");
+      return;
+    }
+
     filters.forEach(async (filter) => {
       await handleTriggers({
         triggers,
@@ -187,12 +211,13 @@ async function filterVisibilityTriggers(sourcesObject) {
 
     obs.on(
       "SourceFilterVisibilityChanged",
-      ({ filterEnabled, filterName }) =>
-        handleTriggers({
+      async ({ filterEnabled, filterName }) => {
+        await handleTriggers({
           triggers,
           itemVisible: filterEnabled,
           itemName: filterName,
-        })
+        });
+      }
     );
   });
 }

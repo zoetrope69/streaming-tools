@@ -367,50 +367,58 @@ async function handleClientConnections({
 }
 
 async function main() {
-  const music = Music();
-  music.on("track", (track) => {
-    io.emit("data", { track });
-  });
+  try {
+    const music = Music();
+    music.on("track", (track) => {
+      io.emit("data", { track });
+    });
 
-  const streamingService = await Twitch({
-    ngrokUrl: NGROK_URL,
-    app,
-  });
+    const streamingService = await Twitch({
+      ngrokUrl: NGROK_URL,
+      app,
+    });
 
-  const channelInfo = new ChannelInfo();
-  const redemptions = new Redemptions({ io, streamingService });
-  const commands = new Commands({
-    io,
-    streamingService,
-    music,
-    channelInfo,
-  });
+    const channelInfo = new ChannelInfo();
+    const redemptions = new Redemptions({ io, streamingService });
+    const commands = new Commands({
+      io,
+      streamingService,
+      music,
+      channelInfo,
+    });
 
-  // initialise various things
-  await obs.initialise();
-  createSourceVisibilityTriggers({ commands, redemptions });
-  createFilterVisibilityTriggers();
+    // initialise various things
+    await obs.initialise();
+    createSourceVisibilityTriggers({ commands, redemptions });
+    createFilterVisibilityTriggers();
 
-  handleChannelInfo({ channelInfo, streamingService });
-  handleSubscription({ streamingService });
-  handleBits({ streamingService });
-  handleRaid({ streamingService });
-  handleChannelPointRedemptions({
-    streamingService,
-    redemptions,
-    music,
-  });
-  handleChatMessages({
-    streamingService,
-    commands,
-    redemptions,
-  });
-  handleModsChatMessages({ streamingService, commands, redemptions });
-  handleClientConnections({
-    music,
-    redemptions,
-    commands,
-  });
+    handleChannelInfo({ channelInfo, streamingService });
+    handleSubscription({ streamingService });
+    handleBits({ streamingService });
+    handleRaid({ streamingService });
+    handleChannelPointRedemptions({
+      streamingService,
+      redemptions,
+      music,
+    });
+    handleChatMessages({
+      streamingService,
+      commands,
+      redemptions,
+    });
+    handleModsChatMessages({
+      streamingService,
+      commands,
+      redemptions,
+    });
+    handleClientConnections({
+      music,
+      redemptions,
+      commands,
+    });
+  } catch (e) {
+    logger.error(e || e.message);
+  }
 }
 
 main();

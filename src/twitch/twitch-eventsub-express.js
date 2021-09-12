@@ -78,6 +78,9 @@ function eventSubExpress(app) {
         logger.debug(
           `Received challenge for ${request.body.subscription.type}, ${request.body.subscription.id}. Returning challenge.`
         );
+        logger.info(
+          `${request.body.subscription.type} subscription successful`
+        );
         response
           .status(200)
           .type("text/plain")

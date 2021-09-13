@@ -16,7 +16,7 @@ const VOICES = [
 ];
 
 async function getAudioURL({ voice, text }) {
-  const response = await fetch("https://streamlabs.com/polly/speak", {
+  const response = await fetch("https://streamlabs.com/ninja/speak", {
     method: "POST",
     body: JSON.stringify({
       voice,

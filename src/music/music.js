@@ -32,7 +32,7 @@ async function getCurrentTrack() {
     track = await spotify.getRecentTrack();
 
     // fallback to lastfm if we cant find spotify
-    if (!track) {
+    if (!track || !track.isNowPlaying) {
       logger.debug(`Couldn't get track from Spotify. Using Last.fm`);
       track = await lastFm.getRecentTrack();
     }

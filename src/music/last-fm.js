@@ -31,8 +31,9 @@ async function getRecentTrack() {
 
   const [track] = json.recenttracks.track;
 
-  const isNowPlaying =
-    track["@attr"] && track["@attr"].nowplaying === "true";
+  const isNowPlaying = !!(
+    track["@attr"] && track["@attr"].nowplaying === "true"
+  );
 
   const albumName = track.album["#text"];
   const albumArt = track.image.find((i) => i.size === "large");

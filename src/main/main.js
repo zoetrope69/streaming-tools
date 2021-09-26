@@ -352,6 +352,10 @@ async function handleModsChatMessages({
     ) {
       await commands.shoutOut({ commandArguments });
     }
+
+    if (command === "thanos") {
+      await commands.thanosDancing();
+    }
   });
 }
 

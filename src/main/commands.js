@@ -23,6 +23,7 @@ class Commands {
     this.handleRecurringGoogleSheetCommands({ streamingService });
 
     this.popUpMessage = "";
+    this.isThanosDancing = false;
   }
 
   async handleRecurringGoogleSheetCommands({ streamingService }) {
@@ -222,11 +223,32 @@ class Commands {
   }
 
   async say({ commandArguments, messageWithEmotes }) {
+    if (!messageWithEmotes || messageWithEmotes.length === 0) {
+      this.streamingService.chat.sendMessage(
+        "you need a message with !say"
+      );
+    }
+
     this.alerts.send({
       type: "say",
       message: commandArguments,
       messageWithEmotes: messageWithEmotes.replace("!say", "").trim(),
     });
+  }
+
+  thanosDancing() {
+    if (this.isThanosDancing) {
+      return;
+    }
+
+    logger.info("🕺 Thanos dancing triggered...");
+
+    this.isThanosDancing = true;
+    const timeout = 15 * 1000;
+    obs.turnOnOverlay("Thanos Dancing", timeout);
+    setTimeout(() => {
+      this.isThanosDancing = false;
+    }, timeout);
   }
 }
 

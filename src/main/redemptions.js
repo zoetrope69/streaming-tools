@@ -1,6 +1,8 @@
 const obs = require("../obs");
 const createBeeImage = require("../imma-bee/create-bee-image");
 const createGoosebumpsBookImage = require("../goosebumps");
+const createRunescapeTextImage = require("../create-runescape-text-image");
+const textToSpeech = require("../text-to-speech");
 
 const {
   getPrideFlag,
@@ -15,6 +17,25 @@ const Logger = require("../helpers/logger");
 const logger = new Logger("👾 Redemptions");
 
 const { v4: randomID } = require("uuid");
+
+function getDuration({ message }) {
+  if (!message || message.length === 0) {
+    return 0;
+  }
+
+  const DELAY_TIME = 1500; // milliseconds before user starts reading the notification
+  const BONUS_TIME = 1000; // extra time
+  const WORD_PER_MINUTE = 200; // average words per minute
+  const wordAmount = message.split(" ").length;
+
+  if (wordAmount === 0) {
+    return DELAY_TIME + BONUS_TIME;
+  }
+
+  const wordsTime = (wordAmount / WORD_PER_MINUTE) * 60 * 1000;
+
+  return wordsTime + DELAY_TIME + BONUS_TIME;
+}
 
 class Redemptions {
   constructor({ io, streamingService }) {
@@ -291,6 +312,31 @@ class Redemptions {
         `shout-out to twitch.tv/just_stevesey for telling me im stinky :-(`
       );
     }, timeout);
+  }
+
+  async runescape({ message }) {
+    if (!message || message.length === 0) {
+      return;
+    }
+
+    logger.log("⚔ Runescape triggered...");
+    const { messageWithoutOptions } = await createRunescapeTextImage(
+      message
+    );
+    const duration = getDuration({ message });
+
+    let nameAudioUrl;
+    try {
+      nameAudioUrl = await textToSpeech(messageWithoutOptions);
+    } catch (e) {
+      // couldnt get name audio
+    }
+
+    this.alerts.send({
+      type: "runescape",
+      duration,
+      audioUrl: nameAudioUrl,
+    });
   }
 }
 

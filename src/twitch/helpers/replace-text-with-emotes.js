@@ -80,7 +80,7 @@ function getTwitchEmotes(text, emotes) {
   return emotePositions;
 }
 
-function replaceEmotes(text, emotes) {
+function replaceEmotes(text, emotes, { removeEmotes = false } = {}) {
   if (!emotes || emotes.length === 0) {
     return text;
   }
@@ -90,6 +90,10 @@ function replaceEmotes(text, emotes) {
   const newTokens = textTokens.map((textToken) => {
     const emote = emotes.find(({ code }) => code === textToken);
     if (emote) {
+      if (removeEmotes) {
+        return "";
+      }
+
       const { type, code, image } = emote;
       return `
         <img
@@ -115,7 +119,12 @@ async function replaceTextWithEmotes(text, emoteDataFromTwitchBot) {
   const twitchEmotes = getTwitchEmotes(text, emoteDataFromTwitchBot);
   const emotes = [...twitchEmotes, ...betterTTVEmotes];
 
-  return replaceEmotes(text, emotes);
+  return {
+    messageWithEmotes: replaceEmotes(text, emotes),
+    messageWithNoEmotes: replaceEmotes(text, emotes, {
+      removeEmotes: true,
+    }),
+  };
 }
 
 module.exports = replaceTextWithEmotes;

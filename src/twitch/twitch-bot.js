@@ -124,10 +124,8 @@ async function TwitchBot({ eventEmitter }) {
       const id = data["user-id"];
       const username = data["display-name"];
 
-      const messageWithEmotes = await replaceTextWithEmotes(
-        message,
-        emotes
-      );
+      const { messageWithEmotes, messageWithNoEmotes } =
+        await replaceTextWithEmotes(message, emotes);
       eventEmitter.emit("subscribe", {
         isGift: false,
         user: {
@@ -135,6 +133,7 @@ async function TwitchBot({ eventEmitter }) {
           username,
           message,
           messageWithEmotes,
+          messageWithNoEmotes,
         },
       });
     }

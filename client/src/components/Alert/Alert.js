@@ -7,6 +7,7 @@ import BigData from "./BigData";
 import ImmaBee from "./ImmaBee";
 import PenguinThrow from "./PenguinThrow";
 import PhilPunch from "./PhilPunch";
+import Runescape from "./Runescape";
 import ZacYouStink from "./ZacYouStink";
 
 import axolotlStyles from "./Axolotl.css";
@@ -140,6 +141,10 @@ const Alert = ({ alert, currentFaceDetection }) => {
         currentFaceDetection={currentFaceDetection}
       />
     );
+  }
+
+  if (type === "runescape") {
+    return <Runescape duration={duration} />;
   }
 
   return null;

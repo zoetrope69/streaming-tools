@@ -247,6 +247,10 @@ async function handleChannelPointRedemptions({
       if (title === "zac u stink") {
         await redemptions.zacYouStink();
       }
+
+      if (title === "runescape") {
+        await redemptions.runescape({ message });
+      }
     }
   );
 }

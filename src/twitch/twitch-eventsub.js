@@ -34,7 +34,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   }
 
   // channel point redemptions
-  const channelPointRedemptionHandler = (data) => {
+  const channelPointRedemptionHandler = async (data) => {
     const {
       user_id,
       user_name,

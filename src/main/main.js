@@ -138,6 +138,11 @@ async function handleChannelPointRedemptions({
 
       if (title === "brendan takeover") {
         await redemptions.brendanTakeover.start();
+
+        // maximum of 1 minute
+        setTimeout(async () => {
+          await redemptions.brendanTakeover.stop();
+        }, 60 * 1000);
       }
     }
   );

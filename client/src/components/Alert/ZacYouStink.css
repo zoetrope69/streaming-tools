@@ -1,0 +1,39 @@
+.ZacYouStink {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 1;
+  animation: fadeOutZacYouStink ease-in forwards;
+}
+
+@keyframes fadeOutZacYouStink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.ZacYouStink__fly {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: url("../../assets/alerts/zac-you-stink-fly.gif");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: fadeInZacYouStink 0.15s 2.5s ease-in forwards;
+}
+
+@keyframes fadeInZacYouStink {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -7,6 +7,7 @@ import BigData from "./BigData";
 import ImmaBee from "./ImmaBee";
 import PenguinThrow from "./PenguinThrow";
 import PhilPunch from "./PhilPunch";
+import ZacYouStink from "./ZacYouStink";
 
 import axolotlStyles from "./Axolotl.css";
 
@@ -130,6 +131,15 @@ const Alert = ({ alert, currentFaceDetection }) => {
 
   if (type === "philpunch") {
     return <PhilPunch>{alert.message}</PhilPunch>;
+  }
+
+  if (type === "zac-you-stink") {
+    return (
+      <ZacYouStink
+        duration={duration}
+        currentFaceDetection={currentFaceDetection}
+      />
+    );
   }
 
   return null;

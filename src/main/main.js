@@ -238,6 +238,10 @@ async function handleChannelPointRedemptions({
       if (title === "norty devil") {
         await redemptions.nortyDevil();
       }
+
+      if (title === "zac u stink") {
+        await redemptions.zacYouStink();
+      }
     }
   );
 }

@@ -261,6 +261,37 @@ class Redemptions {
       }, timeout);
     });
   }
+
+  async zacYouStink() {
+    logger.log("🦨 Zac you stink triggered...");
+    const type = "zac-you-stink";
+    const timeout = this.alerts.alertTypes[type].duration;
+
+    // send to client
+    await sendFaceDataToClient({ io: this.io });
+    this.alerts.send({ type });
+
+    // handle stinky filter in obs
+    obs.showHideFilter({
+      source: "Raw Webcam",
+      filter: "Webcam: Stinky (Fade in)",
+      filterEnabled: true,
+    });
+    setTimeout(() => {
+      obs.showHideFilter({
+        source: "Raw Webcam",
+        filter: "Webcam: Stinky (Fade out)",
+        filterEnabled: true,
+      });
+    }, timeout - 1000);
+
+    // shout out to stevesey
+    setTimeout(() => {
+      this.streamingService.chat.sendMessage(
+        `shout-out to twitch.tv/just_stevesey for telling me im stinky :-(`
+      );
+    }, timeout);
+  }
 }
 
 module.exports = Redemptions;

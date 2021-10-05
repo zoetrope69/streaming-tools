@@ -1,5 +1,31 @@
 const fetch = require("node-fetch");
 
+// keys must be lowercase
+const CUSTOM_WORD_MAP = {
+  blgsteve: "B L G Steve",
+  bexchat: "Bex Chat",
+  specialcei: "Special K",
+  cei: "K",
+};
+
+function replaceWordsIfNeeded(text) {
+  return text
+    .split(" ")
+    .map((token) => {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          CUSTOM_WORD_MAP,
+          token.toLowerCase()
+        )
+      ) {
+        return CUSTOM_WORD_MAP[token.toLowerCase()];
+      }
+
+      return token;
+    })
+    .join(" ");
+}
+
 const VOICES = [
   "Brian",
   "Ivy",
@@ -49,7 +75,11 @@ async function getAudioURL({ voice, text }) {
 async function getAudioURLs(text) {
   const randomVoice =
     VOICES[Math.floor(Math.random() * VOICES.length)];
-  return getAudioURL({ voice: randomVoice, text });
+
+  return getAudioURL({
+    voice: randomVoice,
+    text: replaceWordsIfNeeded(text),
+  });
 }
 
 module.exports = getAudioURLs;

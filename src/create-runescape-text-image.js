@@ -61,11 +61,24 @@ async function createRunescapeTextImage(message) {
     width: 25,
     trim: true,
   };
-  const { extension, buffer } = getRuneScapeTextImage(
-    text,
-    options,
-    wordWrapOptions
-  );
+
+  let runescapeTextResult = null;
+  try {
+    runescapeTextResult = getRuneScapeTextImage(
+      text,
+      options,
+      wordWrapOptions
+    );
+  } catch (e) {
+    // sometimes the text parser can explode
+    // ...
+  }
+
+  if (!runescapeTextResult) {
+    return null;
+  }
+
+  const { extension, buffer } = runescapeTextResult;
 
   // delete old files if they exist
   deleteFileIfExists(path.join(__dirname, `${FILE_PATH_BASE}.gif`));

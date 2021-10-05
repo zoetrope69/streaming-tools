@@ -110,14 +110,19 @@ function replaceEmotes(text, emotes, { removeEmotes = false } = {}) {
   return newTokens.join(" ").trim();
 }
 
-async function replaceTextWithEmotes(text, emoteDataFromTwitchBot) {
+async function replaceTextWithEmotes({
+  text,
+  twitchEmotes,
+  emoteDataFromTwitchBot,
+}) {
   if (!text || text.length === 0) {
     return "";
   }
 
   const betterTTVEmotes = await getCachedBetterTTVEmotes();
-  const twitchEmotes = getTwitchEmotes(text, emoteDataFromTwitchBot);
-  const emotes = [...twitchEmotes, ...betterTTVEmotes];
+  const twitchChannelEmotes =
+    twitchEmotes || getTwitchEmotes(text, emoteDataFromTwitchBot);
+  const emotes = [...twitchChannelEmotes, ...betterTTVEmotes];
 
   return {
     messageWithEmotes: replaceEmotes(text, emotes),

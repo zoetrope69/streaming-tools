@@ -96,10 +96,11 @@ async function TwitchBot({ eventEmitter }) {
 
     const { command, commandArguments } = getCommand(message);
 
-    const messageWithEmotes = await replaceTextWithEmotes(
-      message,
-      emotes
-    );
+    const { messageWithEmotes, messageWithNoEmotes } =
+      await replaceTextWithEmotes({
+        text: message,
+        emoteDataFromTwitchBot: emotes,
+      });
 
     chatEventEmitter.emit("message", {
       isBot: self,
@@ -107,6 +108,7 @@ async function TwitchBot({ eventEmitter }) {
       isBroadcaster,
       message: message.trim(),
       messageWithEmotes,
+      messageWithNoEmotes,
       command,
       commandArguments,
       user: {
@@ -120,12 +122,14 @@ async function TwitchBot({ eventEmitter }) {
     "resub",
     async (_channel, _username, _months, message, data) => {
       message = message.trim();
-      const { emotes } = data;
       const id = data["user-id"];
       const username = data["display-name"];
 
       const { messageWithEmotes, messageWithNoEmotes } =
-        await replaceTextWithEmotes(message, emotes);
+        await replaceTextWithEmotes({
+          text: message,
+          emoteDataFromTwitchBot: data.emotes,
+        });
       eventEmitter.emit("subscribe", {
         isGift: false,
         user: {

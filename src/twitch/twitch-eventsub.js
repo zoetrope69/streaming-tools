@@ -3,6 +3,8 @@ const logger = new Logger("🌯 Twitch EventSub");
 
 const eventSubExpress = require("./twitch-eventsub-express");
 
+const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
+
 // https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types
 async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   logger.info("Starting...");
@@ -33,6 +35,8 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     }
   }
 
+  const twitchEmotes = await twitchApi.getEmotes();
+
   // channel point redemptions
   const channelPointRedemptionHandler = async (data) => {
     const {
@@ -44,11 +48,17 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       reward,
     } = data;
 
+    const message = user_input;
+    const { messageWithEmotes, messageWithNoEmotes } =
+      await replaceTextWithEmotes({ text: message, twitchEmotes });
+
     const dataEmit = {
       user: {
         id: user_id,
         username: user_name,
-        message: user_input,
+        message,
+        messageWithEmotes,
+        messageWithNoEmotes,
       },
       redeemedAt: redeemed_at,
       reward,
@@ -80,9 +90,13 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       });
     }),
     // bitties
-    await subscribeToTopic("channel.cheer", (data) => {
+    await subscribeToTopic("channel.cheer", async (data) => {
       const { user_id, user_name, is_anonymous, message, bits } =
         data;
+
+      const { messageWithEmotes, messageWithNoEmotes } =
+        await replaceTextWithEmotes({ text: message, twitchEmotes });
+
       eventEmitter.emit("bits", {
         isAnonymous: is_anonymous,
         user: {
@@ -90,6 +104,8 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
           username: user_name,
         },
         message,
+        messageWithEmotes,
+        messageWithNoEmotes,
         amount: bits,
       });
     }),

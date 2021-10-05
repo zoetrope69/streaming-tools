@@ -178,10 +178,10 @@ async function handleChannelPointRedemptions({
       }
 
       const { title } = reward;
-      const { message, username } = user;
+      const { message, messageWithNoEmotes, username } = user;
 
       if (title === "dance with zac") {
-        await redemptions.danceWithMe(username);
+        await redemptions.danceWithMe({ username });
       }
 
       if (title === "pog") {
@@ -249,7 +249,10 @@ async function handleChannelPointRedemptions({
       }
 
       if (title === "runescape") {
-        await redemptions.runescape({ message });
+        await redemptions.runescape({
+          messageWithNoEmotes,
+          username,
+        });
       }
     }
   );

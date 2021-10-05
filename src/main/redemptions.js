@@ -18,15 +18,15 @@ const logger = new Logger("👾 Redemptions");
 
 const { v4: randomID } = require("uuid");
 
-function getDuration({ message }) {
-  if (!message || message.length === 0) {
+function getDuration(text) {
+  if (!text || text.length === 0) {
     return 0;
   }
 
   const DELAY_TIME = 1500; // milliseconds before user starts reading the notification
   const BONUS_TIME = 1000; // extra time
   const WORD_PER_MINUTE = 200; // average words per minute
-  const wordAmount = message.split(" ").length;
+  const wordAmount = text.split(" ").length;
 
   if (wordAmount === 0) {
     return DELAY_TIME + BONUS_TIME;
@@ -49,7 +49,7 @@ class Redemptions {
     this.prideFlagName = "gay";
   }
 
-  async danceWithMe(username) {
+  async danceWithMe({ username }) {
     logger.log("🕺 Dance With Me triggered...");
     const newDancer = await this.streamingService.getUser(username);
     newDancer.id = randomID();
@@ -314,20 +314,29 @@ class Redemptions {
     }, timeout);
   }
 
-  async runescape({ message }) {
-    if (!message || message.length === 0) {
+  async runescape({ messageWithNoEmotes, username }) {
+    if (!messageWithNoEmotes || messageWithNoEmotes.length === 0) {
       return;
     }
 
     logger.log("⚔ Runescape triggered...");
-    const { messageWithoutOptions } = await createRunescapeTextImage(
-      message
+    const runescapeTextImage = await createRunescapeTextImage(
+      messageWithNoEmotes
     );
-    const duration = getDuration({ message });
+    if (!runescapeTextImage) {
+      this.streamingService.chat.sendMessage(
+        `couldn't send that text sorry @${username}`
+      );
+      return;
+    }
+
+    const duration = getDuration(messageWithNoEmotes);
 
     let nameAudioUrl;
     try {
-      nameAudioUrl = await textToSpeech(messageWithoutOptions);
+      nameAudioUrl = await textToSpeech(
+        runescapeTextImage.messageWithoutOptions
+      );
     } catch (e) {
       // couldnt get name audio
     }

@@ -8,7 +8,7 @@
     "lint": "eslint src"
   },
   "devDependencies": {
-    "preact-cli": "3.2.2"
+    "preact-cli": "3.3.0"
   },
   "dependencies": {
     "classnames": "2.3.1",

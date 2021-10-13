@@ -5,7 +5,11 @@ const logger = new Logger("☢ OBS");
 
 const obs = new OBSWebSocket();
 
-const { OBS_WEBSOCKET_ADDRESS, OBS_WEBSOCKET_PASSWORD } = process.env;
+const {
+  WINDOWS_IP_ADDRESS,
+  OBS_WEBSOCKET_ADDRESS_PORT,
+  OBS_WEBSOCKET_PASSWORD,
+} = process.env;
 
 let OBS_INITIALISED = false;
 let AVAILABLE_OBS_REQUESTS = [];
@@ -53,7 +57,7 @@ function initialise() {
 
     try {
       obs.connect({
-        address: OBS_WEBSOCKET_ADDRESS,
+        address: `${WINDOWS_IP_ADDRESS}:${OBS_WEBSOCKET_ADDRESS_PORT}`,
         password: OBS_WEBSOCKET_PASSWORD,
       });
     } catch (e) {

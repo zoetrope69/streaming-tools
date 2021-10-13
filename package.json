@@ -12,7 +12,7 @@
     "dev": "NODE_ENV=development node entry.js --unhandled-rejections=strict --trace-warnings",
     "dev:client": "cd client && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint"
+    "lint": "eslint . --config .eslintrc.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -42,7 +42,7 @@
     "chalk": "4.1.2",
     "dotenv": "10.0.0",
     "enquirer": "2.3.6",
-    "eslint": "8.0.0",
+    "eslint": "^7.9.0",
     "eslint-config-preact": "1.1.4",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "4.0.0",

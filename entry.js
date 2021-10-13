@@ -45,7 +45,7 @@ async function main() {
 
   const nodemonProcess = nodemon({
     script: "./src",
-    exec: `NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
+    exec: `NODE_ENV=${NODE_ENV} NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
     // disable watch mode in production
     watch: NODE_ENV === "production" ? [".env"] : [".env", "src/"],
   });

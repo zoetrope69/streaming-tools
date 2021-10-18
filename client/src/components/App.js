@@ -1,10 +1,19 @@
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
+if (IS_DEVELOPMENT) {
+  // Must use require here as import statements are only allowed
+  // to exist at top-level.
+  require("preact/debug");
+}
+
 import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { io } from "socket.io-client";
 
+import LeapMotion from "./helpers/LeapMotion";
+
 import Alert from "./Alert";
 import Dancers from "./Dancers";
-// import DebugFace from "./DebugFace";
+import Debug from "./Debug";
 import Goosebumps from "./Goosebumps";
 import PopUpMessage from "./PopUpMessage";
 import PrideFlag from "./PrideFlag";
@@ -25,6 +34,8 @@ async function loadImage(image) {
 }
 
 function App() {
+  const [isConnectedToServer, setIsConnectedToServer] =
+    useState(false);
   const [currentAlert, setCurrentAlert] = useState({});
   const [currentTrack, setCurrentTrack] = useState({});
   const [currentPopUpMessage, setCurrentPopUpMessage] = useState("");
@@ -36,11 +47,13 @@ function App() {
   const [currentGoosebumpsBookTitle, setCurrentGoosebumpsBookTitle] =
     useState(null);
   const [currentDancers, setCurrentDancers] = useState([]);
+  const [motionTrackedPointables, setMotionTrackedPointables] =
+    useState([]);
 
   useEffect(() => {
     const socketIOHandler = async (data) => {
       // eslint-disable-next-line no-console
-      console.log("data", data);
+      console.log("[Client] Data sent from server", data);
 
       const {
         alert,
@@ -94,8 +107,56 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const socketIOHandler = () => {
+      // eslint-disable-next-line no-console
+      console.log("[Client] Connected to server");
+      setIsConnectedToServer(true);
+    };
+    socket.on("connected-to-server", socketIOHandler);
+
+    return () => {
+      socket.off("connected-to-server", socketIOHandler);
+    };
+  }, [setIsConnectedToServer]);
+
+  useEffect(() => {
+    let leapMotion;
+
+    if (isConnectedToServer) {
+      leapMotion = LeapMotion(socket);
+
+      leapMotion.controller.on("frame-throttled", (frame) => {
+        const newHandData = frame.pointables.map((pointable) => {
+          const hand = frame.hands.find(
+            (hand) => hand.id === pointable.handId
+          );
+          return {
+            id: pointable.id,
+            position: pointable.screenPosition(),
+            rotation: hand ? hand.roll() : 0,
+            isExtended: pointable.extended,
+            isFinger: pointable.finger,
+          };
+        });
+        setMotionTrackedPointables(newHandData);
+      });
+    }
+
+    return () => {
+      if (leapMotion) leapMotion.disconnectController();
+    };
+  }, [isConnectedToServer, setMotionTrackedPointables]);
+
   return (
     <div className={styles.App}>
+      {IS_DEVELOPMENT && (
+        <Debug
+          currentFaceDetection={currentFaceDetection}
+          motionTrackedPointables={motionTrackedPointables}
+        />
+      )}
+
       {currentAlert && (
         <Alert
           alert={currentAlert}
@@ -103,8 +164,11 @@ function App() {
         />
       )}
 
-      <Dancers currentTrack={currentTrack} dancers={currentDancers} />
-      {/* <DebugFace currentFaceDetection={currentFaceDetection} /> */}
+      <Dancers
+        currentTrack={currentTrack}
+        dancers={currentDancers}
+        motionTrackedPointables={motionTrackedPointables}
+      />
       <Goosebumps bookTitle={currentGoosebumpsBookTitle} />
       <PopUpMessage currentMessage={currentPopUpMessage} />
       <PrideFlag name={currentPrideFlagName} />

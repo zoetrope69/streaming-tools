@@ -367,6 +367,8 @@ async function handleClientConnections({
   redemptions,
   commands,
 }) {
+  clientLogger.info("Waiting for clients...");
+
   io.on("connection", async (socket) => {
     clientLogger.info("Connected");
 
@@ -379,6 +381,42 @@ async function handleClientConnections({
       prideFlagName: redemptions.prideFlagName,
       dancers: redemptions.dancers,
     });
+
+    socket.on("leap-motion", ({ event, data }) => {
+      if (event === "frame-throttled") {
+        return;
+      }
+
+      if (event === "connecting") {
+        clientLogger.info("[🤚 Leap Motion] Connecting...");
+        return;
+      }
+
+      if (event === "ready") {
+        clientLogger.info("[🤚 Leap Motion] Ready...");
+        return;
+      }
+
+      if (event === "deviceStreaming") {
+        clientLogger.info(
+          "[🤚 Leap Motion] Started streaming data..."
+        );
+        return;
+      }
+
+      if (event === "deviceStopped") {
+        clientLogger.info(
+          "[🤚 Leap Motion] Stopped streaming data..."
+        );
+        return;
+      }
+
+      clientLogger.debug(
+        `[🤚 Leap Motion] ${JSON.stringify({ event, data })}`
+      );
+    });
+
+    socket.emit("connected-to-server");
 
     socket.on("disconnect", () => {
       clientLogger.info("Disconnected");

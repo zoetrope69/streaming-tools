@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "scripts": {
     "build": "preact build --no-prerender --no-sw --no-esm --no-json --no-inline-css",
-    "dev": "preact watch --no-prerender --no-sw --no-esm --no-json ",
-    "lint": "eslint src"
+    "dev": "preact watch --no-prerender --no-sw --no-esm --no-json "
   },
   "devDependencies": {
     "preact-cli": "3.3.1"
   },
   "dependencies": {
     "classnames": "2.3.1",
+    "leapjs": "^1.1.1",
     "preact": "10.5.15",
     "preact-render-to-string": "5.1.19",
     "socket.io-client": "4.3.0"

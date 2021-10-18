@@ -18,9 +18,8 @@
   top: 0;
   height: 400px;
   width: 400px;
-  transform: scale(0.5);
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.85));
-  transition: opacity ease-in 1s;
+  transition: opacity ease-in 1s, transform linear 0.05s;
   animation: showAndHide 180s ease-out forwards;
 }
 
@@ -44,8 +43,10 @@
   left: 100px;
   top: 100px;
   background: white;
+  background-position: center;
   background-size: cover;
   border-radius: 50%;
+  background-repeat: no-repeat;
   width: 200px;
   height: 200px;
   border: 10px solid white;

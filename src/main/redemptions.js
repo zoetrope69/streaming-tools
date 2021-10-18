@@ -52,18 +52,23 @@ class Redemptions {
   async danceWithMe({ username }) {
     logger.log("🕺 Dance With Me triggered...");
     const newDancer = await this.streamingService.getUser(username);
+
+    if (!newDancer) {
+      return;
+    }
+
     newDancer.id = randomID();
     this.dancers.push(newDancer);
-
     this.io.emit("data", { dancers: this.dancers });
 
     setTimeout(() => {
       // remove from array
       this.dancers = this.dancers.filter((dancer) => {
-        dancer.id !== newDancer.id;
+        return dancer.id !== newDancer.id;
       });
+
       this.io.emit("data", { dancers: this.dancers });
-    }, 1000 * 60 * 3 + 5000); // 2 minutes (+ wait for it to fade out on client)
+    }, 1000 * 60 * 3 + 5000); // 3 minutes (+ wait for it to fade out on client)
   }
 
   get bigDrink() {

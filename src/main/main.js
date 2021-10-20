@@ -424,6 +424,15 @@ async function handleClientConnections({
   });
 }
 
+async function setTwitchTags({ streamingService }) {
+  logger.info("Settings tags...");
+  streamingService.setTags([
+    "844102e5-5a43-42d6-ac49-de67946cafc5", // Queer
+    "589c4c39-a3cc-41fa-b70c-bf0b735fa21f", // Mental Health
+    "5532e712-9d64-4830-8ff9-ce83b8dcebfa", // Disabled
+  ]);
+}
+
 async function main() {
   try {
     const music = Music();
@@ -435,6 +444,8 @@ async function main() {
       ngrokUrl: NGROK_URL,
       app,
     });
+
+    setTwitchTags({ streamingService });
 
     const channelInfo = new ChannelInfo();
     const redemptions = new Redemptions({ io, streamingService });

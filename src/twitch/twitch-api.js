@@ -286,9 +286,45 @@ async function TwitchAPI({ ngrokUrl }) {
     });
   }
 
-  return {
-    getOAuthToken,
+  async function getTags() {
+    const response = await callTwitchAPI({
+      endpoint: "streams/tags",
+      options: {
+        broadcaster_id: TWITCH_BROADCASTER_ID,
+      },
+    });
 
+    const { data } = response;
+
+    if (!data || data.length === 0) {
+      return {};
+    }
+
+    return data;
+  }
+
+  async function setTags(tagIds = []) {
+    const response = await callTwitchAPI({
+      endpoint: "streams/tags",
+      options: {
+        broadcaster_id: TWITCH_BROADCASTER_ID,
+      },
+      fetchOptions: {
+        method: "PUT",
+        body: JSON.stringify({ tag_ids: tagIds }),
+      },
+    });
+
+    const { data } = response;
+
+    if (!data || data.length === 0) {
+      return {};
+    }
+
+    return data;
+  }
+
+  return {
     getUser: async (username) => {
       const user = await getUser(username);
 
@@ -322,6 +358,14 @@ async function TwitchAPI({ ngrokUrl }) {
     },
 
     getEmotes,
+
+    setTags: async (newTagIds = []) => {
+      const tags = await getTags();
+      const nonAutoTags = tags.filter((tag) => tag.is_auto === false);
+      const tagIds = nonAutoTags.map((tag) => tag.tag_id);
+
+      return setTags([...new Set([...tagIds, ...newTagIds])]);
+    },
   };
 }
 

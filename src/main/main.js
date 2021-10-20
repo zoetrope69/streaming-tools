@@ -53,8 +53,20 @@ async function handleChannelInfo({ channelInfo, streamingService }) {
     "channelInfo",
     async ({ categoryName, title }) => {
       logger.info("Updating category and title");
-      channelInfo.setCategory(categoryName);
-      channelInfo.setTitle(title);
+
+      if (channelInfo.category !== categoryName) {
+        channelInfo.setCategory(categoryName);
+        streamingService.chat.sendMessage(
+          `the category is now "${categoryName}"`
+        );
+      }
+
+      if (channelInfo.title !== title) {
+        channelInfo.setTitle(title);
+        streamingService.chat.sendMessage(
+          `the title is now "${title}"`
+        );
+      }
     }
   );
 }
@@ -264,7 +276,15 @@ async function handleChatMessages({
   redemptions,
 }) {
   streamingService.chat.on("message", async (data) => {
-    const { message, messageWithEmotes, command, user } = data;
+    const {
+      isMod,
+      isBroadcaster,
+      message,
+      messageWithEmotes,
+      command,
+      commandArguments,
+      user,
+    } = data;
 
     io.emit("data", {
       message,
@@ -296,28 +316,26 @@ async function handleChatMessages({
     }
 
     if (command === "game" || command === "category") {
-      await commands.category();
+      await commands.category({
+        isMod,
+        isBroadcaster,
+        commandArguments,
+      });
     }
 
     if (command === "title") {
-      await commands.title();
+      await commands.title({
+        isMod,
+        isBroadcaster,
+        commandArguments,
+      });
     }
-  });
-}
 
-async function handleModsChatMessages({
-  streamingService,
-  commands,
-  redemptions,
-}) {
-  streamingService.chat.on("message", async (data) => {
-    const {
-      isMod,
-      isBroadcaster,
-      messageWithEmotes,
-      command,
-      commandArguments,
-    } = data;
+    if (command === "thanos") {
+      await commands.thanosDancing();
+    }
+
+    // the MOD zone
 
     if (!isMod && !isBroadcaster) {
       return;
@@ -354,10 +372,6 @@ async function handleModsChatMessages({
       command === "shout-out"
     ) {
       await commands.shoutOut({ commandArguments });
-    }
-
-    if (command === "thanos") {
-      await commands.thanosDancing();
     }
   });
 }
@@ -471,11 +485,6 @@ async function main() {
       music,
     });
     handleChatMessages({
-      streamingService,
-      commands,
-      redemptions,
-    });
-    handleModsChatMessages({
       streamingService,
       commands,
       redemptions,

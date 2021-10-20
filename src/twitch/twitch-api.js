@@ -127,38 +127,10 @@ async function TwitchAPI({ ngrokUrl }) {
     };
   }
 
-  async function getCategoryByName(searchName) {
-    const response = await callTwitchAPI({
-      endpoint: "games",
-      options: {
-        name: searchName,
-      },
-    });
-
-    const { data } = response;
-
-    if (!data || data.length === 0) {
-      return {};
-    }
-
-    const { id, name, box_art_url } = data[0];
-
-    return {
-      id,
-      name,
-      image: box_art_url,
-    };
-  }
-
-  async function setChannelInfo({ categoryName, title }) {
+  async function setChannelInfo({ category, title }) {
     const newChannelInfo = {};
 
-    if (categoryName) {
-      const category = await getCategoryByName(categoryName);
-      if (!category) {
-        throw new Error(`${categoryName} isn't a category/game...`);
-      }
-
+    if (category) {
       newChannelInfo.game_id = category.id;
     }
 
@@ -297,7 +269,7 @@ async function TwitchAPI({ ngrokUrl }) {
     const { data } = response;
 
     if (!data || data.length === 0) {
-      return {};
+      return null;
     }
 
     return data;
@@ -318,7 +290,23 @@ async function TwitchAPI({ ngrokUrl }) {
     const { data } = response;
 
     if (!data || data.length === 0) {
-      return {};
+      return null;
+    }
+
+    return data;
+  }
+
+  async function searchCategories(query) {
+    const response = await callTwitchAPI({
+      endpoint: `search/categories?query=${encodeURIComponent(
+        query
+      )}`,
+    });
+
+    const { data } = response;
+
+    if (!data || data.length === 0) {
+      return [];
     }
 
     return data;
@@ -343,6 +331,32 @@ async function TwitchAPI({ ngrokUrl }) {
     getChannelInfo,
 
     setChannelInfo,
+
+    setCategory: async (categoryQuery) => {
+      const categories = await searchCategories(categoryQuery);
+
+      if (!categories || categories.length === 0) {
+        throw new Error(
+          `Couldn't find a category from "${categoryQuery}"`
+        );
+      }
+
+      const exactMatchedCategory = categories.find((category) => {
+        return (
+          category.name.toLowerCase() === categoryQuery.toLowerCase()
+        );
+      });
+
+      if (exactMatchedCategory) {
+        return setChannelInfo({ category: exactMatchedCategory });
+      }
+
+      return setChannelInfo({ category: categories[0] });
+    },
+
+    setTitle: async (title) => {
+      return setChannelInfo({ title });
+    },
 
     eventSub: {
       getSubscriptions: async () => getEventSubSubscriptions(),

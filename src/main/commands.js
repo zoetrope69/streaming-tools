@@ -95,7 +95,31 @@ class Commands {
     obs.turnOnOverlay("octopussy", 12 * 1000);
   }
 
-  async category() {
+  async switchToBRBScene() {
+    logger.info("🗺 Scene change: BRB");
+    try {
+      const image = await obs.getWebcamImage();
+      await saveScreenshotToBrbScreen(image);
+      await obs.switchToScene("BRB");
+    } catch (e) {
+      logger.error(e.message || e);
+    }
+  }
+
+  async category({ isMod, isBroadcaster, commandArguments }) {
+    if ((isMod || isBroadcaster) && commandArguments.length > 0) {
+      try {
+        await this.streamingService.setCategory(commandArguments);
+      } catch (e) {
+        logger.error(e.message);
+        this.streamingService.chat.sendMessage(
+          `couldn't set the title to "${commandArguments}"`
+        );
+      }
+
+      return;
+    }
+
     if (!this.channelInfo.category) {
       this.streamingService.chat.sendMessage(
         `zac isn't doing anything... fuck all`
@@ -118,18 +142,16 @@ class Commands {
     }
   }
 
-  async switchToBRBScene() {
-    logger.info("🗺 Scene change: BRB");
-    try {
-      const image = await obs.getWebcamImage();
-      await saveScreenshotToBrbScreen(image);
-      await obs.switchToScene("BRB");
-    } catch (e) {
-      logger.error(e.message || e);
-    }
-  }
+  async title({ isMod, isBroadcaster, commandArguments }) {
+    if (
+      (isMod || isBroadcaster) &&
+      commandArguments.trim().length > 0
+    ) {
+      await this.streamingService.setTitle(commandArguments);
 
-  async title() {
+      return;
+    }
+
     if (this.channelInfo.title) {
       this.streamingService.chat.sendMessage(
         `stream title is "${this.channelInfo.title}"`

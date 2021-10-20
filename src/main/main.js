@@ -475,6 +475,31 @@ async function main() {
     createSourceVisibilityTriggers({ commands, redemptions });
     createFilterVisibilityTriggers();
 
+    await obs.handleSceneChange((sceneName) => {
+      if (sceneName.includes("Dance")) {
+        ["dance with zac", "dance to a song"].forEach(
+          (redemptionName) => {
+            streamingService.enableRedemption(redemptionName);
+          }
+        );
+
+        ["barry"].forEach((redemptionName) => {
+          streamingService.disableRedemption(redemptionName);
+        });
+        return;
+      }
+
+      ["dance with zac", "dance to a song"].forEach(
+        (redemptionName) => {
+          streamingService.disableRedemption(redemptionName);
+        }
+      );
+
+      ["barry"].forEach((redemptionName) => {
+        streamingService.enableRedemption(redemptionName);
+      });
+    });
+
     handleChannelInfo({ channelInfo, streamingService });
     handleSubscription({ streamingService });
     handleBits({ streamingService });

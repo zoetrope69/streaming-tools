@@ -249,6 +249,16 @@ async function turnOnOverlay(source, timeout) {
   }, 100); // wait 100 ms i guess
 }
 
+async function handleSceneChange(callback) {
+  const currentScene = await request("GetCurrentScene");
+  callback(currentScene.name);
+
+  // get current scene
+  obs.on("SwitchScenes", (data) => {
+    callback(data["scene-name"]);
+  });
+}
+
 module.exports = {
   initialise,
   getWebcamImage,
@@ -261,4 +271,5 @@ module.exports = {
   showHideFilter,
   toggleFilter,
   turnOnOverlay,
+  handleSceneChange,
 };

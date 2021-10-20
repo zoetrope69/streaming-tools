@@ -59,6 +59,7 @@ const TYPES = {
       "bits:read", // bits
       "channel:read:subscriptions", // subbies
       "channel:read:redemptions", // 	view Channel Points custom rewards and their redemptions on a channel
+      "channel:manage:redemptions", // 	manage channel redemptions
       "channel:manage:broadcast", // modifies channel information for users
     ],
     headers: {

@@ -475,7 +475,8 @@ async function main() {
       commands,
     });
   } catch (e) {
-    logger.error(e || e.message);
+    logger.error(e);
+    logger.error(e.message);
   }
 }
 

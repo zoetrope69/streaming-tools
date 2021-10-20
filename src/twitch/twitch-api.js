@@ -5,111 +5,80 @@ const Logger = require("../helpers/logger");
 const logger = new Logger("💩 Twitch API");
 
 const getUserPronouns = require("./helpers/pronouns");
+const { getAccessToken } = require("../helpers/oauth");
 
 const {
   TWITCH_CLIENT_ID,
-  TWITCH_CLIENT_SECRET,
   TWITCH_BROADCASTER_ID,
   TWITCH_EVENTSUB_SECRET,
 } = process.env;
 
-const TWITCH_API_SCOPES = [
-  "user:edit:broadcast",
-  "bits:read", // bits
-  "channel:read:subscriptions", // subbies
-  "channel:read:redemptions", // 	View Channel Points custom rewards and their redemptions on a channel.
-];
+async function callTwitchAPI({
+  endpoint,
+  options,
+  fetchOptions,
+  type = "twitch",
+}) {
+  const { accessToken } = await getAccessToken({ type });
+  const queryString = queryStringStringify(options);
+  const url = `https://api.twitch.tv/helix/${endpoint}?${queryString}`;
 
-// https://id.twitch.tv/oauth2/authorize?client_id=phtz03sabqh7wp44occt0apnd4xoko&redirect_uri=https://zac.land&response_type=code&scope=channel:read:redemptions bits:read channel:read:subscriptions user:edit:broadcast
+  let response;
+  try {
+    response = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.twitchtv.v5+json",
+        Authorization: `Bearer ${accessToken}`,
+        "Client-Id": TWITCH_CLIENT_ID,
+        "Content-Type": "application/json",
+      },
+      ...fetchOptions,
+    });
+  } catch (e) {
+    logger.error(e.message || e);
+  }
 
-async function getOAuthToken() {
-  const queryString = queryStringStringify({
-    client_id: TWITCH_CLIENT_ID,
-    client_secret: TWITCH_CLIENT_SECRET,
-    grant_type: "client_credentials",
-    scope: TWITCH_API_SCOPES.join(" "),
-  });
+  if (!response) {
+    return {};
+  }
 
-  const url = `https://id.twitch.tv/oauth2/token?${queryString}`;
+  const rateLimit = response.headers.get("ratelimit-limit");
+  const rateLimitRemaining = response.headers.get(
+    "ratelimit-remaining"
+  );
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      Accept: "application/vnd.twitchtv.v5+json",
-    },
-  });
+  if (rateLimitRemaining / rateLimit < 0.33) {
+    logger.error(
+      `Twitch API Call Rate limit: ${rateLimitRemaining}/${rateLimit}`
+    );
+  }
+
+  // no content
+  if (response.status === 204) {
+    return {};
+  }
 
   const json = await response.json();
 
-  if (!json.access_token) {
-    throw new Error("No access token.");
+  if (json.error) {
+    logger.error(json.message);
   }
 
-  return json.access_token;
-}
+  if (!json) {
+    logger.error(`No data for: ${url}`);
+    return;
+  }
 
-function callTwitchAPIBuilder(oAuthToken) {
-  return async function (endpoint, options, fetchOptions) {
-    const queryString = queryStringStringify(options);
-    const url = `https://api.twitch.tv/helix/${endpoint}?${queryString}`;
-
-    let response;
-    try {
-      response = await fetch(url, {
-        headers: {
-          Accept: "application/vnd.twitchtv.v5+json",
-          Authorization: `Bearer ${oAuthToken}`,
-          "Client-Id": TWITCH_CLIENT_ID,
-          "Content-Type": "application/json",
-        },
-        ...fetchOptions,
-      });
-    } catch (e) {
-      logger.error(e.message || e);
-    }
-
-    if (!response) {
-      return {};
-    }
-
-    const rateLimit = response.headers.get("ratelimit-limit");
-    const rateLimitRemaining = response.headers.get(
-      "ratelimit-remaining"
-    );
-
-    if (rateLimitRemaining / rateLimit < 0.33) {
-      logger.error(
-        `Twitch API Call Rate limit: ${rateLimitRemaining}/${rateLimit}`
-      );
-    }
-
-    // no content
-    if (response.status === 204) {
-      return {};
-    }
-
-    const json = await response.json();
-
-    if (json.error) {
-      logger.error(json.message);
-    }
-
-    if (!json) {
-      logger.error(`No data for: ${url}`);
-      return;
-    }
-
-    return json;
-  };
+  return json;
 }
 
 async function TwitchAPI({ ngrokUrl }) {
-  const oAuthToken = await getOAuthToken();
-  const callTwitchAPI = callTwitchAPIBuilder(oAuthToken);
-
   async function getUser(username) {
-    const response = await callTwitchAPI("users", {
-      login: username,
+    const response = await callTwitchAPI({
+      endpoint: "users",
+      options: {
+        login: username,
+      },
     });
 
     if (!response || !response.data || response.data.length === 0) {
@@ -126,8 +95,11 @@ async function TwitchAPI({ ngrokUrl }) {
   }
 
   async function getChannelInfo() {
-    const response = await callTwitchAPI("channels", {
-      broadcaster_id: TWITCH_BROADCASTER_ID,
+    const response = await callTwitchAPI({
+      endpoint: "channels",
+      options: {
+        broadcaster_id: TWITCH_BROADCASTER_ID,
+      },
     });
 
     const { data } = response;
@@ -156,8 +128,11 @@ async function TwitchAPI({ ngrokUrl }) {
   }
 
   async function getCategoryByName(searchName) {
-    const response = await callTwitchAPI("games", {
-      name: searchName,
+    const response = await callTwitchAPI({
+      endpoint: "games",
+      options: {
+        name: searchName,
+      },
     });
 
     const { data } = response;
@@ -191,20 +166,23 @@ async function TwitchAPI({ ngrokUrl }) {
       newChannelInfo.title = title;
     }
 
-    return callTwitchAPI(
-      "channels",
-      {
+    return callTwitchAPI({
+      endpoint: "channels",
+      options: {
         broadcaster_id: TWITCH_BROADCASTER_ID,
       },
-      {
+      fetchOptions: {
         method: "PATCH",
         body: JSON.stringify(newChannelInfo),
-      }
-    );
+      },
+    });
   }
 
   async function getEventSubSubscriptions() {
-    const response = await callTwitchAPI("eventsub/subscriptions");
+    const response = await callTwitchAPI({
+      endpoint: "eventsub/subscriptions",
+      type: "twitch-app",
+    });
 
     const { data } = response;
 
@@ -216,27 +194,25 @@ async function TwitchAPI({ ngrokUrl }) {
   }
 
   async function createEventSubSubscription({ type, ngrokUrl }) {
-    const body = {
-      type,
-      version: "1",
-      condition: {
-        broadcaster_user_id: TWITCH_BROADCASTER_ID,
-      },
-      transport: {
-        method: "webhook",
-        callback: `${ngrokUrl}/eventSubCallback`,
-        secret: TWITCH_EVENTSUB_SECRET,
-      },
-    };
-
-    const response = await callTwitchAPI(
-      "eventsub/subscriptions",
-      {},
-      {
+    const response = await callTwitchAPI({
+      endpoint: "eventsub/subscriptions",
+      fetchOptions: {
         method: "POST",
-        body: JSON.stringify(body),
-      }
-    );
+        body: JSON.stringify({
+          type,
+          version: "1",
+          condition: {
+            broadcaster_user_id: TWITCH_BROADCASTER_ID,
+          },
+          transport: {
+            method: "webhook",
+            callback: `${ngrokUrl}/eventSubCallback`,
+            secret: TWITCH_EVENTSUB_SECRET,
+          },
+        }),
+      },
+      type: "twitch-app",
+    });
 
     const { data } = response;
 
@@ -248,13 +224,14 @@ async function TwitchAPI({ ngrokUrl }) {
   }
 
   async function deleteEventSubSubscription({ id }) {
-    const response = await callTwitchAPI(
-      "eventsub/subscriptions",
-      { id },
-      {
+    const response = await callTwitchAPI({
+      endpoint: "eventsub/subscriptions",
+      options: { id },
+      fetchOptions: {
         method: "DELETE",
-      }
-    );
+      },
+      type: "twitch-app",
+    });
 
     const { data } = response;
 
@@ -266,7 +243,9 @@ async function TwitchAPI({ ngrokUrl }) {
   }
 
   async function getGlobalEmotes() {
-    const response = await callTwitchAPI("chat/emotes/global");
+    const response = await callTwitchAPI({
+      endpoint: "chat/emotes/global",
+    });
 
     const { data } = response;
 
@@ -278,8 +257,11 @@ async function TwitchAPI({ ngrokUrl }) {
   }
 
   async function getChannelEmotes() {
-    const response = await callTwitchAPI("chat/emotes", {
-      broadcaster_id: TWITCH_BROADCASTER_ID,
+    const response = await callTwitchAPI({
+      endpoint: "chat/emotes",
+      options: {
+        broadcaster_id: TWITCH_BROADCASTER_ID,
+      },
     });
 
     const { data } = response;
@@ -324,9 +306,7 @@ async function TwitchAPI({ ngrokUrl }) {
 
     getChannelInfo,
 
-    setChannelInfo: async ({ categoryName, title }) => {
-      return setChannelInfo({ categoryName, title });
-    },
+    setChannelInfo,
 
     eventSub: {
       getSubscriptions: async () => getEventSubSubscriptions(),

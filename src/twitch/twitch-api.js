@@ -267,7 +267,7 @@ async function getTags() {
   const { data } = response;
 
   if (!data || data.length === 0) {
-    return null;
+    return [];
   }
 
   return data;

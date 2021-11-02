@@ -255,7 +255,7 @@ class Redemptions {
         });
         await obs.hideSource({
           scene: "Raw Webcam",
-          source: "NVIDIA Broadcast Camera",
+          source: "Logitech BRIO (Greenscreen)",
         });
       },
       stop: async () => {
@@ -265,7 +265,7 @@ class Redemptions {
         });
         await obs.showSource({
           scene: "Raw Webcam",
-          source: "NVIDIA Broadcast Camera",
+          source: "Logitech BRIO (Greenscreen)",
         });
       },
     };

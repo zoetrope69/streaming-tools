@@ -23,10 +23,10 @@ function createSourceVisibilityTriggers({ commands, redemptions }) {
     "Joycon: X": async () => {
       await obs.switchToScene("Dance");
     },
-    "Joycon: Right Shoulder": async () => {
+    "Joycon: R": async () => {
       await obs.switchToScene("Dance Multiple");
     },
-    "Joycon: Right Trigger": async () => {
+    "Joycon: RZ": async () => {
       await obs.switchToScene("Dance everywhere");
     },
     "Joycon: Right Analog In": async () => {

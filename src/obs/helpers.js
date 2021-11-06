@@ -21,15 +21,6 @@ function createSourceVisibilityTriggers({ commands, redemptions }) {
       });
     },
     "Joycon: X": async () => {
-      await obs.switchToScene("Dance");
-    },
-    "Joycon: R": async () => {
-      await obs.switchToScene("Dance Multiple");
-    },
-    "Joycon: RZ": async () => {
-      await obs.switchToScene("Dance everywhere");
-    },
-    "Joycon: Right Analog In": async () => {
       obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Fill Colour",
@@ -38,6 +29,22 @@ function createSourceVisibilityTriggers({ commands, redemptions }) {
         source: "Raw Webcam",
         filter: "Webcam: Rainbow",
       });
+    },
+    "Joycon: R": async () => {},
+    "Joycon: RZ": async () => {},
+    "Joycon: Right Analog In": async () => {
+      const DANCE_SCENES = [
+        "Dance",
+        "Dance Multiple",
+        "Dance everywhere",
+        "Dance Mouth",
+        "Dance Greggs",
+      ];
+
+      const randomDanceScene =
+        DANCE_SCENES[Math.floor(Math.random() * DANCE_SCENES.length)];
+
+      await obs.switchToScene(randomDanceScene);
     },
     "Scene change: BRB": async () => {
       await commands.switchToBRBScene();

@@ -64,7 +64,7 @@ const PRIDE_FLAGS = [
   },
   {
     name: "non-binary",
-    twitchEmote: "NonBinaryPride",
+    twitchEmote: "NonbinaryPride",
     lightColors: ["yellow", "white", "purple", "black"],
   },
   {
@@ -103,12 +103,16 @@ function getPrideFlag(name) {
     return;
   }
 
-  if (PRIDE_FLAGS_ALIAS_MAP[name]) {
-    return getPrideFlag(PRIDE_FLAGS_ALIAS_MAP[name]);
+  const caseInsensitiveName = name.toLowerCase();
+
+  if (PRIDE_FLAGS_ALIAS_MAP[caseInsensitiveName]) {
+    return getPrideFlag(PRIDE_FLAGS_ALIAS_MAP[caseInsensitiveName]);
   }
 
   const flag = PRIDE_FLAGS.find(
-    (flag) => flag.name === name || flag.twitchEmote === name
+    (flag) =>
+      flag.name === caseInsensitiveName ||
+      flag.twitchEmote === caseInsensitiveName
   );
 
   if (!flag) {

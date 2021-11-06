@@ -489,7 +489,7 @@ const REDEMPTIONS = [
     id: "1bcb37f6-fbe0-4cb6-8c9d-7303c0fa2aa1",
     title: "ewww this song is doo doo",
     prompt: "skip the song",
-    cost: 500,
+    cost: 800,
     background_color: "#333333",
     should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,

@@ -266,6 +266,14 @@ async function handleChannelPointRedemptions({
           username,
         });
       }
+
+      if (title === "ewww this song is doo doo") {
+        const isSpotifyPlaying = await music.isSpotifyPlaying();
+        if (isSpotifyPlaying) {
+          await redemptions.thisSongIsDooDoo();
+          await music.spotify.skipTrack();
+        }
+      }
     }
   );
 }
@@ -475,27 +483,29 @@ async function main() {
     createSourceVisibilityTriggers({ commands, redemptions });
     createFilterVisibilityTriggers();
 
+    const REDEMPTIONS_FOR_DANCING = [
+      "dance with zac",
+      "dance to a song",
+      "ewww this song is doo doo",
+    ];
+    const REDEMPTIONS_NOT_FOR_DANCING = ["barry"];
     await obs.handleSceneChange((sceneName) => {
       if (sceneName.includes("Dance")) {
-        ["dance with zac", "dance to a song"].forEach(
-          (redemptionName) => {
-            streamingService.enableRedemption(redemptionName);
-          }
-        );
+        REDEMPTIONS_FOR_DANCING.forEach((redemptionName) => {
+          streamingService.enableRedemption(redemptionName);
+        });
 
-        ["barry"].forEach((redemptionName) => {
+        REDEMPTIONS_NOT_FOR_DANCING.forEach((redemptionName) => {
           streamingService.disableRedemption(redemptionName);
         });
         return;
       }
 
-      ["dance with zac", "dance to a song"].forEach(
-        (redemptionName) => {
-          streamingService.disableRedemption(redemptionName);
-        }
-      );
+      REDEMPTIONS_FOR_DANCING.forEach((redemptionName) => {
+        streamingService.disableRedemption(redemptionName);
+      });
 
-      ["barry"].forEach((redemptionName) => {
+      REDEMPTIONS_NOT_FOR_DANCING.forEach((redemptionName) => {
         streamingService.enableRedemption(redemptionName);
       });
     });

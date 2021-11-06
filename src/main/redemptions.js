@@ -352,6 +352,17 @@ class Redemptions {
       audioUrl: nameAudioUrl,
     });
   }
+
+  async thisSongIsDooDoo() {
+    return new Promise((resolve) => {
+      logger.log("💩 Eww this song is doo doo triggered...");
+      const timeout = 1.5 * 1000;
+      obs.turnOnOverlay("Ewan - I Don't Care Video", timeout);
+      setTimeout(() => {
+        resolve();
+      }, timeout);
+    });
+  }
 }
 
 module.exports = Redemptions;

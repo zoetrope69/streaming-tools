@@ -124,6 +124,14 @@ async function pauseTrack() {
   );
 }
 
+async function skipTrack() {
+  return await callEndpoint(
+    "/me/player/next",
+    {},
+    { method: "POST" }
+  );
+}
+
 async function getRecentTrack() {
   const timer = startTimer();
 
@@ -157,5 +165,6 @@ async function getRecentTrack() {
 module.exports = {
   playTrack,
   pauseTrack,
+  skipTrack,
   getRecentTrack,
 };

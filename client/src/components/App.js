@@ -12,6 +12,7 @@ import { io } from "socket.io-client";
 import LeapMotion from "./helpers/LeapMotion";
 
 import Alert from "./Alert";
+import Bubblewrap from "./Bubblewrap";
 import Dancers from "./Dancers";
 import Debug from "./Debug";
 import Goosebumps from "./Goosebumps";
@@ -47,6 +48,9 @@ function App() {
   const [currentGoosebumpsBookTitle, setCurrentGoosebumpsBookTitle] =
     useState(null);
   const [currentDancers, setCurrentDancers] = useState([]);
+  const [bubblewrap, setCurrentBubblewrap] = useState({
+    enabled: false,
+  });
   const [motionTrackedPointables, setMotionTrackedPointables] =
     useState([]);
 
@@ -63,6 +67,7 @@ function App() {
         faceDetection,
         goosebumpsBookTitle,
         dancers,
+        bubblewrap,
       } = data;
 
       if (alert) {
@@ -97,6 +102,10 @@ function App() {
 
       if (dancers) {
         setCurrentDancers(dancers);
+      }
+
+      if (bubblewrap) {
+        setCurrentBubblewrap(bubblewrap);
       }
     };
 
@@ -163,7 +172,12 @@ function App() {
           currentFaceDetection={currentFaceDetection}
         />
       )}
-
+      {bubblewrap.isEnabled && (
+        <Bubblewrap
+          isStopping={bubblewrap.isStopping}
+          bubbles={bubblewrap.bubbles}
+        />
+      )}
       <Dancers
         currentTrack={currentTrack}
         dancers={currentDancers}

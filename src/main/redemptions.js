@@ -18,6 +18,13 @@ const logger = new Logger("👾 Redemptions");
 
 const { v4: randomID } = require("uuid");
 
+const INITIAL_BUBBLEWRAP = {
+  bubbles: [],
+  isStopping: false,
+  isEnabled: false,
+};
+const BUBBLE_AMOUNT = 60;
+
 function getDuration(text) {
   if (!text || text.length === 0) {
     return 0;
@@ -47,6 +54,7 @@ class Redemptions {
     this.goosebumpBook = null;
     this.dancers = [];
     this.prideFlagName = "gay";
+    this.bubblewrap = { ...INITIAL_BUBBLEWRAP };
   }
 
   async danceWithMe({ username }) {
@@ -362,6 +370,108 @@ class Redemptions {
         resolve();
       }, timeout);
     });
+  }
+
+  updateBubblewrap(options) {
+    this.bubblewrap = {
+      ...this.bubblewrap,
+      ...options,
+    };
+    this.io.emit("data", { bubblewrap: this.bubblewrap });
+  }
+
+  get bubblewrapTime() {
+    return {
+      start: async ({ redemption }) => {
+        if (this.bubblewrap.isEnabled || this.bubblewrap.isStopping) {
+          return;
+        }
+
+        logger.log("🔵 Bubblewrap triggered...");
+
+        this.updateBubblewrap({
+          redemption,
+          isEnabled: true,
+          bubbles: Array.from({ length: BUBBLE_AMOUNT }, () => ({
+            id: randomID(),
+            isPopped: false,
+          })),
+        });
+        this.streamingService.disableRedemption("bubblewrap time");
+      },
+      stop: async () => {
+        if (
+          !this.bubblewrap.isEnabled ||
+          this.bubblewrap.isStopping
+        ) {
+          return;
+        }
+
+        logger.log("🔵 Bubblewrap stopping...");
+        this.updateBubblewrap({ isStopping: true });
+
+        setTimeout(() => {
+          logger.log("🔵 Bubblewrap stopped...");
+          this.updateBubblewrap(INITIAL_BUBBLEWRAP);
+          this.streamingService.enableRedemption("bubblewrap time");
+        }, 2000);
+      },
+      popBubble: async () => {
+        if (
+          !this.bubblewrap.isEnabled ||
+          this.bubblewrap.isStopping
+        ) {
+          return;
+        }
+
+        const unpoppedBubbles = this.bubblewrap.bubbles.filter(
+          (bubble) => {
+            return !bubble.isPopped;
+          }
+        );
+
+        if (unpoppedBubbles.length === 0) {
+          return;
+        }
+
+        logger.log(
+          `🔵 Pop bubble... ${
+            this.bubblewrap.bubbles.length -
+            unpoppedBubbles.length +
+            1
+          }/${this.bubblewrap.bubbles.length}`
+        );
+
+        const randomUnpoppedBubble =
+          unpoppedBubbles[
+            Math.floor(Math.random() * unpoppedBubbles.length)
+          ];
+        const randomIndex = this.bubblewrap.bubbles.findIndex(
+          (bubble) => bubble.id === randomUnpoppedBubble.id
+        );
+
+        this.bubblewrap.bubbles[randomIndex].isPopped = true;
+        this.io.emit("data", { bubblewrap: this.bubblewrap });
+
+        const hasAnyUnpoppedBubbles = this.bubblewrap.bubbles.some(
+          (bubble) => {
+            return !bubble.isPopped;
+          }
+        );
+        if (!hasAnyUnpoppedBubbles) {
+          try {
+            // try and fulfill
+            this.streamingService.updateRedemptionReward(
+              this.bubblewrap.redemption
+            );
+          } catch (e) {
+            // do nuthin
+          }
+
+          await this.bubblewrapTime.stop();
+        }
+      },
+    };
   }
 }
 

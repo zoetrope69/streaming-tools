@@ -317,7 +317,7 @@ const DEFAULT_REDEMPTION = {
   is_global_cooldown_enabled: false,
   global_cooldown_seconds: 0,
   is_paused: false,
-  should_redemptions_skip_request_queue: false,
+  should_redemptions_skip_request_queue: true,
 };
 
 const REDEMPTIONS = [
@@ -328,7 +328,6 @@ const REDEMPTIONS = [
     prompt: "pop-up on the stream as a little blob bopping",
     cost: 5,
     background_color: "#002224",
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -338,7 +337,6 @@ const REDEMPTIONS = [
       "you can suggest something, but i have the executive decision",
     cost: 5,
     background_color: "#C2F9FD",
-    is_user_input_required: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -348,7 +346,6 @@ const REDEMPTIONS = [
       "agender, aromantic, asexual, bisexual, gay, genderfluid, genderqueer, intersex, lesbian, non-binary, pansexual, polysexual, transgender - one missing? let me know",
     cost: 10,
     background_color: "#E7E7E7",
-    is_user_input_required: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -357,16 +354,14 @@ const REDEMPTIONS = [
     prompt: "throw a club penguin snowball at me face",
     cost: 20,
     background_color: "#D5E4E7",
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
     id: "975f6903-f026-4112-988a-a13d03a78049",
     title: "imma bee",
     prompt: "imma bee imma bee imma bee imma bee imma bee imma bee",
-    cost: 30,
+    cost: 300,
     background_color: "#FFF400",
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -375,6 +370,7 @@ const REDEMPTIONS = [
     prompt: "it's time to hydrate",
     cost: 50,
     background_color: "#1E92FA",
+    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 10, // 10 minutes
   },
@@ -385,7 +381,6 @@ const REDEMPTIONS = [
     prompt: "get stevesey to tell me i stinky :-(",
     cost: 50,
     background_color: "#2B5323",
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -393,9 +388,8 @@ const REDEMPTIONS = [
     title: "big data",
     prompt:
       "google, facebook gonna f about with our data but... maybe i could be swayed...",
-    cost: 50,
+    cost: 500,
     background_color: "#A42688",
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -403,10 +397,9 @@ const REDEMPTIONS = [
     title: "ally phil",
     prompt:
       "if phil removes something that isn't bigotry you will be warned/banned",
-    cost: 60,
+    cost: 120,
     background_color: "#052DA5",
     is_user_input_required: true,
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -416,7 +409,6 @@ const REDEMPTIONS = [
       "now that, that right there is what we call pog on twitch",
     cost: 100,
     background_color: "#F4FF6B",
-    should_redemptions_skip_request_queue: true,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 1, // 1 minutes
   },
@@ -427,6 +419,7 @@ const REDEMPTIONS = [
     prompt: "only put in one or two words. e.g carrot cake",
     cost: 100,
     background_color: "#00C7AC",
+    should_redemptions_skip_request_queue: false,
     is_user_input_required: true,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 4, // 4 minutes
@@ -438,6 +431,7 @@ const REDEMPTIONS = [
     prompt: "mr fraiser takes over for a bit",
     cost: 200,
     background_color: "#B50028",
+    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 5, // 5 minutes
   },
@@ -446,9 +440,8 @@ const REDEMPTIONS = [
     id: "4de612a1-1fea-40cd-a105-b40d4f8fcb00",
     title: "norty devil",
     prompt: "show one of EggEllie's norty devil artworks",
-    cost: 300,
+    cost: 666,
     background_color: "#000000",
-    should_redemptions_skip_request_queue: true,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 1, // 1 minutes
   },
@@ -461,7 +454,6 @@ const REDEMPTIONS = [
     cost: 300,
     background_color: "#8B4BA8",
     is_user_input_required: true,
-    should_redemptions_skip_request_queue: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -470,7 +462,7 @@ const REDEMPTIONS = [
     prompt: "start your broomers",
     cost: 800,
     background_color: "#FFFFFF",
-    should_redemptions_skip_request_queue: true,
+    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 30, // 30 minutes
   },
@@ -480,7 +472,7 @@ const REDEMPTIONS = [
     title: "barry",
     cost: 1111,
     background_color: "#05B33E",
-    should_redemptions_skip_request_queue: true,
+    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 5, // 5 minutes
   },
@@ -494,6 +486,17 @@ const REDEMPTIONS = [
     should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 5, // 5 minutes
+  },
+  {
+    ...DEFAULT_REDEMPTION,
+    id: "48d766ce-4d60-4147-8ee1-5eac45a7acd1",
+    title: "bubblewrap time",
+    prompt: "lets pop bubbles together",
+    cost: 80,
+    background_color: "#131E5B",
+    should_redemptions_skip_request_queue: false,
+    is_global_cooldown_enabled: true,
+    global_cooldown_seconds: 60 * 1, // 1 minutes
   },
 ];
 
@@ -563,6 +566,27 @@ async function deleteRedemption(id) {
     },
     fetchOptions: {
       method: "DELETE",
+    },
+  });
+}
+
+async function updateRedemptionReward(
+  redemption,
+  fulfilledOrCancelled = true
+) {
+  const { id, reward } = redemption;
+  return await callTwitchAPI({
+    endpoint: "channel_points/custom_rewards/redemptions",
+    options: {
+      broadcaster_id: TWITCH_BROADCASTER_ID,
+      id,
+      reward_id: reward.id,
+    },
+    fetchOptions: {
+      method: "PATCH",
+      body: JSON.stringify({
+        status: fulfilledOrCancelled ? "FULFILLED" : "CANCELED ",
+      }),
     },
   });
 }
@@ -738,6 +762,8 @@ async function TwitchAPI({ ngrokUrl }) {
         is_enabled: true,
       });
     },
+
+    updateRedemptionReward,
   };
 }
 

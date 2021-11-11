@@ -40,6 +40,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   // channel point redemptions
   const channelPointRedemptionHandler = async (data) => {
     const {
+      id,
       user_id,
       user_name,
       user_input,
@@ -53,6 +54,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       await replaceTextWithEmotes({ text: message, twitchEmotes });
 
     const dataEmit = {
+      id,
       user: {
         id: user_id,
         username: user_name,

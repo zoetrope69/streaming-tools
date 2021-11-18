@@ -7,7 +7,7 @@
     "dev": "preact watch --no-prerender --no-sw --no-esm --no-json "
   },
   "devDependencies": {
-    "preact-cli": "3.3.1"
+    "preact-cli": "3.3.2"
   },
   "dependencies": {
     "classnames": "2.3.1",

@@ -374,6 +374,8 @@ const REDEMPTIONS = [
       "agender, aromantic, asexual, bisexual, gay, genderfluid, genderqueer, intersex, lesbian, non-binary, pansexual, polysexual, transgender - one missing? let me know",
     cost: 10,
     background_color: "#E7E7E7",
+    is_user_input_required: true,
+    should_redemptions_skip_request_queue: false,
   },
   {
     ...DEFAULT_REDEMPTION,

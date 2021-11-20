@@ -87,6 +87,12 @@ const PRIDE_FLAGS = [
       "light blue",
     ],
   },
+  {
+    name: "snailgender",
+    twitchEmote: "🐌",
+    twitchMessage: "https://lgbta.wikia.org/wiki/Snailgender",
+    lightColors: ["green", "white", "brown"],
+  },
 ];
 
 const PRIDE_FLAGS_ALIAS_MAP = {
@@ -96,6 +102,7 @@ const PRIDE_FLAGS_ALIAS_MAP = {
   bi: "bisexual",
   rainbow: "gay",
   homosexual: "gay",
+  snail: "snailgender",
 };
 
 function getPrideFlag(name) {

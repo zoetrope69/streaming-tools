@@ -53,6 +53,13 @@ const PrideFlag = ({ name }) => {
           className={NewPrideFlagClassName}
         />
       )}
+
+      {currentName === "snailgender" && (
+        <Fragment>
+          <div className={styles.SnailTrail} />
+          <div className={styles.Snail} />
+        </Fragment>
+      )}
     </Fragment>
   );
 };

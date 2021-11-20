@@ -168,6 +168,9 @@ class Redemptions {
         `${prideFlag.twitchEmote} `.repeat(5)
       );
     }
+    if (prideFlag.twitchMessage) {
+      this.streamingService.chat.sendMessage(prideFlag.twitchMessage);
+    }
   }
 
   async immaBee() {

@@ -158,3 +158,92 @@
     #5bcefa
   );
 }
+
+.PrideFlag--snailgender {
+  background-image: linear-gradient(
+    to bottom,
+    #506854,
+    #89a091,
+    #f5e7da,
+    #a97b54,
+    #5f3b27
+  );
+}
+
+.SnailTrail {
+  position: absolute;
+  top: 55px;
+  right: 65px;
+  width: 30px;
+  height: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(245, 255, 245, 0),
+    rgba(245, 255, 245, 0.25)
+  );
+  border-radius: 15px;
+  animation: moveSnailTrail 100s linear forwards;
+}
+
+@keyframes moveSnailTrail {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+
+  10%,
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    height: calc(100vh - 65px);
+    opacity: 0;
+  }
+}
+
+.Snail {
+  position: absolute;
+  top: 0;
+  right: 50px;
+  width: 80px;
+  bottom: 0;
+  background-image: url("../../assets/pride-flag/snail-emoji.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: moveSnail 100s linear forwards;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.25));
+}
+
+@keyframes moveSnail {
+  0% {
+    background-position-y: top;
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateX(-0px);
+  }
+
+  30% {
+    transform: translateX(0px);
+  }
+
+  60% {
+    transform: translateX(-5px);
+  }
+
+  80% {
+    transform: translateX(0px);
+  }
+
+  100% {
+    background-position-y: bottom;
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+}

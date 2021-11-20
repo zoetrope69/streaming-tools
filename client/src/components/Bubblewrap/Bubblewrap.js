@@ -31,7 +31,6 @@ const SOUNDS = {
   POPS: [
     new Audio(`${BUBBLE_ASSETS_PATH}/bubblewrap-pop-1.mp3`),
     new Audio(`${BUBBLE_ASSETS_PATH}/bubblewrap-pop-2.mp3`),
-    new Audio(`${BUBBLE_ASSETS_PATH}/bubblewrap-pop-4.mp3`),
   ],
   POPS_MOUTH: [
     new Audio(`${BUBBLE_ASSETS_PATH}/bubblewrap-pop-mouth-1.mp3`),

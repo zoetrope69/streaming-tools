@@ -16,6 +16,11 @@ const Alerts = require("./alerts");
 const Logger = require("../helpers/logger");
 const logger = new Logger("👾 Redemptions");
 
+function randNumber(min, max) {
+  const randNumberBetween = Math.floor(Math.random() * max) + min;
+  return randNumberBetween;
+}
+
 const { v4: randomID } = require("uuid");
 
 const INITIAL_BUBBLEWRAP = {
@@ -416,7 +421,7 @@ class Redemptions {
           this.streamingService.enableRedemption("bubblewrap time");
         }, 2000);
       },
-      popBubble: async () => {
+      popBubbles: async () => {
         if (
           !this.bubblewrap.isEnabled ||
           this.bubblewrap.isStopping
@@ -424,6 +429,46 @@ class Redemptions {
           return;
         }
 
+        const viewerCount =
+          await this.streamingService.getViewerCount();
+
+        logger.debug(
+          viewerCount
+            ? `💩 Viewer count is ${viewerCount}`
+            : `💩 Couldn't get viewer count`
+        );
+
+        /*
+          if we couldn't get the viewer count 
+          OR
+          if we have enough viewers for a bubble each
+
+          only pop one bubble for a message
+        */
+        if (!viewerCount || viewerCount >= BUBBLE_AMOUNT) {
+          await this.bubblewrapTime.popBubble();
+          return;
+        }
+
+        /*
+          give each user an amount of bubbles to pop
+          but dont give them too many
+        */
+        const bubblesToPopAmount = Math.min(
+          Math.floor(BUBBLE_AMOUNT / 6),
+          Math.floor(BUBBLE_AMOUNT / viewerCount)
+        );
+
+        logger.log(`🔵 Popping ${bubblesToPopAmount} bubbles...`);
+
+        // pop bubbles at a random pace
+        for (let i = 0; i < bubblesToPopAmount; i++) {
+          setTimeout(() => {
+            this.bubblewrapTime.popBubble();
+          }, randNumber(100, 400) * i);
+        }
+      },
+      popBubble: async () => {
         const unpoppedBubbles = this.bubblewrap.bubbles.filter(
           (bubble) => {
             return !bubble.isPopped;

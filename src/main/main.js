@@ -313,7 +313,8 @@ async function handleChatMessages({
       messageWithEmotes,
     });
 
-    await redemptions.bubblewrapTime.popBubble();
+    // this is a promise but don't wait for it
+    redemptions.bubblewrapTime.popBubbles();
 
     await commands.handleGoogleSheetCommands({ command });
 

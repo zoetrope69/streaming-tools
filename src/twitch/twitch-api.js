@@ -311,6 +311,34 @@ async function searchCategories(query) {
   return data;
 }
 
+async function getStream() {
+  const response = await callTwitchAPI({
+    endpoint: "streams",
+    options: {
+      first: 1,
+      user_id: TWITCH_BROADCASTER_ID,
+    },
+  });
+
+  const { data } = response;
+
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  return data[0];
+}
+
+async function getViewerCount() {
+  const stream = await getStream();
+
+  if (!stream || typeof stream.viewer_count === "undefined") {
+    return null;
+  }
+
+  return stream.viewer_count;
+}
+
 const DEFAULT_REDEMPTION = {
   is_enabled: true,
   is_user_input_required: false,
@@ -764,6 +792,10 @@ async function TwitchAPI({ ngrokUrl }) {
     },
 
     updateRedemptionReward,
+
+    getStream,
+
+    getViewerCount,
   };
 }
 

@@ -1,0 +1,35 @@
+.Bubblewrap {
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0);
+  opacity: 0.75;
+  animation: fadeBackgroundIn 0.15s ease-in forwards;
+  transition: opacity 1s ease-in;
+}
+
+.BubblewrapHidden {
+  opacity: 0;
+}
+
+@keyframes fadeBackgroundIn {
+  to {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.Bubble {
+  display: block;
+  background-image: url("../../assets/bubblewrap/bubble-1.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform ease-in, opacity ease-in;
+}

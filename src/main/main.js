@@ -135,12 +135,18 @@ async function handleChannelPointRedemptions({
 
   streamingService.on(
     "channelPointRewardUnfulfilled",
-    async ({ reward }) => {
-      if (!isValidReward(reward)) {
+    async (data) => {
+      if (!isValidReward(data.reward)) {
         return;
       }
 
-      const { title } = reward;
+      const { title } = data.reward;
+
+      if (title === "bubblewrap time") {
+        await redemptions.bubblewrapTime.start({
+          redemption: data,
+        });
+      }
 
       if (title === "big drink") {
         wasSpotifyPlayingMusic = await music.isSpotifyPlaying();
@@ -178,6 +184,10 @@ async function handleChannelPointRedemptions({
 
       if (title === "brendan takeover") {
         await redemptions.brendanTakeover.stop();
+      }
+
+      if (title === "bubblewrap time") {
+        await redemptions.bubblewrapTime.stop();
       }
     }
   );
@@ -274,6 +284,10 @@ async function handleChannelPointRedemptions({
           await music.spotify.skipTrack();
         }
       }
+
+      if (title === "bubblewrap time") {
+        await redemptions.bubblewrapTime.stop();
+      }
     }
   );
 }
@@ -298,6 +312,9 @@ async function handleChatMessages({
       message,
       messageWithEmotes,
     });
+
+    // this is a promise but don't wait for it
+    redemptions.bubblewrapTime.popBubbles();
 
     await commands.handleGoogleSheetCommands({ command });
 

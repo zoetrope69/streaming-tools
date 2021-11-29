@@ -1,4 +1,4 @@
-const { v4: randomID } = require("uuid");
+import { v4 as randomID } from "uuid";
 
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
@@ -33,7 +33,7 @@ const ALERT_TYPES = {
   "penguin-throw": {
     audioUrl: "/assets/alerts/penguin-throw-snowball-impact.mp3",
     duration: 2000,
-    delayAudio: 900,
+    delayAudio: 500,
   },
   bexchat: {
     audioUrl: "/assets/alerts/bexchat.mp3",
@@ -108,4 +108,4 @@ class Alerts {
   }
 }
 
-module.exports = Alerts;
+export default Alerts;

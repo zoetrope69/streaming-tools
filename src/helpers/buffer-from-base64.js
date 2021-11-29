@@ -19,4 +19,4 @@ function bufferFromBase64(base64text) {
   };
 }
 
-module.exports = bufferFromBase64;
+export default bufferFromBase64;

@@ -1,9 +1,9 @@
-const OBSWebSocket = require("obs-websocket-js");
+import OBSWebSocket from "obs-websocket-js";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("☢ OBS");
 
-const obs = new OBSWebSocket();
+const obsWebSocket = new OBSWebSocket();
 
 const {
   WINDOWS_IP_ADDRESS,
@@ -14,7 +14,7 @@ const {
 let OBS_INITIALISED = false;
 let AVAILABLE_OBS_REQUESTS = [];
 
-async function request(requestName, options) {
+export async function request(requestName, options) {
   if (!OBS_INITIALISED) {
     logger.error(`Error for ${requestName} request`);
     throw new Error("OBS isn't ready");
@@ -34,7 +34,7 @@ async function request(requestName, options) {
 
   let response = {};
   try {
-    response = await obs.send(requestName, options);
+    response = await obsWebSocket.send(requestName, options);
   } catch (exception) {
     logger.error(`Error for ${requestName} request`);
     logger.error(exception || exception.message);
@@ -47,7 +47,7 @@ async function request(requestName, options) {
   return response;
 }
 
-function initialise() {
+export async function initialise() {
   logger.info("Connecting...");
 
   return new Promise((resolve) => {
@@ -56,7 +56,7 @@ function initialise() {
     }
 
     try {
-      obs.connect({
+      obsWebSocket.connect({
         address: `${WINDOWS_IP_ADDRESS}:${OBS_WEBSOCKET_ADDRESS_PORT}`,
         password: OBS_WEBSOCKET_PASSWORD,
       });
@@ -64,19 +64,19 @@ function initialise() {
       logger.error(e.error || e.message || e);
     }
 
-    obs.on("ConnectionClosed", (data) =>
+    obsWebSocket.on("ConnectionClosed", (data) =>
       logger.debug("OBS connection closed", data)
     );
 
-    obs.on("AuthenticationFailure", (data) =>
+    obsWebSocket.on("AuthenticationFailure", (data) =>
       logger.error("OBS Failed to authenticate", data)
     );
 
-    obs.on("ConnectionOpened", async () => {
-      obs.on("AuthenticationSuccess", async () => {
+    obsWebSocket.on("ConnectionOpened", async () => {
+      obsWebSocket.on("AuthenticationSuccess", async () => {
         let versionInfo;
         try {
-          versionInfo = await obs.send("GetVersion");
+          versionInfo = await obsWebSocket.send("GetVersion");
         } catch (e) {
           logger.error(e.error || e.message || e);
         }
@@ -105,7 +105,7 @@ function initialise() {
   });
 }
 
-async function getWebcamImage(sourceName) {
+export async function getWebcamImage(sourceName) {
   if (!OBS_INITIALISED) {
     throw new Error("OBS isn't ready");
   }
@@ -123,19 +123,19 @@ async function getWebcamImage(sourceName) {
   return webcamScreenshot?.img;
 }
 
-async function switchToScene(sceneName) {
+export async function switchToScene(sceneName) {
   return request("SetCurrentScene", {
     "scene-name": sceneName,
   });
 }
 
-async function resetTriggers() {
+export async function resetTriggers() {
   return await request("TriggerHotkeyBySequence", {
     keyId: "OBS_KEY_NUM5",
   });
 }
 
-async function showHideSource({ scene, source, isVisible }) {
+export async function showHideSource({ scene, source, isVisible }) {
   return await request("SetSceneItemRender", {
     "scene-name": scene,
     source,
@@ -143,15 +143,19 @@ async function showHideSource({ scene, source, isVisible }) {
   });
 }
 
-async function showSource({ scene, source }) {
+export async function showSource({ scene, source }) {
   return await showHideSource({ scene, source, isVisible: true });
 }
 
-async function hideSource({ scene, source }) {
+export async function hideSource({ scene, source }) {
   return await showHideSource({ scene, source, isVisible: false });
 }
 
-async function showHideFilter({ source, filter, filterEnabled }) {
+export async function showHideFilter({
+  source,
+  filter,
+  filterEnabled,
+}) {
   return await request("SetSourceFilterVisibility", {
     sourceName: source,
     filterName: filter,
@@ -159,7 +163,7 @@ async function showHideFilter({ source, filter, filterEnabled }) {
   });
 }
 
-async function toggleFilter({ source, filter }) {
+export async function toggleFilter({ source, filter }) {
   const result = await request("GetSourceFilterInfo", {
     sourceName: source,
     filterName: filter,
@@ -172,7 +176,11 @@ async function toggleFilter({ source, filter }) {
   });
 }
 
-async function handleTriggers({ triggers, itemVisible, itemName }) {
+export async function handleTriggers({
+  triggers,
+  itemVisible,
+  itemName,
+}) {
   try {
     if (!Object.prototype.hasOwnProperty.call(triggers, itemName)) {
       return;
@@ -186,13 +194,15 @@ async function handleTriggers({ triggers, itemVisible, itemName }) {
   }
 }
 
-async function sourceVisibilityTriggers(triggers) {
-  obs.on("SceneItemVisibilityChanged", ({ itemVisible, itemName }) =>
-    handleTriggers({ triggers, itemVisible, itemName })
+export async function sourceVisibilityTriggers(triggers) {
+  obsWebSocket.on(
+    "SceneItemVisibilityChanged",
+    ({ itemVisible, itemName }) =>
+      handleTriggers({ triggers, itemVisible, itemName })
   );
 }
 
-async function filterVisibilityTriggers(sourcesObject) {
+export async function filterVisibilityTriggers(sourcesObject) {
   const sources = Object.keys(sourcesObject);
   sources.forEach(async (source) => {
     const triggers = sourcesObject[source];
@@ -213,7 +223,7 @@ async function filterVisibilityTriggers(sourcesObject) {
       });
     });
 
-    obs.on(
+    obsWebSocket.on(
       "SourceFilterVisibilityChanged",
       async ({ filterEnabled, filterName }) => {
         await handleTriggers({
@@ -226,7 +236,7 @@ async function filterVisibilityTriggers(sourcesObject) {
   });
 }
 
-async function turnOnOverlay(source, timeout) {
+export async function turnOnOverlay(source, timeout) {
   await hideSource({
     scene: "Overlays",
     source,
@@ -249,27 +259,12 @@ async function turnOnOverlay(source, timeout) {
   }, 100); // wait 100 ms i guess
 }
 
-async function handleSceneChange(callback) {
+export async function handleSceneChange(callback) {
   const currentScene = await request("GetCurrentScene");
   callback(currentScene.name);
 
   // get current scene
-  obs.on("SwitchScenes", (data) => {
+  obsWebSocket.on("SwitchScenes", (data) => {
     callback(data["scene-name"]);
   });
 }
-
-module.exports = {
-  initialise,
-  getWebcamImage,
-  switchToScene,
-  sourceVisibilityTriggers,
-  filterVisibilityTriggers,
-  showSource,
-  hideSource,
-  showHideSource,
-  showHideFilter,
-  toggleFilter,
-  turnOnOverlay,
-  handleSceneChange,
-};

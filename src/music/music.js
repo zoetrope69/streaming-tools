@@ -1,9 +1,14 @@
-const { EventEmitter } = require("events");
-const spotify = require("./spotify");
-const lastFm = require("./last-fm");
+import { EventEmitter } from "events";
+import {
+  getRecentSpotifyTrack,
+  pauseTrack,
+  playTrack,
+  skipTrack,
+} from "./spotify.js";
+import { getRecentLastFmTrack } from "./last-fm.js";
 
-const Logger = require("../helpers/logger");
-const { getAlbumArtColors } = require("./helpers");
+import Logger from "../helpers/logger.js";
+import { getCachedAlbumArtColors as getAlbumArtColors } from "./helpers.js";
 
 const logger = new Logger("🎸 Music");
 
@@ -29,11 +34,11 @@ async function getCurrentTrack() {
   let track = {};
 
   try {
-    track = await spotify.getRecentTrack();
+    track = await getRecentSpotifyTrack();
 
     // fallback to lastfm if we cant find spotify
     if (!track || !track.isNowPlaying) {
-      track = await lastFm.getRecentTrack();
+      track = await getRecentLastFmTrack();
     }
 
     if (!track) {
@@ -58,11 +63,11 @@ async function emitCurrentTrack(eventEmitter) {
 }
 
 async function isSpotifyPlaying() {
-  const track = await spotify.getRecentTrack();
+  const track = await getRecentSpotifyTrack();
   return track && track.isNowPlaying;
 }
 
-function music() {
+function Music() {
   const eventEmitter = new EventEmitter();
 
   if (!areMusicAPIEnvironmentVariablesAvailable()) {
@@ -80,10 +85,17 @@ function music() {
 
   return Object.assign(eventEmitter, {
     isSpotifyPlaying,
-    spotify,
-    lastFm,
+    spotify: {
+      getRecentTrack: getRecentSpotifyTrack,
+      pauseTrack,
+      playTrack,
+      skipTrack,
+    },
+    lastFm: {
+      getRecentTrack: getRecentLastFmTrack,
+    },
     getCurrentTrack,
   });
 }
 
-module.exports = music;
+export default Music;

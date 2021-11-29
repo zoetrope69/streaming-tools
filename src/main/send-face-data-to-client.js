@@ -1,6 +1,6 @@
-const obs = require("../obs");
+import obs from "../obs/index.js";
 
-const detectFaces = require("../helpers/detect-faces");
+import detectFaces from "../helpers/detect-faces.js";
 
 async function sendFaceDataToClient({ io }) {
   try {
@@ -18,4 +18,4 @@ async function sendFaceDataToClient({ io }) {
   }
 }
 
-module.exports = sendFaceDataToClient;
+export default sendFaceDataToClient;

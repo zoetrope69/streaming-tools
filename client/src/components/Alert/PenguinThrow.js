@@ -1,4 +1,5 @@
 import { h } from "preact";
+
 import { useState, useEffect } from "preact/hooks";
 import classNames from "classnames";
 
@@ -9,19 +10,16 @@ const PENGUIN_THROW_ANIMATION_DURATION = 750;
 
 const PenguinThrow = ({ id, currentFaceDetection }) => {
   const [isHidden, setIsHidden] = useState(false);
-  const [isFaceDetectionPaused, setIsFaceDetectionPaused] =
-    useState(false);
   const [isTargetVisible, setIsTargetVisible] = useState(true);
   const [isSnowballVisible, setIsSnowballVisible] = useState(false);
-  const [faceDetection, setFaceDetection] = useState(null);
 
   // onload
   useEffect(() => {
+    setIsHidden(false);
     setIsSnowballVisible(false);
     setIsTargetVisible(true);
 
     setTimeout(() => {
-      setIsFaceDetectionPaused(true);
       setIsSnowballVisible(true);
 
       setTimeout(() => {
@@ -32,33 +30,40 @@ const PenguinThrow = ({ id, currentFaceDetection }) => {
         setIsHidden(true);
       }, SNOWBALL_ANIMATION_DURATION);
     }, PENGUIN_THROW_ANIMATION_DURATION);
-  }, [setIsSnowballVisible, setIsFaceDetectionPaused]);
+  }, []);
 
-  useEffect(() => {
-    if (!isFaceDetectionPaused) {
-      setFaceDetection(currentFaceDetection.position);
-    }
-  }, [isFaceDetectionPaused, setFaceDetection, currentFaceDetection]);
-
-  const x = faceDetection ? faceDetection.x : 1025;
-  const y = faceDetection ? faceDetection.y : 525;
+  const x = currentFaceDetection?.position?.x || 500;
+  const y =
+    currentFaceDetection?.position?.y || window.innerHeight - 500;
   const width = Math.max(
-    335,
-    faceDetection ? faceDetection.width : 335
+    currentFaceDetection?.position?.width || 150,
+    150
   );
   const height = Math.max(
-    335,
-    faceDetection ? faceDetection.height : 335
+    currentFaceDetection?.position?.height || 150,
+    150
   );
 
   const positionStyles = {
-    transform: `translate(
-      ${x}px,
-      ${y}px
-    )`,
+    left: `${x}px`,
+    top: `${y}px`,
     width: `${width}px`,
     height: `${height}px`,
   };
+
+  const penguinSnowballX = `-${x + width}px`;
+  const penguinSnowballY = `${window.innerHeight - (y + height)}px`;
+  const snowballStyles = {
+    ...positionStyles,
+    opacity: 0,
+    transform: `translate(${penguinSnowballX}, ${penguinSnowballY}) scale(0.25)`,
+    transitionDuration: `${SNOWBALL_ANIMATION_DURATION}ms`,
+  };
+
+  if (isSnowballVisible) {
+    snowballStyles.opacity = 1;
+    snowballStyles.transform = `translate(0) scale(0.75)`;
+  }
 
   const PenguinThrowClassName = classNames(styles.PenguinThrow, {
     [styles["PenguinThrow--hidden"]]: isHidden,
@@ -79,16 +84,10 @@ const PenguinThrow = ({ id, currentFaceDetection }) => {
           style={positionStyles}
         />
       )}
-      {isSnowballVisible && (
-        <div
-          className={styles["PenguinThrow__snowball"]}
-          style={{
-            ...positionStyles,
-            transform: `${positionStyles.transform} scale(0.5)`,
-            animationDuration: `${SNOWBALL_ANIMATION_DURATION}ms`,
-          }}
-        />
-      )}
+      <div
+        className={styles["PenguinThrow__snowball"]}
+        style={snowballStyles}
+      />
     </div>
   );
 };

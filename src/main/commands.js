@@ -1,13 +1,13 @@
-const obs = require("../obs");
-const textToSpeech = require("../text-to-speech");
-const googleSheet = require("../google-sheet");
+import obs from "../obs/index.js";
+import textToSpeech from "../text-to-speech.js";
+import * as googleSheet from "../google-sheet.js";
 
-const sendFaceDataToClient = require("./send-face-data-to-client");
-const saveScreenshotToBrbScreen = require("./save-screenshot-to-brb-screen");
-const Alerts = require("./alerts");
+import sendFaceDataToClient from "./send-face-data-to-client.js";
+import saveScreenshotToBrbScreen from "./save-screenshot-to-brb-screen.js";
+import Alerts from "./alerts.js";
 
-const { schedule } = require("../helpers/schedule");
-const Logger = require("../helpers/logger");
+import { schedule } from "../helpers/schedule.js";
+import Logger from "../helpers/logger.js";
 const logger = new Logger("🚀 Commands");
 
 class Commands {
@@ -45,7 +45,7 @@ class Commands {
   }
 
   async updateGoogleSheetCommands() {
-    this.googleSheetCommands = await googleSheet.getCommands();
+    this.googleSheetCommands = await googleSheet.getCachedCommands();
   }
 
   async handleGoogleSheetCommands({ command }) {
@@ -274,4 +274,4 @@ class Commands {
   }
 }
 
-module.exports = Commands;
+export default Commands;

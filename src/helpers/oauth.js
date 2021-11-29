@@ -1,18 +1,20 @@
-const path = require("path");
-const fs = require("fs");
-const REFRESH_TOKEN_PATH = path.join(
-  __dirname,
-  "../../refresh-tokens.json"
+import fs from "fs";
+
+import cache from "memory-cache";
+import { stringify as queryStringStringify } from "qs";
+import enquirer from "enquirer";
+import fetch from "node-fetch";
+
+import importJSON from "./import-json.js";
+import Logger from "./logger.js";
+const logger = new Logger("🔃 OAuth");
+
+const REFRESH_TOKEN_PATH = new URL(
+  "../../refresh-tokens.json",
+  import.meta.url
 );
 
-let refreshTokens = require(REFRESH_TOKEN_PATH);
-const cache = require("memory-cache");
-const { stringify: queryStringStringify } = require("qs");
-const { prompt } = require("enquirer");
-const fetch = require("node-fetch");
-
-const Logger = require("./logger");
-const logger = new Logger("🔃 OAuth");
+let refreshTokens = await importJSON(REFRESH_TOKEN_PATH);
 
 const BASE_CACHE_KEY = "OAUTH";
 
@@ -121,7 +123,7 @@ function createAuthURL({ type }) {
 async function getAuthCodeFromCommandLineUrl({ type }) {
   const { state: existingState } = TYPES[type];
 
-  const response = await prompt({
+  const response = await enquirer.prompt({
     type: "input",
     name: "url",
     message: "Redirected URL",
@@ -308,6 +310,4 @@ async function getCachedAccessToken({ type }) {
   return { accessToken };
 }
 
-module.exports = {
-  getAccessToken: getCachedAccessToken,
-};
+export default getCachedAccessToken;

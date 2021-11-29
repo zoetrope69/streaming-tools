@@ -1,27 +1,28 @@
 // get process.env from .env
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const path = require("path");
+import path from "path";
+import http from "http";
 
-const express = require("express");
-const http = require("http");
-const socketIO = require("socket.io");
+import express from "express";
+import { Server } from "socket.io";
 
-const Twitch = require("../twitch");
-const Music = require("../music");
-const textToSpeech = require("../text-to-speech");
-const obs = require("../obs");
-const {
+import Music from "../music/index.js";
+import Twitch from "../twitch/twitch.js";
+import textToSpeech from "../text-to-speech.js";
+import obs from "../obs/index.js";
+import {
   createFilterVisibilityTriggers,
   createSourceVisibilityTriggers,
-} = require("../obs/helpers");
-const ChannelInfo = require("./channel-info");
-const Alerts = require("./alerts");
-const Redemptions = require("./redemptions");
-const Commands = require("./commands");
-const { firstTimeTalking } = require("./users-who-have-talked");
+} from "../obs/helpers.js";
+import ChannelInfo from "./channel-info.js";
+import Alerts from "./alerts.js";
+import Redemptions from "./redemptions.js";
+import Commands from "./commands.js";
+import { firstTimeTalking } from "./users-who-have-talked.js";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const { NGROK_URL, PORT } = process.env;
 const CLIENT_FILE_PATH = "client/build";
 
@@ -30,7 +31,7 @@ const clientLogger = new Logger("👽 Streaming Tools Client");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = new Server(server);
 
 const alerts = new Alerts({ io });
 
@@ -39,7 +40,10 @@ app.use(express.static(CLIENT_FILE_PATH));
 
 app.get("/", (_request, response) => {
   response.sendFile(
-    path.join(__dirname, CLIENT_FILE_PATH, "/index.html")
+    new URL(
+      path.join(CLIENT_FILE_PATH, "/index.html"),
+      import.meta.url
+    )
   );
 });
 
@@ -157,10 +161,22 @@ async function handleChannelPointRedemptions({
       if (title === "brendan takeover") {
         await redemptions.brendanTakeover.start();
 
-        // maximum of 1 minute
+        // maximum of 3 minute
         setTimeout(async () => {
           await redemptions.brendanTakeover.stop();
-        }, 60 * 1000);
+        }, 3 * 60 * 1000);
+      }
+
+      if (title === "BroomyJagRace") {
+        const isSpotifyPlaying = await music.isSpotifyPlaying();
+        if (isSpotifyPlaying) await music.spotify.pauseTrack();
+        await redemptions.broomyJagRace.start();
+      }
+
+      if (title === "imma bee") {
+        await redemptions.immaBee({
+          redemption: data,
+        });
       }
     }
   );
@@ -188,6 +204,10 @@ async function handleChannelPointRedemptions({
 
       if (title === "bubblewrap time") {
         await redemptions.bubblewrapTime.stop();
+      }
+
+      if (title === "BroomyJagRace") {
+        await redemptions.broomyJagRace.stop();
       }
     }
   );
@@ -222,10 +242,6 @@ async function handleChannelPointRedemptions({
         await redemptions.showYourPride({ message, username });
       }
 
-      if (title === "imma bee") {
-        await redemptions.immaBee();
-      }
-
       if (title === "big data") {
         await redemptions.bigData();
       }
@@ -247,15 +263,11 @@ async function handleChannelPointRedemptions({
       }
 
       if (title === "BroomyJagRace") {
-        const isSpotifyPlaying = await music.isSpotifyPlaying();
-        if (isSpotifyPlaying) await music.spotify.pauseTrack();
-        await redemptions.broomyJagRace.start();
+        await redemptions.broomyJagRace.stop();
       }
 
       if (title === "goosebumpz book") {
-        const isSpotifyPlaying = await music.isSpotifyPlaying();
-        if (isSpotifyPlaying) await music.spotify.pauseTrack();
-        await redemptions.goosebumps.start({ message });
+        await redemptions.goosebumps.start({ message, music });
       }
 
       if (title === "brendan takeover") {
@@ -322,23 +334,14 @@ async function handleChatMessages({
       await commands.song();
     }
 
-    if (user.username === "EggEllie") {
-      firstTimeTalking("EggEllie", async () => {
-        await redemptions.nortyDevil();
-      });
-    }
-
-    if (user.username === "bexchat") {
-      firstTimeTalking("bexchat", async () => {
-        await commands.bex();
-      });
-    }
-
-    if (user.username === "blgsteve") {
-      firstTimeTalking("blgsteve", async () => {
-        await commands.octopussy();
-      });
-    }
+    [
+      { username: "EggEllie", callback: redemptions.nortyDevil },
+      { username: "Broomyjag", callback: redemptions.nortyDevil },
+      { username: "Bexchat", callback: commands.bex },
+      { username: "BLGSTEVE", callback: commands.octopussy },
+    ].forEach(({ username, callback }) => {
+      firstTimeTalking(user, username, callback);
+    });
 
     if (command === "game" || command === "category") {
       await commands.category({
@@ -478,14 +481,11 @@ async function main() {
     music.on("track", (track) => {
       io.emit("data", { track });
     });
-
     const streamingService = await Twitch({
       ngrokUrl: NGROK_URL,
       app,
     });
-
     setTwitchTags({ streamingService });
-
     const channelInfo = new ChannelInfo();
     const redemptions = new Redemptions({ io, streamingService });
     const commands = new Commands({
@@ -494,7 +494,6 @@ async function main() {
       music,
       channelInfo,
     });
-
     // initialise various things
     await obs.initialise();
     createSourceVisibilityTriggers({ commands, redemptions });
@@ -505,28 +504,24 @@ async function main() {
       "dance to a song",
       "ewww this song is doo doo",
     ];
-    const REDEMPTIONS_NOT_FOR_DANCING = ["barry"];
+    const REDEMPTIONS_NOT_FOR_DANCING = [];
     await obs.handleSceneChange((sceneName) => {
       if (sceneName.includes("Dance")) {
         REDEMPTIONS_FOR_DANCING.forEach((redemptionName) => {
           streamingService.enableRedemption(redemptionName);
         });
-
         REDEMPTIONS_NOT_FOR_DANCING.forEach((redemptionName) => {
           streamingService.disableRedemption(redemptionName);
         });
         return;
       }
-
       REDEMPTIONS_FOR_DANCING.forEach((redemptionName) => {
         streamingService.disableRedemption(redemptionName);
       });
-
       REDEMPTIONS_NOT_FOR_DANCING.forEach((redemptionName) => {
         streamingService.enableRedemption(redemptionName);
       });
     });
-
     handleChannelInfo({ channelInfo, streamingService });
     handleSubscription({ streamingService });
     handleBits({ streamingService });
@@ -546,14 +541,14 @@ async function main() {
       redemptions,
       commands,
     });
+
+    server.listen(PORT, () => {
+      logger.info(`Listening on http://localhost:${PORT}`);
+    });
   } catch (e) {
     logger.error(e);
     logger.error(e.message);
   }
 }
 
-main();
-
-server.listen(PORT, () => {
-  logger.info(`Listening on http://localhost:${PORT}`);
-});
+export default main;

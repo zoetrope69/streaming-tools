@@ -1,4 +1,4 @@
-const chalk = require("chalk");
+import chalk from "chalk";
 
 const { NODE_ENV } = process.env;
 const DEBUG = NODE_ENV !== "production";
@@ -63,4 +63,4 @@ class Logger {
   }
 }
 
-module.exports = Logger;
+export default Logger;

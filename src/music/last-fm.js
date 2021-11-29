@@ -1,12 +1,12 @@
-const fetch = require("node-fetch");
-const hash = require("object-hash");
-const { stringify: stringifyQueryString } = require("qs");
+import fetch from "node-fetch";
+import hash from "object-hash";
+import { stringify as stringifyQueryString } from "qs";
 
 const { LAST_FM_API_KEY, LAST_FM_USERNAME } = process.env;
 
 const BASE_URL = `http://ws.audioscrobbler.com/2.0/`;
 
-async function getRecentTrack() {
+export async function getRecentLastFmTrack() {
   const queryString = stringifyQueryString({
     api_key: LAST_FM_API_KEY,
     format: "json",
@@ -56,7 +56,3 @@ async function getRecentTrack() {
     ...data,
   };
 }
-
-module.exports = {
-  getRecentTrack,
-};

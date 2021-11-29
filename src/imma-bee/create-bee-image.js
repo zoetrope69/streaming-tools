@@ -1,12 +1,24 @@
-const path = require("path");
-const jimp = require("jimp");
-const detectFaces = require("../helpers/detect-faces");
-const bufferFromBase64 = require("../helpers/buffer-from-base64");
+import fs from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
+
+import jimp from "jimp";
+
+import detectFaces from "../helpers/detect-faces.js";
+import bufferFromBase64 from "../helpers/buffer-from-base64.js";
 
 const { BLEND_MULTIPLY } = jimp;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const BEE_IMAGE = fs.readFileSync(
+  new URL("./bee.png", import.meta.url)
+);
+const CIRCLE_MASK_IMAGE = fs.readFileSync(
+  new URL("./circle-mask.png", import.meta.url)
+);
 
 async function createBeeImage(dataUri) {
-  const { buffer: imageBuffer } = bufferFromBase64(dataUri); // TODO might not need this
+  const { buffer: imageBuffer } = bufferFromBase64(dataUri);
   const faceDetectionResult = await detectFaces(dataUri);
 
   if (!faceDetectionResult) {
@@ -14,10 +26,9 @@ async function createBeeImage(dataUri) {
   }
 
   const streamImage = await jimp.read(imageBuffer);
-  const beeImage = await jimp.read(path.join(__dirname, "/bee.png"));
-  const circleMaskImage = await jimp.read(
-    path.join(__dirname, "/circle-mask.png")
-  );
+
+  const beeImage = await jimp.read(BEE_IMAGE);
+  const circleMaskImage = await jimp.read(CIRCLE_MASK_IMAGE);
 
   const { x, y, width, height } = faceDetectionResult.position;
   streamImage.crop(x, y, width, height);
@@ -40,4 +51,4 @@ async function createBeeImage(dataUri) {
   return Promise.resolve();
 }
 
-module.exports = createBeeImage;
+export default createBeeImage;

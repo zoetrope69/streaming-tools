@@ -12,12 +12,14 @@ const Runescape = ({ duration }) => {
     top: `10%`,
     left: `10%`,
   });
+  const [randNumber, setRandNumber] = useState(0);
 
   useEffect(() => {
     setPositionStyles({
       top: `${randomNumberBetween(10, 50)}%`,
       left: `${randomNumberBetween(10, 50)}%`,
     });
+    setRandNumber(randomNumberBetween(0, 1000));
   }, []);
 
   const style = {
@@ -30,12 +32,12 @@ const Runescape = ({ duration }) => {
       <div className={styles.RunescapeWrapper} style={style}>
         <img
           className={styles.RunescapeTextImage}
-          src={`../../assets/alerts/runescape-text.gif?${Math.random().toString()}`}
+          src={`../../assets/alerts/runescape-text.gif?${randNumber}`}
           alt=""
         />
         <img
           className={styles.RunescapeTextImage}
-          src={`../../assets/alerts/runescape-text.png?${Math.random().toString()}`}
+          src={`../../assets/alerts/runescape-text.png?${randNumber}`}
           alt=""
         />
       </div>

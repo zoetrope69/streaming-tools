@@ -2,7 +2,7 @@ const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 if (IS_DEVELOPMENT) {
   // Must use require here as import statements are only allowed
   // to exist at top-level.
-  require("preact/debug");
+  require("preact/debug"); // eslint-disable-line no-undef
 }
 
 import { h } from "preact";
@@ -74,6 +74,7 @@ function App() {
         if (alert.loadImage) {
           await loadImage(alert.loadImage);
         }
+
         setCurrentAlert(alert);
       }
 

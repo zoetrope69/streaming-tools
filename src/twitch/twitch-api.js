@@ -1,11 +1,11 @@
-const fetch = require("node-fetch");
-const { stringify: queryStringStringify } = require("qs");
+import fetch from "node-fetch";
+import { stringify as queryStringStringify } from "qs";
 
-const Logger = require("../helpers/logger");
+import getUserPronouns from "./helpers/pronouns.js";
+import getAccessToken from "../helpers/oauth.js";
+
+import Logger from "../helpers/logger.js";
 const logger = new Logger("💩 Twitch API");
-
-const getUserPronouns = require("./helpers/pronouns");
-const { getAccessToken } = require("../helpers/oauth");
 
 const {
   TWITCH_CLIENT_ID,
@@ -356,6 +356,7 @@ const REDEMPTIONS = [
     prompt: "pop-up on the stream as a little blob bopping",
     cost: 5,
     background_color: "#002224",
+    is_user_input_required: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -375,7 +376,6 @@ const REDEMPTIONS = [
     cost: 10,
     background_color: "#E7E7E7",
     is_user_input_required: true,
-    should_redemptions_skip_request_queue: false,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -392,6 +392,7 @@ const REDEMPTIONS = [
     prompt: "imma bee imma bee imma bee imma bee imma bee imma bee",
     cost: 300,
     background_color: "#FFF400",
+    should_redemptions_skip_request_queue: false,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -494,17 +495,17 @@ const REDEMPTIONS = [
     background_color: "#FFFFFF",
     should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 30, // 30 minutes
+    global_cooldown_seconds: 60 * 5, // 5 minutes
   },
   {
     ...DEFAULT_REDEMPTION,
-    id: "219a26d4-587e-417d-bd80-2cb2cbe5e86d",
+    id: "51411177-c629-48da-90da-1ecf9046e760",
     title: "barry",
     cost: 1111,
     background_color: "#05B33E",
-    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 5, // 5 minutes
+    is_enabled: false,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -513,7 +514,6 @@ const REDEMPTIONS = [
     prompt: "skip the song",
     cost: 800,
     background_color: "#333333",
-    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 5, // 5 minutes
   },
@@ -524,11 +524,19 @@ const REDEMPTIONS = [
     prompt: "lets pop bubbles together",
     cost: 80,
     background_color: "#131E5B",
-    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
+    should_redemptions_skip_request_queue: false,
     global_cooldown_seconds: 60 * 1, // 1 minutes
   },
-];
+].map((redemption) => {
+  // in development mode remove all cooldowns
+  if (process.env.NODE_ENV === "development") {
+    redemption.is_global_cooldown_enabled = false;
+    redemption.global_cooldown_seconds = 0;
+  }
+
+  return redemption;
+});
 
 async function getRedemptions() {
   const response = await callTwitchAPI({
@@ -615,7 +623,7 @@ async function updateRedemptionReward(
     fetchOptions: {
       method: "PATCH",
       body: JSON.stringify({
-        status: fulfilledOrCancelled ? "FULFILLED" : "CANCELED ",
+        status: fulfilledOrCancelled ? "FULFILLED" : "CANCELED",
       }),
     },
   });
@@ -801,4 +809,4 @@ async function TwitchAPI({ ngrokUrl }) {
   };
 }
 
-module.exports = TwitchAPI;
+export default TwitchAPI;

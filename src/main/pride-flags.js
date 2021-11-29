@@ -1,7 +1,4 @@
-const {
-  setLightsColor,
-  resetLights,
-} = require("./helpers/hue-bulbs");
+import { setLightsColor, resetLights } from "./helpers/hue-bulbs.js";
 
 const PRIDE_FLAGS = [
   {
@@ -105,7 +102,7 @@ const PRIDE_FLAGS_ALIAS_MAP = {
   snail: "snailgender",
 };
 
-function getPrideFlag(name) {
+export function getPrideFlag(name) {
   if (!name || name.length === 0) {
     return;
   }
@@ -129,7 +126,7 @@ function getPrideFlag(name) {
   return flag;
 }
 
-function getRandomPrideFlag() {
+export function getRandomPrideFlag() {
   const prideFlagNames = Object.keys(PRIDE_FLAGS);
   const randomPrideFlagName =
     prideFlagNames[Math.floor(Math.random() * prideFlagNames.length)];
@@ -152,7 +149,7 @@ async function goThroughColors(colors) {
   });
 }
 
-async function setLightsToPrideFlag(name) {
+export async function setLightsToPrideFlag(name) {
   const prideFlag = getPrideFlag(name);
 
   if (!prideFlag) {
@@ -161,9 +158,3 @@ async function setLightsToPrideFlag(name) {
 
   return goThroughColors(prideFlag.lightColors);
 }
-
-module.exports = {
-  getPrideFlag,
-  getRandomPrideFlag,
-  setLightsToPrideFlag,
-};

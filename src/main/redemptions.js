@@ -1,27 +1,27 @@
-const obs = require("../obs");
-const createBeeImage = require("../imma-bee/create-bee-image");
-const createGoosebumpsBookImage = require("../goosebumps");
-const createRunescapeTextImage = require("../create-runescape-text-image");
-const textToSpeech = require("../text-to-speech");
+import { v4 as randomID } from "uuid";
 
-const {
+import obs from "../obs/index.js";
+import createBeeImage from "../imma-bee/create-bee-image.js";
+import createGoosebumpsBookImage from "../goosebumps/index.js";
+import createRunescapeTextImage from "../create-runescape-text-image.js";
+import textToSpeech from "../text-to-speech.js";
+
+import {
   getPrideFlag,
   getRandomPrideFlag,
   setLightsToPrideFlag,
-} = require("./pride-flags");
-const sendFaceDataToClient = require("./send-face-data-to-client");
+} from "./pride-flags.js";
+import sendFaceDataToClient from "./send-face-data-to-client.js";
 
-const Alerts = require("./alerts");
+import Alerts from "./alerts.js";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
 
 function randNumber(min, max) {
   const randNumberBetween = Math.floor(Math.random() * max) + min;
   return randNumberBetween;
 }
-
-const { v4: randomID } = require("uuid");
 
 const INITIAL_BUBBLEWRAP = {
   bubbles: [],
@@ -173,18 +173,20 @@ class Redemptions {
     }
   }
 
-  async immaBee() {
+  async immaBee({ redemption }) {
     logger.log("🐝 Imma bee triggered...");
 
     try {
       const image = await obs.getWebcamImage();
       await createBeeImage(image);
       this.alerts.send({ type: "immabee" });
+      this.streamingService.updateRedemptionReward(redemption); // fulfill redemption
     } catch (e) {
       logger.error(`🐝 Imma bee ${JSON.stringify(e)}`);
       this.streamingService.chat.sendMessage(
         `Couldn't find Zac's face...`
       );
+      this.streamingService.updateRedemptionReward(redemption, false); // cancel redemption
     }
   }
 
@@ -235,12 +237,16 @@ class Redemptions {
 
   get goosebumps() {
     return {
-      start: async ({ message }) => {
+      start: async ({ message, music }) => {
         logger.log("📚 Goosebumps Book triggered...");
         try {
           const { bookTitle } = await createGoosebumpsBookImage(
             message
           );
+
+          const isSpotifyPlaying = await music.isSpotifyPlaying();
+          if (isSpotifyPlaying) await music.spotify.pauseTrack();
+
           this.io.emit("data", { goosebumpsBookTitle: bookTitle });
           this.goosebumpBook = bookTitle;
           await obs.switchToScene("Goosebumps");
@@ -250,6 +256,7 @@ class Redemptions {
             `Couldn't generate a book for ${message}`
           );
           this.goosebumpBook = null;
+          await obs.switchToScene("Main Bigger Zac");
         }
       },
 
@@ -294,10 +301,7 @@ class Redemptions {
       obs.turnOnOverlay("Stop Look At My Giant Ass", timeout);
       setTimeout(() => {
         this.streamingService.chat.sendMessage(
-          `shout-out to twitch.tv/EggEllie the creator of the norty devils`
-        );
-        this.streamingService.chat.sendMessage(
-          `shout-out to twitch.tv/Broomyjag for the voice of the devil`
+          `shout-out to twitch.tv/EggEllie the creator of the norty devils and twitch.tv/Broomyjag for the voice of the devil`
         );
         resolve();
       }, timeout);
@@ -523,4 +527,4 @@ class Redemptions {
   }
 }
 
-module.exports = Redemptions;
+export default Redemptions;

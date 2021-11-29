@@ -1,7 +1,8 @@
-const fetch = require("node-fetch");
-const { colorNameToXY, hexToXY } = require("./color-converting");
+import fetch from "node-fetch";
 
-const Logger = require("../../helpers/logger");
+import { colorNameToXY, hexToXY } from "./color-converting.js";
+
+import Logger from "../../helpers/logger.js";
 const logger = new Logger("💡 Hue Bulbs");
 
 const { HUE_BULB_USERNAME, HUE_BULB_HUB_IP_ADDRESS } = process.env;
@@ -79,7 +80,7 @@ async function getLightByName(name) {
   return lights.find((light) => light.name === name);
 }
 
-async function setLightsColor(colorInput) {
+export async function setLightsColor(colorInput) {
   const colorState = getColorState(colorInput);
 
   if (!colorState) {
@@ -98,7 +99,7 @@ async function setLightsColor(colorInput) {
   });
 }
 
-async function setFairyLights(value) {
+export async function setFairyLights(value) {
   const light = await getLightByName("fairy-lights");
 
   if (!light) {
@@ -111,7 +112,7 @@ async function setFairyLights(value) {
   });
 }
 
-async function resetLights() {
+export async function resetLights() {
   if (!DEFAULT_LIGHT_STATES) {
     return;
   }
@@ -133,7 +134,7 @@ async function resetLights() {
   });
 }
 
-async function initDefaultLights() {
+export async function initDefaultLights() {
   const lights = await getLights();
 
   if (!lights || lights.length === 0) {
@@ -148,11 +149,5 @@ async function initDefaultLights() {
     DEFAULT_LIGHT_STATES[light.name] = light.state;
   });
 }
-initDefaultLights();
 
-module.exports = {
-  getLights,
-  setLightsColor,
-  setFairyLights,
-  resetLights,
-};
+initDefaultLights();

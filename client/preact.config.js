@@ -1,4 +1,4 @@
-module.exports = function (config) {
+export default function (config) {
   if (process.env.NODE_ENV === "development" && config.devServer) {
     config.devServer.proxy = [
       {
@@ -15,4 +15,4 @@ module.exports = function (config) {
   config.performance = {
     hints: false,
   };
-};
+}

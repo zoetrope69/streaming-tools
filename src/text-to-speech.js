@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
 // keys must be lowercase
 const CUSTOM_WORD_MAP = {
@@ -82,4 +82,4 @@ async function getAudioURLs(text) {
   });
 }
 
-module.exports = getAudioURLs;
+export default getAudioURLs;

@@ -1,9 +1,8 @@
-const Logger = require("../helpers/logger");
+import eventSubExpress from "./twitch-eventsub-express.js";
+
+import replaceTextWithEmotes from "./helpers/replace-text-with-emotes.js";
+import Logger from "../helpers/logger.js";
 const logger = new Logger("🌯 Twitch EventSub");
-
-const eventSubExpress = require("./twitch-eventsub-express");
-
-const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
 
 // https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types
 async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
@@ -133,4 +132,4 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   return eventEmitter;
 }
 
-module.exports = TwitchEventSub;
+export default TwitchEventSub;

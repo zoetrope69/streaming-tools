@@ -1,6 +1,9 @@
-const obs = require("./index");
+import obs from "./index.js";
 
-function createSourceVisibilityTriggers({ commands, redemptions }) {
+export function createSourceVisibilityTriggers({
+  commands,
+  redemptions,
+}) {
   obs.sourceVisibilityTriggers({
     "Joycon: A": async () => {
       return obs.toggleFilter({
@@ -55,7 +58,7 @@ function createSourceVisibilityTriggers({ commands, redemptions }) {
   });
 }
 
-function createFilterVisibilityTriggers() {
+export function createFilterVisibilityTriggers() {
   obs.filterVisibilityTriggers({
     "Main Microphone": {
       "Mic: Deep Voice": async ({ isVisible }) => {
@@ -82,8 +85,3 @@ function createFilterVisibilityTriggers() {
     },
   });
 }
-
-module.exports = {
-  createFilterVisibilityTriggers,
-  createSourceVisibilityTriggers,
-};

@@ -1,9 +1,9 @@
-const { EventEmitter } = require("events");
-const tmi = require("tmi.js");
+import { EventEmitter } from "events";
+import tmi from "tmi.js";
 
-const replaceTextWithEmotes = require("./helpers/replace-text-with-emotes");
+import replaceTextWithEmotes from "./helpers/replace-text-with-emotes.js";
 
-const Logger = require("../helpers/logger");
+import Logger from "../helpers/logger.js";
 const logger = new Logger("🤖 Twitch Bot");
 
 const {
@@ -170,4 +170,4 @@ async function TwitchBot({ eventEmitter }) {
   };
 }
 
-module.exports = TwitchBot;
+export default TwitchBot;

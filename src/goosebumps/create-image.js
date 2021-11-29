@@ -1,6 +1,12 @@
-const path = require("path");
-const fetch = require("node-fetch");
-const jimp = require("jimp");
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+import fetch from "node-fetch";
+import jimp from "jimp";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const { FONT_SANS_16_BLACK, FONT_SANS_16_WHITE } = jimp;
 
 const WIDTH = 339;
@@ -92,7 +98,9 @@ async function createImage(keyword, text) {
   const defaultImage = await getImageFromURL(defaultImageURL);
   const loadedImage = await getImageFromURL(loadedImageURL);
   const goosebumpsImage = await jimp.read(
-    path.join(__dirname, "/assets/", coverImagePath)
+    fs.readFileSync(
+      new URL(path.join("./assets/", coverImagePath), import.meta.url)
+    )
   );
   const font = await jimp.loadFont(fontPath);
 
@@ -148,4 +156,4 @@ async function createImage(keyword, text) {
   );
 }
 
-module.exports = createImage;
+export default createImage;

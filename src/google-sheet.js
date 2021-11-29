@@ -1,9 +1,13 @@
-const cache = require("memory-cache");
-const { GoogleSpreadsheet } = require("google-spreadsheet");
+import cache from "memory-cache";
+import { GoogleSpreadsheet } from "google-spreadsheet";
 
-const googleCredentials = require("../google-credentials.json");
-const Logger = require("./helpers/logger");
+import Logger from "./helpers/logger.js";
+import importJSON from "./helpers/import-json.js";
 const logger = new Logger("🐑 Google Sheet");
+
+const googleCredentials = await importJSON(
+  new URL("../google-credentials.json", import.meta.url)
+);
 
 const SPREADSHEET_ID = "1p1xXy096Y_0STY_qJGpBlUsgB2o1zfSrJj13GUGhooA";
 const CACHE_KEY = "COMMANDS";
@@ -48,7 +52,7 @@ async function getCommands() {
     });
 }
 
-async function getCachedCommands() {
+export async function getCachedCommands() {
   if (!hasCredentials()) {
     logger.error("No environment variables");
     return [];
@@ -67,7 +71,7 @@ async function getCachedCommands() {
   return commands;
 }
 
-async function getScheduledCommands() {
+export async function getScheduledCommands() {
   try {
     const commands = await getCachedCommands();
     const scheduledCommands = commands.filter(
@@ -80,8 +84,3 @@ async function getScheduledCommands() {
     logger.error(e.message || e);
   }
 }
-
-module.exports = {
-  getCommands: getCachedCommands,
-  getScheduledCommands,
-};

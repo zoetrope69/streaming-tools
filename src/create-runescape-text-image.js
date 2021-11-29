@@ -1,6 +1,6 @@
-const path = require("path");
-const fs = require("fs");
-const getRuneScapeTextImage = require("runescape-text");
+import fs from "fs";
+
+import getRuneScapeTextImage from "runescape-text";
 
 function truncate(text, amount = 100) {
   if (!text || text.length === 0) {
@@ -14,13 +14,12 @@ function truncate(text, amount = 100) {
   return `${text.substring(0, amount)}...`;
 }
 
-const FILE_PATH_BASE =
-  "/../client/build/assets/alerts/runescape-text";
+const FILE_PATH_BASE = "../client/build/assets/alerts/runescape-text";
 
 function deleteFileIfExists(filePath) {
-  const exists = fs.existsSync(filePath);
+  const exists = fs.existsSync(new URL(filePath, import.meta.url));
   if (exists) {
-    fs.unlinkSync(filePath);
+    fs.unlinkSync(new URL(filePath, import.meta.url));
   }
 }
 
@@ -81,16 +80,16 @@ async function createRunescapeTextImage(message) {
   const { extension, buffer } = runescapeTextResult;
 
   // delete old files if they exist
-  deleteFileIfExists(path.join(__dirname, `${FILE_PATH_BASE}.gif`));
-  deleteFileIfExists(path.join(__dirname, `${FILE_PATH_BASE}.png`));
+  deleteFileIfExists(`${FILE_PATH_BASE}.gif`);
+  deleteFileIfExists(`${FILE_PATH_BASE}.png`);
 
   // save new file
   fs.writeFileSync(
-    path.join(__dirname, `${FILE_PATH_BASE}.${extension}`),
+    new URL(`${FILE_PATH_BASE}.${extension}`, import.meta.url),
     await buffer
   );
 
   return { messageWithoutOptions };
 }
 
-module.exports = createRunescapeTextImage;
+export default createRunescapeTextImage;

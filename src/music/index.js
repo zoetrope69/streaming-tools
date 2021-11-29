@@ -1,1 +1,3 @@
-module.exports = require("./music");
+import Music from "./music.js";
+
+export default Music;

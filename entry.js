@@ -1,10 +1,12 @@
 // get process.env from .env
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const ngrok = require("ngrok");
-const nodemon = require("nodemon");
+import ngrok from "ngrok";
+import nodemon from "nodemon";
 
-const Logger = require("./src/helpers/logger");
+import Logger from "./src/helpers/logger.js";
+
 const ngrokLogger = new Logger("👽 ngrok");
 const nodemonLogger = new Logger("😈 Nodemon");
 
@@ -68,11 +70,8 @@ async function main() {
   });
 
   nodemonProcess.on("quit", async () => {
-    nodemonLogger.debug(
-      "The application has quit, closing ngrok tunnel"
-    );
     await ngrok.kill();
-    process.exit(0);
+    throw new Error("The application has quit, closing ngrok tunnel");
   });
 }
 

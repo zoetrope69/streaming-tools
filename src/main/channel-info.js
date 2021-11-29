@@ -13,4 +13,4 @@ class ChannelInfo {
   }
 }
 
-module.exports = ChannelInfo;
+export default ChannelInfo;

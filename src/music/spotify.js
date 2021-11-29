@@ -1,7 +1,7 @@
-const fetch = require("node-fetch");
-const { stringify: queryStringStringify } = require("qs");
+import fetch from "node-fetch";
+import { stringify as queryStringStringify } from "qs";
 
-const { getAccessToken } = require("../helpers/oauth");
+import getAccessToken from "../helpers/oauth.js";
 
 const BASE_URL = "https://api.spotify.com/v1";
 
@@ -112,11 +112,11 @@ function elapsedTime(timer) {
   return process.hrtime(timer)[1] / 1000000;
 }
 
-async function playTrack() {
+export async function playTrack() {
   return await callEndpoint("/me/player/play", {}, { method: "PUT" });
 }
 
-async function pauseTrack() {
+export async function pauseTrack() {
   return await callEndpoint(
     "/me/player/pause",
     {},
@@ -124,7 +124,7 @@ async function pauseTrack() {
   );
 }
 
-async function skipTrack() {
+export async function skipTrack() {
   return await callEndpoint(
     "/me/player/next",
     {},
@@ -132,7 +132,7 @@ async function skipTrack() {
   );
 }
 
-async function getRecentTrack() {
+export async function getRecentSpotifyTrack() {
   const timer = startTimer();
 
   const track = await getCurrentTrack();
@@ -161,10 +161,3 @@ async function getRecentTrack() {
     beatsDelay,
   };
 }
-
-module.exports = {
-  playTrack,
-  pauseTrack,
-  skipTrack,
-  getRecentTrack,
-};

@@ -2,6 +2,9 @@
   "private": true,
   "name": "streaming-tools-client",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "build": "preact build --no-prerender --no-sw --no-esm --no-json --no-inline-css",
     "dev": "preact watch --no-prerender --no-sw --no-esm --no-json "

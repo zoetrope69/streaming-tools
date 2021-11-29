@@ -1,5 +1,5 @@
-const fetch = require("node-fetch");
-const cache = require("memory-cache");
+import fetch from "node-fetch";
+import cache from "memory-cache";
 
 const { TWITCH_BROADCASTER_ID } = process.env;
 
@@ -132,4 +132,4 @@ async function replaceTextWithEmotes({
   };
 }
 
-module.exports = replaceTextWithEmotes;
+export default replaceTextWithEmotes;

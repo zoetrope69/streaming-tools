@@ -24,8 +24,17 @@ const Alert = ({ alert, currentFaceDetection }) => {
 
     let audioTimeout;
     if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.preload = true;
+
       audioTimeout = setTimeout(() => {
-        const audio = new Audio(audioUrl);
+        audio.addEventListener(
+          "canplaythrough",
+          () => {
+            audio.play();
+          },
+          false
+        );
         audio.play();
       }, delayAudio || 0);
     }

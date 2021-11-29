@@ -8,15 +8,18 @@ function addToUserWhoHaveTalked(username) {
   USERS_WHO_HAVE_TALKED.push(username.toLowerCase());
 }
 
-function firstTimeTalking(username, callback) {
-  if (hasUserTalked(username)) {
+export function firstTimeTalking(user, usernameToMatch, callback) {
+  if (
+    !user?.username ||
+    user.username.toLowerCase() !== usernameToMatch.toLowerCase()
+  ) {
     return;
   }
 
-  addToUserWhoHaveTalked(username);
+  if (hasUserTalked(usernameToMatch)) {
+    return;
+  }
+
+  addToUserWhoHaveTalked(usernameToMatch);
   callback();
 }
-
-module.exports = {
-  firstTimeTalking,
-};

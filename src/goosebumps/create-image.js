@@ -3,6 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 
 import fetch from "node-fetch";
+import arrayBufferToBuffer from "arraybuffer-to-buffer";
 import jimp from "jimp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,8 +28,8 @@ async function getFlickrImageURLByKeyword(keyword) {
 
 async function getImageBuffer(imageURL) {
   const response = await fetch(imageURL);
-  const buffer = await response.buffer();
-  return buffer;
+  const arrayBuffer = await response.arrayBuffer();
+  return arrayBufferToBuffer(arrayBuffer);
 }
 
 async function getImageFromURL(url) {

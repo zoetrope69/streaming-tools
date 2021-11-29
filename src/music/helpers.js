@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import getColors from "get-image-colors";
 import chroma from "chroma-js";
+import arrayBufferToBuffer from "arraybuffer-to-buffer";
 import imageType from "image-type";
 import cache from "memory-cache";
 
@@ -12,9 +13,9 @@ async function getAlbumArtColors(albumArtURL) {
   }
 
   const response = await fetch(albumArtURL);
-  const imageBuffer = await response.buffer();
+  const imageArrayBuffer = await response.arrayBuffer();
+  const imageBuffer = arrayBufferToBuffer(imageArrayBuffer);
   const { mime } = imageType(imageBuffer);
-
   const colors = await getColors(imageBuffer, mime);
 
   // sort by luminance, get contrast of top and bototm if they pass a value use them

@@ -6,6 +6,7 @@ import path from "path";
 import http from "http";
 
 import express from "express";
+import ExpressRateLimit from "express-rate-limit";
 import { Server } from "socket.io";
 
 import Music from "../music/index.js";
@@ -34,6 +35,15 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const alerts = new Alerts({ io });
+
+// set up rate limiter: maximum of five requests per minute
+const limiter = new ExpressRateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 50,
+});
+
+// apply rate limiter to all requests
+app.use(limiter);
 
 // serve client files
 app.use(express.static(CLIENT_FILE_PATH));

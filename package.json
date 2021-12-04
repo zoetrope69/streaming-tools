@@ -51,7 +51,7 @@
     "object-hash": "^2.0.3",
     "obs-websocket-js": "^4.0.2",
     "opencv4nodejs": "^5.6.0",
-    "prettier": "2.5.0",
+    "prettier": "2.5.1",
     "qs": "^6.9.4",
     "runescape-text": "^1.1.10",
     "socket.io": "^4.0.0",

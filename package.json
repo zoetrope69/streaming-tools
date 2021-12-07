@@ -51,7 +51,7 @@
     "obs-websocket-js": "4.0.2",
     "opencv4nodejs": "5.6.0",
     "prettier": "2.5.1",
-    "qs": "6.9.4",
+    "qs": "6.10.2",
     "runescape-text": "1.1.10",
     "socket.io": "4.1.2",
     "three": "0.135.0",

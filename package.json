@@ -22,7 +22,7 @@
   "dependencies": {
     "arraybuffer-to-buffer": "0.0.7",
     "chalk": "5.0.0",
-    "chroma-js": "2.1.0",
+    "chroma-js": "2.1.2",
     "color-name-list": "8.36.0",
     "dotenv": "10.0.0",
     "enquirer": "2.3.6",

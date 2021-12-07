@@ -49,7 +49,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     } = data;
 
     const message = user_input;
-    const { messageWithEmotes, messageWithNoEmotes } =
+    const { messageWithEmotes, messageWithNoEmotes, emoteImages } =
       await replaceTextWithEmotes({ text: message, twitchEmotes });
 
     const dataEmit = {
@@ -60,6 +60,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
         message,
         messageWithEmotes,
         messageWithNoEmotes,
+        emoteImages,
       },
       redeemedAt: redeemed_at,
       reward,

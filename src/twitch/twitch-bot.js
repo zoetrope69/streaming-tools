@@ -96,7 +96,7 @@ async function TwitchBot({ eventEmitter }) {
 
     const { command, commandArguments } = getCommand(message);
 
-    const { messageWithEmotes, messageWithNoEmotes } =
+    const { messageWithEmotes, messageWithNoEmotes, emoteImages } =
       await replaceTextWithEmotes({
         text: message,
         emoteDataFromTwitchBot: emotes,
@@ -115,6 +115,7 @@ async function TwitchBot({ eventEmitter }) {
         username,
         color,
       },
+      emoteImages,
     });
   });
 

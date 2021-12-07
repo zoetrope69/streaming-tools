@@ -110,6 +110,24 @@ function replaceEmotes(text, emotes, { removeEmotes = false } = {}) {
   return newTokens.join(" ").trim();
 }
 
+function getEmoteImages(text, emotes) {
+  if (!emotes || emotes.length === 0) {
+    return text;
+  }
+
+  const emoteImages = [];
+
+  const textTokens = text.split(" ");
+  textTokens.forEach((textToken) => {
+    const emote = emotes.find(({ code }) => code === textToken);
+    if (emote) {
+      emoteImages.push(emote.image);
+    }
+  });
+
+  return emoteImages;
+}
+
 async function replaceTextWithEmotes({
   text,
   twitchEmotes,
@@ -129,6 +147,7 @@ async function replaceTextWithEmotes({
     messageWithNoEmotes: replaceEmotes(text, emotes, {
       removeEmotes: true,
     }),
+    emoteImages: getEmoteImages(text, emotes),
   };
 }
 

@@ -1,8 +1,6 @@
 import crypto from "crypto";
 import { EventEmitter } from "events";
 
-import bodyParser from "body-parser";
-
 import Logger from "../helpers/logger.js";
 const logger = new Logger("🌯 Twitch EventSub");
 
@@ -11,33 +9,52 @@ const IGNORE_DUPLICATE_EVENTSUB_MESSAGES = true;
 const IGNORE_OLD_MESSAGES = true;
 const { TWITCH_EVENTSUB_SECRET } = process.env;
 
-function verifyEventSubSCallback(request, _response, buffer) {
+const TWITCH_MESSAGE_ID = "Twitch-Eventsub-Message-Id".toLowerCase();
+const TWITCH_MESSAGE_TIMESTAMP =
+  "Twitch-Eventsub-Message-Timestamp".toLowerCase();
+const TWITCH_MESSAGE_SIGNATURE =
+  "Twitch-Eventsub-Message-Signature".toLowerCase();
+const HMAC_PREFIX = "sha256=";
+
+function getHmacMessage(request) {
+  return (
+    request.headers[TWITCH_MESSAGE_ID] +
+    request.headers[TWITCH_MESSAGE_TIMESTAMP] +
+    JSON.stringify(request.body)
+  );
+}
+
+// Get the HMAC.
+function getHmac(secret, message) {
+  return crypto
+    .createHmac("sha256", secret)
+    .update(message)
+    .digest("hex");
+}
+
+// Verify whether your signature matches Twitch's signature.
+function verifyMessage(hmac, verifySignature) {
+  return crypto.timingSafeEqual(
+    Buffer.from(hmac),
+    Buffer.from(verifySignature)
+  );
+}
+
+function verifyEventSubSCallback(request, response, next) {
   logger.debug("Verifying webhook request");
-  request.isFromTwitch = false;
+
+  let message = getHmacMessage(request);
+  let hmac = HMAC_PREFIX + getHmac(TWITCH_EVENTSUB_SECRET, message);
 
   if (
-    request.headers &&
-    Object.prototype.hasOwnProperty.call(
-      request.headers,
-      "twitch-eventsub-message-signature"
-    )
+    true ===
+    verifyMessage(hmac, request.headers[TWITCH_MESSAGE_SIGNATURE])
   ) {
-    logger.debug(
-      "Request contains message signature, calculating verification signature"
-    );
+    // Handle notification.
     request.isFromTwitch = true;
-
-    const id = request.headers["twitch-eventsub-message-id"];
-    const timestamp =
-      request.headers["twitch-eventsub-message-timestamp"];
-    const signature =
-      request.headers["twitch-eventsub-message-signature"].split("=");
-
-    request.calculatedSignature = crypto
-      .createHmac(signature[0], TWITCH_EVENTSUB_SECRET)
-      .update(id + timestamp + buffer)
-      .digest("hex");
-    request.twitchSignature = signature[1];
+    next();
+  } else {
+    response.sendStatus(403);
   }
 }
 
@@ -46,9 +63,7 @@ function eventSubExpress(app) {
 
   app.post(
     "/eventSubCallback",
-    bodyParser.json({
-      verify: verifyEventSubSCallback,
-    }),
+    verifyEventSubSCallback,
     (request, response) => {
       if (!request.isFromTwitch) {
         logger.error(

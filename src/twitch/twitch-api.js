@@ -524,9 +524,20 @@ const REDEMPTIONS = [
     prompt: "lets pop bubbles together",
     cost: 80,
     background_color: "#131E5B",
-    is_global_cooldown_enabled: true,
     should_redemptions_skip_request_queue: false,
+    is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 1, // 1 minutes
+  },
+  {
+    ...DEFAULT_REDEMPTION,
+    id: "f0ed621b-c66a-482b-9a5d-3af0aa9be656",
+    title: "TTP (text-to-print)",
+    prompt: "send something to the printer ennet",
+    cost: 100,
+    background_color: "#FFFFFF",
+    is_global_cooldown_enabled: true,
+    global_cooldown_seconds: 60 * 1, // 1 minutes
+    is_user_input_required: true,
   },
 ].map((redemption) => {
   // in development mode remove all cooldowns

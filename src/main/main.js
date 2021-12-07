@@ -20,6 +20,7 @@ import {
 import ChannelInfo from "./channel-info.js";
 import Alerts from "./alerts.js";
 import Redemptions from "./redemptions.js";
+import RaspberryPi from "./raspberry-pi.js";
 import Commands from "./commands.js";
 import { firstTimeTalking } from "./users-who-have-talked.js";
 
@@ -41,6 +42,9 @@ const limiter = new ExpressRateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 50,
 });
+
+// allow json
+app.use(express.json());
 
 // apply rate limiter to all requests
 app.use(limiter);
@@ -136,6 +140,7 @@ async function handleChannelPointRedemptions({
   streamingService,
   redemptions,
   music,
+  raspberryPi,
 }) {
   let wasSpotifyPlayingMusic = false;
 
@@ -310,6 +315,13 @@ async function handleChannelPointRedemptions({
       if (title === "bubblewrap time") {
         await redemptions.bubblewrapTime.stop();
       }
+
+      if (title === "TTP (text-to-print)") {
+        await redemptions.textToPrint({
+          raspberryPi,
+          messageWithNoEmotes,
+        });
+      }
     }
   );
 }
@@ -338,6 +350,7 @@ async function handleChatMessages({
     // this is a promise but don't wait for it
     redemptions.bubblewrapTime.popBubbles();
 
+    // TODO: is this working?
     await commands.handleGoogleSheetCommands({ command });
 
     if (command === "song" || command === "music") {
@@ -487,6 +500,11 @@ async function setTwitchTags({ streamingService }) {
 
 async function main() {
   try {
+    server.listen(PORT, () => {
+      logger.info(`Listening on http://localhost:${PORT}`);
+    });
+
+    const raspberryPi = new RaspberryPi({ app });
     const music = Music();
     music.on("track", (track) => {
       io.emit("data", { track });
@@ -504,6 +522,7 @@ async function main() {
       music,
       channelInfo,
     });
+
     // initialise various things
     await obs.initialise();
     createSourceVisibilityTriggers({ commands, redemptions });
@@ -540,20 +559,18 @@ async function main() {
       streamingService,
       redemptions,
       music,
+      raspberryPi,
     });
     handleChatMessages({
       streamingService,
       commands,
       redemptions,
+      raspberryPi,
     });
     handleClientConnections({
       music,
       redemptions,
       commands,
-    });
-
-    server.listen(PORT, () => {
-      logger.info(`Listening on http://localhost:${PORT}`);
     });
   } catch (e) {
     logger.error(e);

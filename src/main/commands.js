@@ -1,6 +1,9 @@
 import obs from "../obs/index.js";
 import textToSpeech from "../text-to-speech.js";
-import * as googleSheet from "../google-sheet.js";
+import {
+  getCachedCommands as getCommands,
+  getScheduledCommands,
+} from "../google-sheet.js";
 
 import sendFaceDataToClient from "./send-face-data-to-client.js";
 import saveScreenshotToBrbScreen from "./save-screenshot-to-brb-screen.js";
@@ -27,25 +30,20 @@ class Commands {
   }
 
   async handleRecurringGoogleSheetCommands({ streamingService }) {
-    try {
-      this.googleSheetCommands = await googleSheet.getCommands();
-      const scheduledCommands =
-        await googleSheet.getScheduledCommands();
-      scheduledCommands.forEach((scheduledCommand) => {
-        logger.info(
-          `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
-        );
-        schedule(scheduledCommand.schedule, () => {
-          streamingService.chat.sendMessage(scheduledCommand.value);
-        });
+    this.googleSheetCommands = await getCommands();
+    const scheduledCommands = await getScheduledCommands();
+    scheduledCommands.forEach((scheduledCommand) => {
+      logger.info(
+        `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
+      );
+      schedule(scheduledCommand.schedule, () => {
+        streamingService.chat.sendMessage(scheduledCommand.value);
       });
-    } catch (e) {
-      logger.info("Couldn't run scheduled commands");
-    }
+    });
   }
 
   async updateGoogleSheetCommands() {
-    this.googleSheetCommands = await googleSheet.getCachedCommands();
+    this.googleSheetCommands = await getCommands();
   }
 
   async handleGoogleSheetCommands({ command }) {

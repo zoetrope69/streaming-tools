@@ -350,7 +350,6 @@ async function handleChatMessages({
     // this is a promise but don't wait for it
     redemptions.bubblewrapTime.popBubbles();
 
-    // TODO: is this working?
     await commands.handleGoogleSheetCommands({ command });
 
     if (command === "song" || command === "music") {

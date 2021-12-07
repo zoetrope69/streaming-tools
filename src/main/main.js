@@ -357,12 +357,14 @@ async function handleChatMessages({
       await commands.song();
     }
 
-    [
-      { username: "EggEllie", callback: redemptions.nortyDevil },
-      { username: "Broomyjag", callback: redemptions.nortyDevil },
-      { username: "Bexchat", callback: commands.bex },
-      { username: "BLGSTEVE", callback: commands.octopussy },
-    ].forEach(({ username, callback }) => {
+    const firstTimeTalkingCallbacks = {
+      EggEllie: () => redemptions.nortyDevil(),
+      Broomyjag: () => redemptions.nortyDevil(),
+      Bexchat: () => commands.bex(),
+      BLGSTEVE: () => commands.octopussy(),
+    };
+    Object.keys(firstTimeTalkingCallbacks).forEach((username) => {
+      const callback = firstTimeTalkingCallbacks[username];
       firstTimeTalking(user, username, callback);
     });
 

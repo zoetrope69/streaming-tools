@@ -294,14 +294,13 @@ class Redemptions {
     };
   }
 
-  nortyDevil() {
-    const that = this;
+  async nortyDevil() {
     return new Promise((resolve) => {
       logger.log("👿 Norty Devil triggered...");
       const timeout = 20 * 1000;
       obs.turnOnOverlay("Stop Look At My Giant Ass", timeout);
       setTimeout(() => {
-        that.streamingService.chat.sendMessage(
+        this.streamingService.chat.sendMessage(
           `shout-out to twitch.tv/EggEllie the creator of the norty devils and twitch.tv/Broomyjag for the voice of the devil`
         );
         resolve();

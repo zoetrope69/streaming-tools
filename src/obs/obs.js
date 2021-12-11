@@ -123,6 +123,24 @@ export async function getWebcamImage(sourceName) {
   return webcamScreenshot?.img;
 }
 
+export async function getCurrentScene() {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
+  return request("GetCurrentScene");
+}
+
+export async function getAllScenes() {
+  if (!OBS_INITIALISED) {
+    throw new Error("OBS isn't ready");
+  }
+
+  const { scenes } = await request("GetSceneList");
+
+  return scenes;
+}
+
 export async function switchToScene(sceneName) {
   return request("SetCurrentScene", {
     "scene-name": sceneName,
@@ -260,7 +278,7 @@ export async function turnOnOverlay(source, timeout) {
 }
 
 export async function handleSceneChange(callback) {
-  const currentScene = await request("GetCurrentScene");
+  const currentScene = await getCurrentScene();
   callback(currentScene.name);
 
   // get current scene

@@ -1,54 +1,13 @@
 import obs from "./index.js";
+import createDanceSourceVisibilityTriggers from "./dance-triggers.js";
 
 export function createSourceVisibilityTriggers({
   commands,
   redemptions,
 }) {
+  createDanceSourceVisibilityTriggers();
+
   obs.sourceVisibilityTriggers({
-    "Joycon: A": async () => {
-      return obs.toggleFilter({
-        source: "Raw Webcam",
-        filter: "Webcam: Recursion Effect",
-      });
-    },
-    "Joycon: B": async () => {
-      return obs.toggleFilter({
-        source: "Raw Webcam",
-        filter: "Webcam: Time Warp Scan",
-      });
-    },
-    "Joycon: Y": async () => {
-      return obs.toggleFilter({
-        source: "Raw Webcam",
-        filter: "Webcam: Trail",
-      });
-    },
-    "Joycon: X": async () => {
-      obs.toggleFilter({
-        source: "Raw Webcam",
-        filter: "Webcam: Fill Colour",
-      });
-      return obs.toggleFilter({
-        source: "Raw Webcam",
-        filter: "Webcam: Rainbow",
-      });
-    },
-    "Joycon: R": async () => {},
-    "Joycon: RZ": async () => {},
-    "Joycon: Right Analog In": async () => {
-      const DANCE_SCENES = [
-        "Dance",
-        "Dance Multiple",
-        "Dance everywhere",
-        "Dance Mouth",
-        "Dance Greggs",
-      ];
-
-      const randomDanceScene =
-        DANCE_SCENES[Math.floor(Math.random() * DANCE_SCENES.length)];
-
-      await obs.switchToScene(randomDanceScene);
-    },
     "Scene change: BRB": async () => {
       await commands.switchToBRBScene();
     },

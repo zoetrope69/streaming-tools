@@ -229,13 +229,13 @@ async function handleChannelPointRedemptions({
 
   streamingService.on(
     "channelPointRewardFulfilled",
-    async ({ reward, user }) => {
+    async ({ reward, user, message, messageWithNoEmotes }) => {
       if (!isValidReward(reward)) {
         return;
       }
 
       const { title } = reward;
-      const { message, messageWithNoEmotes, username } = user;
+      const { username } = user;
 
       if (title === "dance with zac") {
         await redemptions.danceWithMe({ username });

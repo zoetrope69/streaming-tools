@@ -57,11 +57,11 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
       user: {
         id: user_id,
         username: user_name,
-        message,
-        messageWithEmotes,
-        messageWithNoEmotes,
-        emoteImages,
       },
+      message,
+      messageWithEmotes,
+      messageWithNoEmotes,
+      emoteImages,
       redeemedAt: redeemed_at,
       reward,
     };

@@ -356,7 +356,6 @@ const REDEMPTIONS = [
     prompt: "pop-up on the stream as a little blob bopping",
     cost: 5,
     background_color: "#002224",
-    is_user_input_required: true,
   },
   {
     ...DEFAULT_REDEMPTION,
@@ -366,6 +365,7 @@ const REDEMPTIONS = [
       "you can suggest something, but i have the executive decision",
     cost: 5,
     background_color: "#C2F9FD",
+    is_user_input_required: true,
   },
   {
     ...DEFAULT_REDEMPTION,

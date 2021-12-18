@@ -452,8 +452,6 @@ const REDEMPTIONS = [
     background_color: "#00C7AC",
     should_redemptions_skip_request_queue: false,
     is_user_input_required: true,
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 4, // 4 minutes
   },
   {
     ...DEFAULT_REDEMPTION,

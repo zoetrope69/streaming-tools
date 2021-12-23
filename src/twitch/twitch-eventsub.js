@@ -79,7 +79,7 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
     }
   };
 
-  await Promise.all([
+  Promise.allSettled([
     // subbies
     await subscribeToTopic("channel.subscribe", (data) => {
       const { user_id, user_name, is_gift } = data;

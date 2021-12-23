@@ -71,11 +71,11 @@ class RaspberryPi {
     return this.printImage(base64Text);
   }
 
-  async printText(text) {
+  async printText(text, options = {}) {
     return this.print("text", {
       text,
       isFlipped: FLIPPED,
-      isBig: true,
+      ...options,
     });
   }
 }

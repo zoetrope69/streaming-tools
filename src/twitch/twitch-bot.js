@@ -86,8 +86,9 @@ async function TwitchBot({ eventEmitter }) {
   });
 
   botClient.on("message", async (_channel, data, message, self) => {
-    const { badges, emotes, mod: isMod, color } = data;
+    const { id, badges, emotes, mod: isMod, color } = data;
     const username = data["display-name"];
+    const redemptionId = data["custom-reward-id"];
     const isBroadcaster =
       username === TWITCH_BROADCASTER_NAME ||
       badges?.broadcaster === 1;
@@ -103,6 +104,8 @@ async function TwitchBot({ eventEmitter }) {
       });
 
     chatEventEmitter.emit("message", {
+      id,
+      redemptionId,
       isBot: self,
       isMod,
       isBroadcaster,
@@ -154,21 +157,26 @@ async function TwitchBot({ eventEmitter }) {
 
   await waitForTwitchBotToBeReady(botClient);
 
-  return {
-    chat: Object.assign(chatEventEmitter, {
-      sendMessage: (message) => {
-        return botClient.say(TWITCH_BROADCASTER_NAME, message);
-      },
-      timeout: ({ username, lengthSeconds, reason }) => {
-        return botClient.timeout(
-          TWITCH_BROADCASTER_NAME,
-          username,
-          lengthSeconds,
-          reason
-        );
-      },
-    }),
-  };
+  return Object.assign(chatEventEmitter, {
+    sendMessage: async (message) => {
+      return botClient.say(TWITCH_BROADCASTER_NAME, message);
+    },
+    deleteMessage: async (id) => {
+      try {
+        await botClient.deletemessage(TWITCH_BROADCASTER_NAME, id);
+      } catch (error) {
+        logger.error(error);
+      }
+    },
+    timeout: ({ username, lengthSeconds, reason }) => {
+      return botClient.timeout(
+        TWITCH_BROADCASTER_NAME,
+        username,
+        lengthSeconds,
+        reason
+      );
+    },
+  });
 }
 
 export default TwitchBot;

@@ -348,7 +348,7 @@ const DEFAULT_REDEMPTION = {
   should_redemptions_skip_request_queue: true,
 };
 
-const REDEMPTIONS = [
+export const REDEMPTIONS = [
   {
     ...DEFAULT_REDEMPTION,
     id: "1970bc27-8ffa-4cfd-ade3-ded68bb893c7",
@@ -533,6 +533,7 @@ const REDEMPTIONS = [
     prompt: "send something to the printer ennet",
     cost: 100,
     background_color: "#FFFFFF",
+    should_redemptions_skip_request_queue: false,
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 1, // 1 minutes
     is_user_input_required: true,

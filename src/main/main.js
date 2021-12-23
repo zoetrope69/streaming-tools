@@ -155,11 +155,12 @@ async function handleChannelPointRedemptions({
   streamingService.on(
     "channelPointRewardUnfulfilled",
     async (data) => {
-      if (!isValidReward(data.reward)) {
+      const { reward, messageWithNoEmotes } = data;
+      if (!isValidReward(reward)) {
         return;
       }
 
-      const { title } = data.reward;
+      const { title } = reward;
 
       if (title === "bubblewrap time") {
         await redemptions.bubblewrapTime.start({
@@ -193,6 +194,14 @@ async function handleChannelPointRedemptions({
           redemption: data,
         });
       }
+
+      if (title === "TTP (text-to-print)") {
+        await redemptions.textToPrint.start({
+          raspberryPi,
+          messageWithNoEmotes,
+          redemption: data,
+        });
+      }
     }
   );
 
@@ -223,6 +232,10 @@ async function handleChannelPointRedemptions({
 
       if (title === "BroomyJagRace") {
         await redemptions.broomyJagRace.stop();
+      }
+
+      if (title === "TTP (text-to-print)") {
+        await redemptions.textToPrint.stop();
       }
     }
   );
@@ -317,13 +330,35 @@ async function handleChannelPointRedemptions({
       }
 
       if (title === "TTP (text-to-print)") {
-        await redemptions.textToPrint({
-          raspberryPi,
-          messageWithNoEmotes,
-        });
+        await redemptions.textToPrint.stop();
       }
     }
   );
+}
+
+function isRedemptionByIdTitle({ redemptions, id, title }) {
+  return redemptions.find((redemption) => {
+    const isCorrectId = (redemption.id = id);
+    const isCorrectTitle = redemption.title === title;
+    return isCorrectId && isCorrectTitle;
+  });
+}
+
+async function handleChannelPointRedemptionChatMessage({
+  streamingService,
+}) {
+  streamingService.chat.on("message", ({ id, redemptionId }) => {
+    if (
+      isRedemptionByIdTitle({
+        redemptions: streamingService.REDEMPTIONS,
+        id: redemptionId,
+        title: "TTP (text-to-print)",
+      })
+    ) {
+      streamingService.chat.deleteMessage(id);
+      return;
+    }
+  });
 }
 
 async function handleChatMessages({
@@ -562,6 +597,7 @@ async function main() {
       music,
       raspberryPi,
     });
+    handleChannelPointRedemptionChatMessage({ streamingService });
     handleChatMessages({
       streamingService,
       commands,

@@ -526,8 +526,43 @@ class Redemptions {
     };
   }
 
-  async textToPrint({ raspberryPi, messageWithNoEmotes }) {
-    return raspberryPi.printText(messageWithNoEmotes);
+  get textToPrint() {
+    return {
+      start: async ({
+        raspberryPi,
+        messageWithNoEmotes,
+        redemption,
+      }) => {
+        await obs.showSource({
+          scene: "Overlays",
+          source: "Printer Cam",
+        });
+
+        await raspberryPi.printText(messageWithNoEmotes, {
+          isBig: true,
+        });
+
+        setTimeout(async () => {
+          await obs.hideSource({
+            scene: "Overlays",
+            source: "Printer Cam",
+          });
+
+          try {
+            // try and fulfill
+            this.streamingService.updateRedemptionReward(redemption);
+          } catch (e) {
+            // do nuthin
+          }
+        }, 60 * 1000); // 1 minute later hide
+      },
+      stop: async () => {
+        await obs.hideSource({
+          scene: "Overlays",
+          source: "Printer Cam",
+        });
+      },
+    };
   }
 }
 

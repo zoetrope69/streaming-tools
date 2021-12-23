@@ -1,4 +1,7 @@
-import { setLightsColor, resetLights } from "./helpers/hue-bulbs.js";
+import {
+  setLightsColor,
+  resetLights,
+} from "../../../helpers/hue-bulbs.js";
 
 const PRIDE_FLAGS = [
   {

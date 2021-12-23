@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 
 import { colorNameToXY, hexToXY } from "./color-converting.js";
 
-import Logger from "../../helpers/logger.js";
+import Logger from "./logger.js";
 const logger = new Logger("💡 Hue Bulbs");
 
 const { HUE_BULB_USERNAME, HUE_BULB_HUB_IP_ADDRESS } = process.env;

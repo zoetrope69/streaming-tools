@@ -3,6 +3,7 @@ import { v4 as randomID } from "uuid";
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 
+// TODO move these to their corresponding redemptions/commands
 const ALERT_TYPES = {
   "shout-out": {
     duration: 10000,

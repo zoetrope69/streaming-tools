@@ -19,7 +19,7 @@ import {
 } from "../obs/helpers.js";
 import ChannelInfo from "./channel-info.js";
 import Alerts from "./alerts.js";
-import Redemptions from "./redemptions.js";
+import Redemptions from "./redemptions/index.js";
 import RaspberryPi from "./raspberry-pi.js";
 import Commands from "./commands.js";
 import { firstTimeTalking } from "./users-who-have-talked.js";
@@ -162,12 +162,6 @@ async function handleChannelPointRedemptions({
 
       const { title } = reward;
 
-      if (title === "bubblewrap time") {
-        await redemptions.bubblewrapTime.start({
-          redemption: data,
-        });
-      }
-
       if (title === "big drink") {
         wasSpotifyPlayingMusic = await music.isSpotifyPlaying();
         if (wasSpotifyPlayingMusic) await music.spotify.pauseTrack();
@@ -226,10 +220,6 @@ async function handleChannelPointRedemptions({
         await redemptions.brendanTakeover.stop();
       }
 
-      if (title === "bubblewrap time") {
-        await redemptions.bubblewrapTime.stop();
-      }
-
       if (title === "BroomyJagRace") {
         await redemptions.broomyJagRace.stop();
       }
@@ -264,10 +254,6 @@ async function handleChannelPointRedemptions({
           await music.spotify.playTrack();
           wasSpotifyPlayingMusic = false;
         }
-      }
-
-      if (title === "show your pride") {
-        await redemptions.showYourPride({ message, username });
       }
 
       if (title === "big data") {
@@ -317,48 +303,11 @@ async function handleChannelPointRedemptions({
         });
       }
 
-      if (title === "ewww this song is doo doo") {
-        const isSpotifyPlaying = await music.isSpotifyPlaying();
-        if (isSpotifyPlaying) {
-          await redemptions.thisSongIsDooDoo();
-          await music.spotify.skipTrack();
-        }
-      }
-
-      if (title === "bubblewrap time") {
-        await redemptions.bubblewrapTime.stop();
-      }
-
       if (title === "TTP (text-to-print)") {
         await redemptions.textToPrint.stop();
       }
     }
   );
-}
-
-function isRedemptionByIdTitle({ redemptions, id, title }) {
-  return redemptions.find((redemption) => {
-    const isCorrectId = (redemption.id = id);
-    const isCorrectTitle = redemption.title === title;
-    return isCorrectId && isCorrectTitle;
-  });
-}
-
-async function handleChannelPointRedemptionChatMessage({
-  streamingService,
-}) {
-  streamingService.chat.on("message", ({ id, redemptionId }) => {
-    if (
-      isRedemptionByIdTitle({
-        redemptions: streamingService.REDEMPTIONS,
-        id: redemptionId,
-        title: "TTP (text-to-print)",
-      })
-    ) {
-      streamingService.chat.deleteMessage(id);
-      return;
-    }
-  });
 }
 
 async function handleChatMessages({
@@ -479,7 +428,7 @@ async function handleClientConnections({
       track: currentTrack,
       popUpMessage: commands.popUpMessage,
       goosebumpsBookTitle: redemptions.goosebumpBook,
-      prideFlagName: redemptions.prideFlagName,
+      prideFlagName: redemptions.showYourPride.prideFlagName,
       dancers: redemptions.dancers,
     });
 
@@ -540,6 +489,9 @@ async function main() {
       logger.info(`Listening on http://localhost:${PORT}`);
     });
 
+    // initialise various things
+    await obs.initialise();
+
     const raspberryPi = new RaspberryPi({ app });
     const music = Music();
     music.on("track", (track) => {
@@ -551,42 +503,23 @@ async function main() {
     });
     setTwitchTags({ streamingService });
     const channelInfo = new ChannelInfo();
-    const redemptions = new Redemptions({ io, streamingService });
+    const redemptions = new Redemptions({
+      io,
+      streamingService,
+      raspberryPi,
+      alerts,
+      music,
+    });
     const commands = new Commands({
       io,
       streamingService,
       music,
       channelInfo,
+      alerts,
     });
 
-    // initialise various things
-    await obs.initialise();
     createSourceVisibilityTriggers({ commands, redemptions });
     createFilterVisibilityTriggers();
-
-    const REDEMPTIONS_FOR_DANCING = [
-      "dance with zac",
-      "dance to a song",
-      "ewww this song is doo doo",
-    ];
-    const REDEMPTIONS_NOT_FOR_DANCING = [];
-    await obs.handleSceneChange((sceneName) => {
-      if (sceneName.includes("Dance")) {
-        REDEMPTIONS_FOR_DANCING.forEach((redemptionName) => {
-          streamingService.enableRedemption(redemptionName);
-        });
-        REDEMPTIONS_NOT_FOR_DANCING.forEach((redemptionName) => {
-          streamingService.disableRedemption(redemptionName);
-        });
-        return;
-      }
-      REDEMPTIONS_FOR_DANCING.forEach((redemptionName) => {
-        streamingService.disableRedemption(redemptionName);
-      });
-      REDEMPTIONS_NOT_FOR_DANCING.forEach((redemptionName) => {
-        streamingService.enableRedemption(redemptionName);
-      });
-    });
     handleChannelInfo({ channelInfo, streamingService });
     handleSubscription({ streamingService });
     handleBits({ streamingService });
@@ -597,7 +530,6 @@ async function main() {
       music,
       raspberryPi,
     });
-    handleChannelPointRedemptionChatMessage({ streamingService });
     handleChatMessages({
       streamingService,
       commands,

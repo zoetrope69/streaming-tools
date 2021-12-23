@@ -7,20 +7,19 @@ import {
 
 import sendFaceDataToClient from "./send-face-data-to-client.js";
 import saveScreenshotToBrbScreen from "./save-screenshot-to-brb-screen.js";
-import Alerts from "./alerts.js";
 
 import { schedule } from "../helpers/schedule.js";
 import Logger from "../helpers/logger.js";
 const logger = new Logger("🚀 Commands");
 
 class Commands {
-  constructor({ io, music, streamingService, channelInfo }) {
+  constructor({ io, music, streamingService, channelInfo, alerts }) {
     this.io = io;
     this.music = music;
     this.streamingService = streamingService;
     this.channelInfo = channelInfo;
+    this.alerts = alerts;
 
-    this.alerts = new Alerts({ io });
     this.googleSheetCommands = [];
 
     this.handleRecurringGoogleSheetCommands({ streamingService });

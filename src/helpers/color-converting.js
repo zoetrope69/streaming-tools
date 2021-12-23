@@ -7,10 +7,10 @@
   until importing JSON directly in ESM works we'll do
   this filth instead
   */
-import importJSON from "../../helpers/import-json.js";
+import importJSON from "./import-json.js";
 const namedColors = await importJSON(
   new URL(
-    "../../../node_modules/color-name-list/dist/colornames.json",
+    "../../node_modules/color-name-list/dist/colornames.json",
     import.meta.url
   )
 );

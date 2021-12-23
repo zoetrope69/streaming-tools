@@ -62,6 +62,10 @@ async function emitCurrentTrack(eventEmitter) {
   eventEmitter.emit("track", track);
 }
 
+async function clearCurrentTrack(eventEmitter) {
+  eventEmitter.emit("track", {});
+}
+
 async function isSpotifyPlaying() {
   const track = await getRecentSpotifyTrack();
   return track && track.isNowPlaying;
@@ -84,6 +88,7 @@ function Music() {
   }, 1000 * 3);
 
   return Object.assign(eventEmitter, {
+    clearCurrentTrack: () => clearCurrentTrack(eventEmitter),
     isSpotifyPlaying,
     spotify: {
       getRecentTrack: getRecentSpotifyTrack,

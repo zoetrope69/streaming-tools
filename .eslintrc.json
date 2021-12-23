@@ -17,5 +17,10 @@
   "rules": {
     "prettier/prettier": ["error"],
     "no-console": ["error"]
+  },
+  "settings": {
+    "jest": {
+      "version": "latest"
+    }
   }
 }

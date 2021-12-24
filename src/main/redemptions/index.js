@@ -108,76 +108,44 @@ const REDEMPTIONS = [
 
 class Redemptions {
   constructor({ io, streamingService, raspberryPi, alerts, music }) {
+    // TODO these might not be neccessary once refactored
     this.io = io;
     this.streamingService = streamingService;
     this.raspberryPi = raspberryPi;
     this.alerts = alerts;
+    this.music = music;
 
     this.goosebumpBook = null;
 
-    this.bubblewrapTime = new BubblewrapTimeRedemption({
-      io,
-      streamingService,
-    });
-    this.thisSongIsDooDoo = new ThisSongIsDooDooRedemption({
-      streamingService,
-      music,
-    });
-    this.showYourPride = new ShowYourPrideRedemption({
-      io,
-      streamingService,
-    });
-    this.snowball = new SnowballRedemption({
-      io,
-      streamingService,
-      alerts,
-    });
-    this.danceWithZac = new DanceWithZacRedemption({
-      io,
-      streamingService,
-    });
-    this.danceToASong = new DanceToASongRedemption({
-      io,
-      streamingService,
-    });
-    this.immaBee = new ImmaBeeRedemption({
-      io,
-      streamingService,
-      alerts,
-    });
-    this.bigDrink = new BigDrinkRedemption({
-      io,
-      streamingService,
-      music,
-    });
-    this.zacYouStink = new ZacYouStinkRedemption({
-      io,
-      streamingService,
-      alerts,
-    });
-    this.bigData = new BigDataRedemption({
-      streamingService,
-      alerts,
-    });
-    this.runescape = new RunescapeRedemption({
-      streamingService,
-      alerts,
+    const redemptions = {
+      bubblewrapTime: BubblewrapTimeRedemption,
+      thisSongIsDooDoo: ThisSongIsDooDooRedemption,
+      showYourPride: ShowYourPrideRedemption,
+      snowball: SnowballRedemption,
+      danceWithZac: DanceWithZacRedemption,
+      danceToASong: DanceToASongRedemption,
+      immaBee: ImmaBeeRedemption,
+      bigDrink: BigDrinkRedemption,
+      zacYouStink: ZacYouStinkRedemption,
+      bigData: BigDataRedemption,
+      runescape: RunescapeRedemption,
+    };
+
+    const allRedemptionsData = [...REDEMPTIONS];
+    Object.keys(redemptions).forEach((key) => {
+      const Redemption = redemptions[key];
+      const redemption = new Redemption({
+        io,
+        streamingService,
+        raspberryPi,
+        alerts,
+        music,
+      });
+      allRedemptionsData.push(redemption.data);
+      this[key] = redemption;
     });
 
-    this.redemptions = [
-      ...REDEMPTIONS,
-      this.bubblewrapTime.data,
-      this.thisSongIsDooDoo.data,
-      this.showYourPride.data,
-      this.snowball.data,
-      this.danceWithZac.data,
-      this.danceToASong.data,
-      this.immaBee.data,
-      this.bigDrink.data,
-      this.zacYouStink.data,
-      this.bigData.data,
-      this.runescape.data,
-    ].map((redemption) => {
+    this.redemptions = allRedemptionsData.map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
         redemption.is_global_cooldown_enabled = false;

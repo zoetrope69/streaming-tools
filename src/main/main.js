@@ -142,8 +142,6 @@ async function handleChannelPointRedemptions({
   music,
   raspberryPi,
 }) {
-  let wasSpotifyPlayingMusic = false;
-
   function isValidReward(reward) {
     if (!reward || !reward.title) {
       return false;
@@ -161,12 +159,6 @@ async function handleChannelPointRedemptions({
       }
 
       const { title } = reward;
-
-      if (title === "big drink") {
-        wasSpotifyPlayingMusic = await music.isSpotifyPlaying();
-        if (wasSpotifyPlayingMusic) await music.spotify.pauseTrack();
-        await redemptions.bigDrink.start();
-      }
 
       if (title === "brendan takeover") {
         await redemptions.brendanTakeover.start();
@@ -202,14 +194,6 @@ async function handleChannelPointRedemptions({
 
       const { title } = reward;
 
-      if (title === "big drink") {
-        await redemptions.bigDrink.stop();
-        if (wasSpotifyPlayingMusic) {
-          await music.spotify.playTrack();
-          wasSpotifyPlayingMusic = false;
-        }
-      }
-
       if (title === "brendan takeover") {
         await redemptions.brendanTakeover.stop();
       }
@@ -236,14 +220,6 @@ async function handleChannelPointRedemptions({
 
       if (title === "pog") {
         await redemptions.pog();
-      }
-
-      if (title === "big drink") {
-        await redemptions.bigDrink.stop();
-        if (wasSpotifyPlayingMusic) {
-          await music.spotify.playTrack();
-          wasSpotifyPlayingMusic = false;
-        }
       }
 
       if (title === "big data") {

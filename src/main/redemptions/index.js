@@ -15,6 +15,7 @@ import SnowballRedemption from "./snowball.js";
 import DanceWithZacRedemption from "./dance-with-zac.js";
 import DanceToASongRedemption from "./dance-to-a-song.js";
 import ImmaBeeRedemption from "./immabee/index.js";
+import BigDrinkRedemption from "./big-drink.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -45,16 +46,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "fc929918-95d5-4b79-9697-c4f6d8c36d13",
-    title: "big drink",
-    prompt: "it's time to hydrate",
-    cost: 50,
-    background_color: "#1E92FA",
-    should_redemptions_skip_request_queue: false,
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 10, // 10 minutes
-  },
   {
     id: "d20463be-3f02-490d-87d8-ea600e450857",
     title: "zac u stink",
@@ -197,6 +188,11 @@ class Redemptions {
       streamingService,
       alerts,
     });
+    this.bigDrink = new BigDrinkRedemption({
+      io,
+      streamingService,
+      music,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -207,6 +203,7 @@ class Redemptions {
       this.danceWithZac.data,
       this.danceToASong.data,
       this.immaBee.data,
+      this.bigDrink.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -398,36 +395,6 @@ class Redemptions {
         }
       }
     );
-  }
-
-  get bigDrink() {
-    logger.log("🚰 Big Drink triggered...");
-    return {
-      start: async () => {
-        await obs.showSource({
-          scene: "Overlays",
-          source: "Amelia Water Loop Music",
-        });
-        await obs.showSource({
-          scene: "Overlays",
-          source: "Amelia Water Loop Video",
-        });
-      },
-      stop: async () => {
-        await obs.hideSource({
-          scene: "Overlays",
-          source: "Amelia Water Loop Music",
-        });
-        await obs.hideSource({
-          scene: "Overlays",
-          source: "Amelia Water Loop Video",
-        });
-
-        this.streamingService.chat.sendMessage(
-          "shout-out to twitch.tv/ameliabayler the water singer"
-        );
-      },
-    };
   }
 
   pog() {

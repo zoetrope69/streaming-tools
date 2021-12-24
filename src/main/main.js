@@ -210,13 +210,12 @@ async function handleChannelPointRedemptions({
 
   streamingService.on(
     "channelPointRewardFulfilled",
-    async ({ reward, user, message, messageWithNoEmotes }) => {
+    async ({ reward, message }) => {
       if (!isValidReward(reward)) {
         return;
       }
 
       const { title } = reward;
-      const { username } = user;
 
       if (title === "pog") {
         await redemptions.pog();
@@ -248,13 +247,6 @@ async function handleChannelPointRedemptions({
 
       if (title === "norty devil") {
         await redemptions.nortyDevil();
-      }
-
-      if (title === "runescape") {
-        await redemptions.runescape({
-          messageWithNoEmotes,
-          username,
-        });
       }
 
       if (title === "TTP (text-to-print)") {

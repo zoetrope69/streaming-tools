@@ -1,7 +1,5 @@
 import obs from "../../obs/index.js";
 import createGoosebumpsBookImage from "../../goosebumps/index.js";
-import createRunescapeTextImage from "../../create-runescape-text-image.js";
-import textToSpeech from "../text-to-speech.js";
 
 import Logger from "../../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
@@ -16,26 +14,9 @@ import ImmaBeeRedemption from "./immabee/index.js";
 import BigDrinkRedemption from "./big-drink.js";
 import ZacYouStinkRedemption from "./zac-you-stink.js";
 import BigDataRedemption from "./big-data.js";
+import RunescapeRedemption from "./runescape/index.js";
 
-function getDuration(text) {
-  if (!text || text.length === 0) {
-    return 0;
-  }
-
-  const DELAY_TIME = 1500; // milliseconds before user starts reading the notification
-  const BONUS_TIME = 1000; // extra time
-  const WORD_PER_MINUTE = 200; // average words per minute
-  const wordAmount = text.split(" ").length;
-
-  if (wordAmount === 0) {
-    return DELAY_TIME + BONUS_TIME;
-  }
-
-  const wordsTime = (wordAmount / WORD_PER_MINUTE) * 60 * 1000;
-
-  return wordsTime + DELAY_TIME + BONUS_TIME;
-}
-
+// TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
   is_enabled: true,
   is_user_input_required: false,
@@ -92,15 +73,6 @@ const REDEMPTIONS = [
     background_color: "#000000",
     is_global_cooldown_enabled: true,
     global_cooldown_seconds: 60 * 1, // 1 minutes
-  },
-  {
-    id: "e7159fe0-237e-4271-ae3a-680dd3abe928",
-    title: "runescape",
-    prompt:
-      "show runescape text on the screen - !runescape of how to customise text",
-    cost: 300,
-    background_color: "#8B4BA8",
-    is_user_input_required: true,
   },
   {
     id: "910b17fe-7a87-4a2a-860e-54cdf56b73e4",
@@ -187,6 +159,10 @@ class Redemptions {
       streamingService,
       alerts,
     });
+    this.runescape = new RunescapeRedemption({
+      streamingService,
+      alerts,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -200,6 +176,7 @@ class Redemptions {
       this.bigDrink.data,
       this.zacYouStink.data,
       this.bigData.data,
+      this.runescape.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -234,6 +211,7 @@ class Redemptions {
     return this.streamingService.enableRedemption(redemption.id);
   }
 
+  // TODO will these be used?
   async disable({ id, title }) {
     if (id) {
       return this.streamingService.disableRedemption(id);
@@ -511,40 +489,6 @@ class Redemptions {
         );
         resolve();
       }, timeout);
-    });
-  }
-
-  async runescape({ messageWithNoEmotes, username }) {
-    if (!messageWithNoEmotes || messageWithNoEmotes.length === 0) {
-      return;
-    }
-
-    logger.log("⚔ Runescape triggered...");
-    const runescapeTextImage = await createRunescapeTextImage(
-      messageWithNoEmotes
-    );
-    if (!runescapeTextImage) {
-      this.streamingService.chat.sendMessage(
-        `couldn't send that text sorry @${username}`
-      );
-      return;
-    }
-
-    const duration = getDuration(messageWithNoEmotes);
-
-    let nameAudioUrl;
-    try {
-      nameAudioUrl = await textToSpeech(
-        runescapeTextImage.messageWithoutOptions
-      );
-    } catch (e) {
-      // couldnt get name audio
-    }
-
-    this.alerts.send({
-      type: "runescape",
-      duration,
-      audioUrl: nameAudioUrl,
     });
   }
 

@@ -31,9 +31,6 @@ const ALERT_TYPES = {
     audioUrl: "/assets/alerts/bexchat.mp3",
     duration: 10000,
   },
-  runescape: {
-    duration: 10000,
-  },
 };
 
 function addToAlertQueue(alert) {

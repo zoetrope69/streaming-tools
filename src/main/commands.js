@@ -1,5 +1,5 @@
 import obs from "../obs/index.js";
-import textToSpeech from "../text-to-speech.js";
+import textToSpeech from "./text-to-speech.js";
 import {
   getCachedCommands as getCommands,
   getScheduledCommands,

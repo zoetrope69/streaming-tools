@@ -11,7 +11,7 @@ import { Server } from "socket.io";
 
 import Music from "../music/index.js";
 import Twitch from "../twitch/twitch.js";
-import textToSpeech from "../text-to-speech.js";
+import textToSpeech from "./text-to-speech.js";
 import obs from "../obs/index.js";
 import {
   createFilterVisibilityTriggers,

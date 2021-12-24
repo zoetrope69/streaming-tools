@@ -2,7 +2,7 @@ import obs from "../../obs/index.js";
 import createBeeImage from "../../imma-bee/create-bee-image.js";
 import createGoosebumpsBookImage from "../../goosebumps/index.js";
 import createRunescapeTextImage from "../../create-runescape-text-image.js";
-import textToSpeech from "../../text-to-speech.js";
+import textToSpeech from "../text-to-speech.js";
 
 import sendFaceDataToClient from "../send-face-data-to-client.js";
 

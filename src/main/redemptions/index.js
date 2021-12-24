@@ -5,7 +5,6 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
 
 import BubblewrapTimeRedemption from "./bubblewrap-time.js";
-import ThisSongIsDooDooRedemption from "./this-song-is-doo-doo.js";
 import ShowYourPrideRedemption from "./show-your-pride/index.js";
 import SnowballRedemption from "./snowball.js";
 import DanceWithZacRedemption from "./dance-with-zac.js";
@@ -119,7 +118,6 @@ class Redemptions {
 
     const redemptions = {
       bubblewrapTime: BubblewrapTimeRedemption,
-      thisSongIsDooDoo: ThisSongIsDooDooRedemption,
       showYourPride: ShowYourPrideRedemption,
       snowball: SnowballRedemption,
       danceWithZac: DanceWithZacRedemption,

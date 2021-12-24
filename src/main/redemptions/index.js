@@ -14,6 +14,7 @@ import ThisSongIsDooDooRedemption from "./this-song-is-doo-doo.js";
 import ShowYourPrideRedemption from "./show-your-pride/index.js";
 import SnowballRedemption from "./snowball.js";
 import DanceWithZacRedemption from "./dance-with-zac.js";
+import DanceToASongRedemption from "./dance-to-a-song.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -44,16 +45,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "f75ae948-4d4d-41a1-94c5-76315bc2bcb7",
-    title: "dance to a song",
-    prompt:
-      "you can suggest something, but i have the executive decision",
-    cost: 5,
-    background_color: "#C2F9FD",
-    is_user_input_required: true,
-    isForDancing: true,
-  },
   {
     id: "975f6903-f026-4112-988a-a13d03a78049",
     title: "imma bee",
@@ -205,6 +196,10 @@ class Redemptions {
       io,
       streamingService,
     });
+    this.danceToASong = new DanceToASongRedemption({
+      io,
+      streamingService,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -213,6 +208,7 @@ class Redemptions {
       this.showYourPride.data,
       this.snowball.data,
       this.danceWithZac.data,
+      this.danceToASong.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {

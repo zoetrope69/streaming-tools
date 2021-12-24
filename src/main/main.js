@@ -183,12 +183,6 @@ async function handleChannelPointRedemptions({
         await redemptions.broomyJagRace.start();
       }
 
-      if (title === "imma bee") {
-        await redemptions.immaBee({
-          redemption: data,
-        });
-      }
-
       if (title === "TTP (text-to-print)") {
         await redemptions.textToPrint.start({
           raspberryPi,

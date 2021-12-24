@@ -4,8 +4,8 @@ import path from "path";
 
 import jimp from "jimp";
 
-import detectFaces from "../helpers/detect-faces.js";
-import bufferFromBase64 from "../helpers/buffer-from-base64.js";
+import detectFaces from "../../../helpers/detect-faces.js";
+import bufferFromBase64 from "../../../helpers/buffer-from-base64.js";
 
 const { BLEND_MULTIPLY } = jimp;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,7 +44,7 @@ async function createBeeImage(dataUri) {
   await beeImage.writeAsync(
     path.join(
       __dirname,
-      "/../../client/build/assets/alerts/immabee.png"
+      "/../../../../client/build/assets/alerts/immabee.png"
     )
   );
 

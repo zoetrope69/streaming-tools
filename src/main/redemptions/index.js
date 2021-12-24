@@ -1,5 +1,4 @@
 import obs from "../../obs/index.js";
-import createBeeImage from "../../imma-bee/create-bee-image.js";
 import createGoosebumpsBookImage from "../../goosebumps/index.js";
 import createRunescapeTextImage from "../../create-runescape-text-image.js";
 import textToSpeech from "../text-to-speech.js";
@@ -15,6 +14,7 @@ import ShowYourPrideRedemption from "./show-your-pride/index.js";
 import SnowballRedemption from "./snowball.js";
 import DanceWithZacRedemption from "./dance-with-zac.js";
 import DanceToASongRedemption from "./dance-to-a-song.js";
+import ImmaBeeRedemption from "./immabee/index.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -45,14 +45,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "975f6903-f026-4112-988a-a13d03a78049",
-    title: "imma bee",
-    prompt: "imma bee imma bee imma bee imma bee imma bee imma bee",
-    cost: 300,
-    background_color: "#FFF400",
-    should_redemptions_skip_request_queue: false,
-  },
   {
     id: "fc929918-95d5-4b79-9697-c4f6d8c36d13",
     title: "big drink",
@@ -200,6 +192,11 @@ class Redemptions {
       io,
       streamingService,
     });
+    this.immaBee = new ImmaBeeRedemption({
+      io,
+      streamingService,
+      alerts,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -209,6 +206,7 @@ class Redemptions {
       this.snowball.data,
       this.danceWithZac.data,
       this.danceToASong.data,
+      this.immaBee.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -444,23 +442,6 @@ class Redemptions {
         resolve();
       }, timeout);
     });
-  }
-
-  async immaBee({ redemption }) {
-    logger.log("🐝 Imma bee triggered...");
-
-    try {
-      const image = await obs.getWebcamImage();
-      await createBeeImage(image);
-      this.alerts.send({ type: "immabee" });
-      this.streamingService.updateRedemptionReward(redemption); // fulfill redemption
-    } catch (e) {
-      logger.error(`🐝 Imma bee ${JSON.stringify(e)}`);
-      this.streamingService.chat.sendMessage(
-        `Couldn't find Zac's face...`
-      );
-      this.streamingService.updateRedemptionReward(redemption, false); // cancel redemption
-    }
   }
 
   bigData() {

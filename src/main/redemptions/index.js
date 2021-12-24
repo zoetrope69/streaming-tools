@@ -188,15 +188,7 @@ const REDEMPTIONS = [
     global_cooldown_seconds: 60 * 1, // 1 minutes
     is_user_input_required: true,
   },
-].map((redemption) => {
-  // in development mode remove all cooldowns
-  if (process.env.NODE_ENV === "development") {
-    redemption.is_global_cooldown_enabled = false;
-    redemption.global_cooldown_seconds = 0;
-  }
-
-  return redemption;
-});
+];
 
 class Redemptions {
   constructor({ io, streamingService, raspberryPi, alerts, music }) {
@@ -226,7 +218,18 @@ class Redemptions {
       this.bubblewrapTime.data,
       this.thisSongIsDooDoo.data,
       this.showYourPride.data,
-    ];
+    ].map((redemption) => {
+      // in development mode remove all cooldowns
+      if (process.env.NODE_ENV === "development") {
+        redemption.is_global_cooldown_enabled = false;
+        redemption.global_cooldown_seconds = 0;
+      }
+
+      return {
+        ...DEFAULT_REDEMPTION,
+        ...redemption,
+      };
+    });
 
     this.syncRedemptions();
     this.handleDancingRedemptions();

@@ -1,5 +1,3 @@
-import { v4 as randomID } from "uuid";
-
 import obs from "../../obs/index.js";
 import createBeeImage from "../../imma-bee/create-bee-image.js";
 import createGoosebumpsBookImage from "../../goosebumps/index.js";
@@ -15,6 +13,7 @@ import BubblewrapTimeRedemption from "./bubblewrap-time.js";
 import ThisSongIsDooDooRedemption from "./this-song-is-doo-doo.js";
 import ShowYourPrideRedemption from "./show-your-pride/index.js";
 import SnowballRedemption from "./snowball.js";
+import DanceWithZacRedemption from "./dance-with-zac.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -45,14 +44,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "1970bc27-8ffa-4cfd-ade3-ded68bb893c7",
-    title: "dance with zac",
-    prompt: "pop-up on the stream as a little blob bopping",
-    cost: 5,
-    background_color: "#002224",
-    isForDancing: true,
-  },
   {
     id: "f75ae948-4d4d-41a1-94c5-76315bc2bcb7",
     title: "dance to a song",
@@ -192,7 +183,6 @@ class Redemptions {
     this.alerts = alerts;
 
     this.goosebumpBook = null;
-    this.dancers = [];
 
     this.bubblewrapTime = new BubblewrapTimeRedemption({
       io,
@@ -211,6 +201,10 @@ class Redemptions {
       streamingService,
       alerts,
     });
+    this.danceWithZac = new DanceWithZacRedemption({
+      io,
+      streamingService,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -218,6 +212,7 @@ class Redemptions {
       this.thisSongIsDooDoo.data,
       this.showYourPride.data,
       this.snowball.data,
+      this.danceWithZac.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -409,28 +404,6 @@ class Redemptions {
         }
       }
     );
-  }
-
-  async danceWithMe({ username }) {
-    logger.log("🕺 Dance With Me triggered...");
-    const newDancer = await this.streamingService.getUser(username);
-
-    if (!newDancer) {
-      return;
-    }
-
-    newDancer.id = randomID();
-    this.dancers.push(newDancer);
-    this.io.emit("data", { dancers: this.dancers });
-
-    setTimeout(() => {
-      // remove from array
-      this.dancers = this.dancers.filter((dancer) => {
-        return dancer.id !== newDancer.id;
-      });
-
-      this.io.emit("data", { dancers: this.dancers });
-    }, 1000 * 60 * 3 + 5000); // 3 minutes (+ wait for it to fade out on client)
   }
 
   get bigDrink() {

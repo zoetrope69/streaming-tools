@@ -240,10 +240,6 @@ async function handleChannelPointRedemptions({
       const { title } = reward;
       const { username } = user;
 
-      if (title === "dance with zac") {
-        await redemptions.danceWithMe({ username });
-      }
-
       if (title === "pog") {
         await redemptions.pog();
       }
@@ -425,7 +421,7 @@ async function handleClientConnections({
       popUpMessage: commands.popUpMessage,
       goosebumpsBookTitle: redemptions.goosebumpBook,
       prideFlagName: redemptions.showYourPride.prideFlagName,
-      dancers: redemptions.dancers,
+      dancers: redemptions.danceWithZac.dancers,
     });
 
     socket.on("leap-motion", ({ event, data }) => {

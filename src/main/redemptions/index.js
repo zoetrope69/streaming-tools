@@ -15,6 +15,7 @@ import DanceToASongRedemption from "./dance-to-a-song.js";
 import ImmaBeeRedemption from "./immabee/index.js";
 import BigDrinkRedemption from "./big-drink.js";
 import ZacYouStinkRedemption from "./zac-you-stink.js";
+import BigDataRedemption from "./big-data.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -45,14 +46,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "a102d4bc-570b-483b-b060-b5a8c99fd5f6",
-    title: "big data",
-    prompt:
-      "google, facebook gonna f about with our data but... maybe i could be swayed...",
-    cost: 500,
-    background_color: "#A42688",
-  },
   {
     id: "1d8c3308-035b-4466-adae-8cc5726bac26",
     title: "ally phil",
@@ -190,6 +183,10 @@ class Redemptions {
       streamingService,
       alerts,
     });
+    this.bigData = new BigDataRedemption({
+      streamingService,
+      alerts,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -202,6 +199,7 @@ class Redemptions {
       this.immaBee.data,
       this.bigDrink.data,
       this.zacYouStink.data,
+      this.bigData.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -407,11 +405,6 @@ class Redemptions {
         resolve();
       }, timeout);
     });
-  }
-
-  bigData() {
-    logger.log("😎 Big Data triggered...");
-    this.alerts.send({ type: "bigdata" });
   }
 
   allyPhil({ message }) {

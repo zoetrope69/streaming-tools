@@ -18,10 +18,6 @@ const ALERT_TYPES = {
   say: {
     duration: 5000,
   },
-  bigdata: {
-    audioUrl: "/assets/alerts/bigdata.mp3",
-    duration: 6000,
-  },
   immabee: {
     audioUrl: "/assets/alerts/immabee.mp3",
     duration: 4000,

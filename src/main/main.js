@@ -222,10 +222,6 @@ async function handleChannelPointRedemptions({
         await redemptions.pog();
       }
 
-      if (title === "big data") {
-        await redemptions.bigData();
-      }
-
       if (title === "ally phil") {
         await redemptions.allyPhil({ message });
       }

@@ -362,30 +362,30 @@ class Redemptions {
   async handleDancingRedemptions() {
     const redemptionsForDancing = this.redemptions.filter(
       (redemption) => {
-        return redemption.isForDancing;
+        return redemption.isForDancing === true;
       }
     );
     const redemptionsNotForDancing = this.redemptions.filter(
       (redemption) => {
-        return redemption.isNotForDancing;
+        return redemption.isNotForDancing === true;
       }
     );
 
     await obs.handleSceneChange((sceneName) => {
       if (sceneName.includes("Dance")) {
-        redemptionsForDancing.forEach((title) => {
+        redemptionsForDancing.forEach(({ title }) => {
           this.enable({ title });
         });
-        redemptionsNotForDancing.forEach((title) => {
+        redemptionsNotForDancing.forEach(({ title }) => {
           this.disable({ title });
         });
         return;
       }
 
-      redemptionsForDancing.forEach((title) => {
+      redemptionsForDancing.forEach(({ title }) => {
         this.disable({ title });
       });
-      redemptionsNotForDancing.forEach((title) => {
+      redemptionsNotForDancing.forEach(({ title }) => {
         this.enable({ title });
       });
     });

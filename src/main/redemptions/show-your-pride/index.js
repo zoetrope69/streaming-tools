@@ -7,11 +7,11 @@ import {
 import BaseRedemption from "../base-redemption.js";
 
 import Logger from "../../../helpers/logger.js";
-const logger = new Logger("💩 Redemption: This Song Is Doo Doo");
+const logger = new Logger("🌈 Redemption: Show Your Pride");
 
-class ShowYourPride extends BaseRedemption {
+class ShowYourPrideRedemption extends BaseRedemption {
   constructor({ io, streamingService }) {
-    const title = "show your pride";
+    const title = "change the pride flag";
 
     super({ streamingService, title });
 
@@ -21,7 +21,7 @@ class ShowYourPride extends BaseRedemption {
       id: "3c3b6573-8de4-4adb-8187-8f760cafdb7e",
       title,
       prompt:
-        "agender, aromantic, asexual, bisexual, gay, genderfluid, genderqueer, intersex, lesbian, non-binary, pansexual, polysexual, transgender - one missing? let me know",
+        "use a single term such as: agender, aromantic, asexual, bisexual, gay, genderfluid, genderqueer, intersex, lesbian, non-binary, pansexual, polysexual, transgender - one missing? let me know",
       cost: 10,
       background_color: "#E7E7E7",
       is_user_input_required: true,
@@ -35,7 +35,7 @@ class ShowYourPride extends BaseRedemption {
   }
 
   async start({ message, user }) {
-    logger.log("🌈 Pride flag triggered...");
+    logger.log("Triggered...");
 
     const [inputPrideFlagName] = message.split(" ");
 
@@ -80,4 +80,4 @@ class ShowYourPride extends BaseRedemption {
   }
 }
 
-export default ShowYourPride;
+export default ShowYourPrideRedemption;

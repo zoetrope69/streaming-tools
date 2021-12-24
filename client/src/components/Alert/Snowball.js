@@ -3,12 +3,12 @@ import { h } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import classNames from "classnames";
 
-import styles from "./PenguinThrow.css";
+import styles from "./Snowball.css";
 
 const SNOWBALL_ANIMATION_DURATION = 300;
 const PENGUIN_THROW_ANIMATION_DURATION = 750;
 
-const PenguinThrow = ({ id, currentFaceDetection }) => {
+const Snowball = ({ id, currentFaceDetection }) => {
   const [isHidden, setIsHidden] = useState(false);
   const [isTargetVisible, setIsTargetVisible] = useState(true);
   const [isSnowballVisible, setIsSnowballVisible] = useState(false);
@@ -65,14 +65,14 @@ const PenguinThrow = ({ id, currentFaceDetection }) => {
     snowballStyles.transform = `translate(0) scale(0.75)`;
   }
 
-  const PenguinThrowClassName = classNames(styles.PenguinThrow, {
-    [styles["PenguinThrow--hidden"]]: isHidden,
+  const SnowballClassName = classNames(styles.Snowball, {
+    [styles["Snowball--hidden"]]: isHidden,
   });
 
   return (
-    <div className={PenguinThrowClassName}>
+    <div className={SnowballClassName}>
       <img
-        className={styles["PenguinThrow__penguin"]}
+        className={styles["Snowball__penguin"]}
         // dirty hack to get the gif to play again
         src={`../../assets/alerts/penguin-throw-penguin.gif?id=${id}`}
         alt=""
@@ -80,16 +80,16 @@ const PenguinThrow = ({ id, currentFaceDetection }) => {
 
       {isTargetVisible && (
         <div
-          className={styles["PenguinThrow__target"]}
+          className={styles["Snowball__target"]}
           style={positionStyles}
         />
       )}
       <div
-        className={styles["PenguinThrow__snowball"]}
+        className={styles["Snowball__snowball"]}
         style={snowballStyles}
       />
     </div>
   );
 };
 
-export default PenguinThrow;
+export default Snowball;

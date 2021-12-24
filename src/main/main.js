@@ -264,10 +264,6 @@ async function handleChannelPointRedemptions({
         await redemptions.allyPhil({ message });
       }
 
-      if (title === "snowball") {
-        await redemptions.snowball();
-      }
-
       if (title === "barry") {
         const isSpotifyPlaying = await music.isSpotifyPlaying();
 

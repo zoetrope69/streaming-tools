@@ -5,9 +5,9 @@ import Axolotl from "./Axolotl";
 import BexcHat from "./BexcHat";
 import BigData from "./BigData";
 import ImmaBee from "./ImmaBee";
-import PenguinThrow from "./PenguinThrow";
 import PhilPunch from "./PhilPunch";
 import Runescape from "./Runescape";
+import Snowball from "./Snowball";
 import ZacYouStink from "./ZacYouStink";
 
 import axolotlStyles from "./Axolotl.css";
@@ -129,9 +129,9 @@ const Alert = ({ alert, currentFaceDetection }) => {
     return <ImmaBee duration={duration} />;
   }
 
-  if (type === "penguin-throw") {
+  if (type === "snowball") {
     return (
-      <PenguinThrow
+      <Snowball
         id={id}
         duration={duration}
         currentFaceDetection={currentFaceDetection}

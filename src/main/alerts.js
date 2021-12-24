@@ -31,11 +31,6 @@ const ALERT_TYPES = {
     duration: 5000,
     delayAudio: 1000,
   },
-  "penguin-throw": {
-    audioUrl: "/assets/alerts/penguin-throw-snowball-impact.mp3",
-    duration: 2000,
-    delayAudio: 500,
-  },
   bexchat: {
     audioUrl: "/assets/alerts/bexchat.mp3",
     duration: 10000,

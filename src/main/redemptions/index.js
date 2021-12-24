@@ -13,7 +13,8 @@ const logger = new Logger("👾 Redemptions");
 
 import BubblewrapTimeRedemption from "./bubblewrap-time.js";
 import ThisSongIsDooDooRedemption from "./this-song-is-doo-doo.js";
-import ShowYourPride from "./show-your-pride/index.js";
+import ShowYourPrideRedemption from "./show-your-pride/index.js";
+import SnowballRedemption from "./snowball.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -61,13 +62,6 @@ const REDEMPTIONS = [
     background_color: "#C2F9FD",
     is_user_input_required: true,
     isForDancing: true,
-  },
-  {
-    id: "7de7d543-cf2f-434f-a319-eba5fd4e1496",
-    title: "snowball",
-    prompt: "throw a club penguin snowball at me face",
-    cost: 20,
-    background_color: "#D5E4E7",
   },
   {
     id: "975f6903-f026-4112-988a-a13d03a78049",
@@ -208,9 +202,14 @@ class Redemptions {
       streamingService,
       music,
     });
-    this.showYourPride = new ShowYourPride({
+    this.showYourPride = new ShowYourPrideRedemption({
       io,
       streamingService,
+    });
+    this.snowball = new SnowballRedemption({
+      io,
+      streamingService,
+      alerts,
     });
 
     this.redemptions = [
@@ -218,6 +217,7 @@ class Redemptions {
       this.bubblewrapTime.data,
       this.thisSongIsDooDoo.data,
       this.showYourPride.data,
+      this.snowball.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -502,12 +502,6 @@ class Redemptions {
   allyPhil({ message }) {
     logger.log("🥊 Phil Punch triggered...");
     this.alerts.send({ type: "philpunch", message });
-  }
-
-  async snowball() {
-    logger.log("❄ Snowball triggered...");
-    await sendFaceDataToClient({ io: this.io });
-    this.alerts.send({ type: "penguin-throw" });
   }
 
   barry() {

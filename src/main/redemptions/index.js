@@ -300,7 +300,7 @@ class Redemptions {
       }
     );
 
-    await obs.handleSceneChange((sceneName) => {
+    const handleScene = (sceneName) => {
       if (sceneName.includes("Dance")) {
         redemptionsForDancing.forEach(({ title }) => {
           this.enable({ title });
@@ -317,7 +317,13 @@ class Redemptions {
       redemptionsNotForDancing.forEach(({ title }) => {
         this.enable({ title });
       });
-    });
+    };
+
+    // on load of the scripts
+    const { name } = await obs.getCurrentScene();
+    handleScene(name);
+
+    await obs.handleSceneChange(handleScene);
   }
 
   async handleChannelPointRedemptionChatMessage() {

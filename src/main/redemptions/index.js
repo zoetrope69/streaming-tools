@@ -3,8 +3,6 @@ import createGoosebumpsBookImage from "../../goosebumps/index.js";
 import createRunescapeTextImage from "../../create-runescape-text-image.js";
 import textToSpeech from "../text-to-speech.js";
 
-import sendFaceDataToClient from "../send-face-data-to-client.js";
-
 import Logger from "../../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
 
@@ -16,6 +14,7 @@ import DanceWithZacRedemption from "./dance-with-zac.js";
 import DanceToASongRedemption from "./dance-to-a-song.js";
 import ImmaBeeRedemption from "./immabee/index.js";
 import BigDrinkRedemption from "./big-drink.js";
+import ZacYouStinkRedemption from "./zac-you-stink.js";
 
 function getDuration(text) {
   if (!text || text.length === 0) {
@@ -46,13 +45,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "d20463be-3f02-490d-87d8-ea600e450857",
-    title: "zac u stink",
-    prompt: "get stevesey to tell me i stinky :-(",
-    cost: 50,
-    background_color: "#2B5323",
-  },
   {
     id: "a102d4bc-570b-483b-b060-b5a8c99fd5f6",
     title: "big data",
@@ -193,6 +185,11 @@ class Redemptions {
       streamingService,
       music,
     });
+    this.zacYouStink = new ZacYouStinkRedemption({
+      io,
+      streamingService,
+      alerts,
+    });
 
     this.redemptions = [
       ...REDEMPTIONS,
@@ -204,6 +201,7 @@ class Redemptions {
       this.danceToASong.data,
       this.immaBee.data,
       this.bigDrink.data,
+      this.zacYouStink.data,
     ].map((redemption) => {
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
@@ -521,37 +519,6 @@ class Redemptions {
         resolve();
       }, timeout);
     });
-  }
-
-  async zacYouStink() {
-    logger.log("🦨 Zac you stink triggered...");
-    const type = "zac-you-stink";
-    const timeout = this.alerts.alertTypes[type].duration;
-
-    // send to client
-    await sendFaceDataToClient({ io: this.io });
-    this.alerts.send({ type });
-
-    // handle stinky filter in obs
-    obs.showHideFilter({
-      source: "Raw Webcam",
-      filter: "Webcam: Stinky (Fade in)",
-      filterEnabled: true,
-    });
-    setTimeout(() => {
-      obs.showHideFilter({
-        source: "Raw Webcam",
-        filter: "Webcam: Stinky (Fade out)",
-        filterEnabled: true,
-      });
-    }, timeout - 1000);
-
-    // shout out to stevesey
-    setTimeout(() => {
-      this.streamingService.chat.sendMessage(
-        `shout-out to twitch.tv/just_stevesey for telling me im stinky :-(`
-      );
-    }, timeout);
   }
 
   async runescape({ messageWithNoEmotes, username }) {

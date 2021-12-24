@@ -254,10 +254,6 @@ async function handleChannelPointRedemptions({
         await redemptions.nortyDevil();
       }
 
-      if (title === "zac u stink") {
-        await redemptions.zacYouStink();
-      }
-
       if (title === "runescape") {
         await redemptions.runescape({
           messageWithNoEmotes,

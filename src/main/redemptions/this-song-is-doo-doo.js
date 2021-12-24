@@ -13,7 +13,7 @@ class ThisSongIsDooDooRedemption extends BaseRedemption {
     super({ streamingService, title });
 
     this.data = {
-      id: "ef648ac3-fa5d-4065-ae8e-1448d166d5a6",
+      id: "b8af795c-bb65-40b4-90a6-dab731730328",
       title,
       prompt: "skip the song ok",
       cost: 800,

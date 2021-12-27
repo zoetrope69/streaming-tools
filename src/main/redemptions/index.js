@@ -17,6 +17,7 @@ import RunescapeRedemption from "./runescape/index.js";
 import BarryRedemption from "./barry.js";
 import AllyPhilRedemption from "./ally-phil.js";
 import PogRedemption from "./pog.js";
+import BrendanTakeoverRedemption from "./brendan-takeover.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -37,16 +38,6 @@ const REDEMPTIONS = [
     background_color: "#00C7AC",
     should_redemptions_skip_request_queue: false,
     is_user_input_required: true,
-  },
-  {
-    id: "824b91da-d234-441f-bc55-0b1a148463b5",
-    title: "brendan takeover",
-    prompt: "mr fraiser takes over for a bit",
-    cost: 200,
-    background_color: "#B50028",
-    should_redemptions_skip_request_queue: false,
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 5, // 5 minutes
   },
   {
     id: "4de612a1-1fea-40cd-a105-b40d4f8fcb00",
@@ -105,6 +96,7 @@ class Redemptions {
       barry: BarryRedemption,
       ally: AllyPhilRedemption,
       pog: PogRedemption,
+      brendanTakeover: BrendanTakeoverRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -368,32 +360,6 @@ class Redemptions {
         this.io.emit("data", { goosebumpsBookTitle: null });
         this.goosebumpBook = null;
         await obs.switchToScene("Main Bigger Zac");
-      },
-    };
-  }
-
-  get brendanTakeover() {
-    return {
-      start: async () => {
-        logger.log("☠ Brendan Takeover triggered...");
-        await obs.showSource({
-          scene: "Raw Webcam",
-          source: "Brendan On His Switch",
-        });
-        await obs.hideSource({
-          scene: "Raw Webcam",
-          source: "Snap Camera (Greenscreen)",
-        });
-      },
-      stop: async () => {
-        await obs.hideSource({
-          scene: "Raw Webcam",
-          source: "Brendan On His Switch",
-        });
-        await obs.showSource({
-          scene: "Raw Webcam",
-          source: "Snap Camera (Greenscreen)",
-        });
       },
     };
   }

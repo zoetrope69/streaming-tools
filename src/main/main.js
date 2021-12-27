@@ -160,15 +160,6 @@ async function handleChannelPointRedemptions({
 
       const { title } = reward;
 
-      if (title === "brendan takeover") {
-        await redemptions.brendanTakeover.start();
-
-        // maximum of 3 minute
-        setTimeout(async () => {
-          await redemptions.brendanTakeover.stop();
-        }, 3 * 60 * 1000);
-      }
-
       if (title === "BroomyJagRace") {
         const isSpotifyPlaying = await music.isSpotifyPlaying();
         if (isSpotifyPlaying) await music.spotify.pauseTrack();
@@ -193,10 +184,6 @@ async function handleChannelPointRedemptions({
       }
 
       const { title } = reward;
-
-      if (title === "brendan takeover") {
-        await redemptions.brendanTakeover.stop();
-      }
 
       if (title === "BroomyJagRace") {
         await redemptions.broomyJagRace.stop();
@@ -223,10 +210,6 @@ async function handleChannelPointRedemptions({
 
       if (title === "goosebumpz book") {
         await redemptions.goosebumps.start({ message, music });
-      }
-
-      if (title === "brendan takeover") {
-        await redemptions.brendanTakeover.stop();
       }
 
       if (title === "norty devil") {

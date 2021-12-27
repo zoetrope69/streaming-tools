@@ -7,6 +7,9 @@ import twitchShoutOuts from "./helpers/shout-outs.js";
 async function Twitch({ ngrokUrl, app }) {
   const eventEmitter = new EventEmitter();
 
+  // default is 10 lets allow for more
+  eventEmitter.setMaxListeners(100);
+
   const twitchBot = await TwitchBot({ eventEmitter });
   const twitchApi = await TwitchAPI({ ngrokUrl, twitchBot });
   TwitchEventSub({

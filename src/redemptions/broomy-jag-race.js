@@ -13,7 +13,7 @@ class BroomyJagRaceRedemption extends BaseRedemption {
 
     this.music = music;
     this.data = {
-      id: "999fdbde-e8a6-4a1f-913f-62e29751b5e0",
+      id: "243c560a-fabe-413b-b47c-bcf9deb0dbd1",
       title,
       prompt: "start your broomers",
       cost: 800,

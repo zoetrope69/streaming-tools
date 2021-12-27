@@ -116,38 +116,6 @@ class Redemptions {
     this.handleChannelPointRedemptionChatMessage();
   }
 
-  // TODO will these be used?
-  async enable({ id, title }) {
-    if (id) {
-      return this.streamingService.enableRedemption(id);
-    }
-
-    const redemption = this.redemptions.find(
-      (redemption) => redemption.title === title
-    );
-    if (!redemption) {
-      return;
-    }
-
-    return this.streamingService.enableRedemption(redemption.id);
-  }
-
-  // TODO will these be used?
-  async disable({ id, title }) {
-    if (id) {
-      return this.streamingService.disableRedemption(id);
-    }
-
-    const redemption = this.redemptions.find(
-      (redemption) => redemption.title === title
-    );
-    if (!redemption) {
-      return;
-    }
-
-    return this.streamingService.disableRedemption(redemption.id);
-  }
-
   isRedemptionByIdTitle({ id, title }) {
     return this.redemptions.find((redemption) => {
       const isCorrectId = redemption.id === id;
@@ -257,20 +225,20 @@ class Redemptions {
 
     const handleScene = (sceneName) => {
       if (sceneName.includes("Dance")) {
-        redemptionsForDancing.forEach(({ title }) => {
-          this.enable({ title });
+        redemptionsForDancing.forEach((redemption) => {
+          this.streamingService.enableRedemption(redemption.id);
         });
-        redemptionsNotForDancing.forEach(({ title }) => {
-          this.disable({ title });
+        redemptionsNotForDancing.forEach((redemption) => {
+          this.streamingService.disableRedemption(redemption.id);
         });
         return;
       }
 
-      redemptionsForDancing.forEach(({ title }) => {
-        this.disable({ title });
+      redemptionsForDancing.forEach((redemption) => {
+        this.streamingService.disableRedemption(redemption.id);
       });
-      redemptionsNotForDancing.forEach(({ title }) => {
-        this.enable({ title });
+      redemptionsNotForDancing.forEach((redemption) => {
+        this.streamingService.enableRedemption(redemption.id);
       });
     };
 

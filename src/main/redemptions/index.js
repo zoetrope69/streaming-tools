@@ -16,6 +16,7 @@ import BigDataRedemption from "./big-data.js";
 import RunescapeRedemption from "./runescape/index.js";
 import BarryRedemption from "./barry.js";
 import AllyPhilRedemption from "./ally-phil.js";
+import PogRedemption from "./pog.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -28,16 +29,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "8ad56fc6-f597-433c-b388-8e47ba23bc56",
-    title: "pog",
-    prompt:
-      "now that, that right there is what we call pog on twitch",
-    cost: 100,
-    background_color: "#F4FF6B",
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 1, // 1 minutes
-  },
   {
     id: "6b8cc18a-f927-41fd-9dbf-aca27fd1f0ec",
     title: "goosebumpz book",
@@ -113,6 +104,7 @@ class Redemptions {
       runescape: RunescapeRedemption,
       barry: BarryRedemption,
       ally: AllyPhilRedemption,
+      pog: PogRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -327,20 +319,6 @@ class Redemptions {
         }
       }
     );
-  }
-
-  pog() {
-    return new Promise((resolve) => {
-      logger.log("😮 Pog triggered...");
-      const timeout = 9 * 1000;
-      obs.turnOnOverlay("Steve Pointing Group", timeout);
-      setTimeout(() => {
-        this.streamingService.chat.sendMessage(
-          "shout-out to twitch.tv/blgsteve for the pog audit"
-        );
-        resolve();
-      }, timeout);
-    });
   }
 
   get broomyJagRace() {

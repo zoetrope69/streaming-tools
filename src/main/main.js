@@ -217,10 +217,6 @@ async function handleChannelPointRedemptions({
 
       const { title } = reward;
 
-      if (title === "pog") {
-        await redemptions.pog();
-      }
-
       if (title === "BroomyJagRace") {
         await redemptions.broomyJagRace.stop();
       }

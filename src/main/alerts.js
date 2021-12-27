@@ -22,11 +22,6 @@ const ALERT_TYPES = {
     audioUrl: "/assets/alerts/immabee.mp3",
     duration: 4000,
   },
-  philpunch: {
-    audioUrl: "/assets/alerts/phil-punch.mp3",
-    duration: 5000,
-    delayAudio: 1000,
-  },
   bexchat: {
     audioUrl: "/assets/alerts/bexchat.mp3",
     duration: 10000,

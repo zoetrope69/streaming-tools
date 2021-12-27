@@ -15,6 +15,7 @@ import ZacYouStinkRedemption from "./zac-you-stink.js";
 import BigDataRedemption from "./big-data.js";
 import RunescapeRedemption from "./runescape/index.js";
 import BarryRedemption from "./barry.js";
+import AllyPhilRedemption from "./ally-phil.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -27,15 +28,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "1d8c3308-035b-4466-adae-8cc5726bac26",
-    title: "ally phil",
-    prompt:
-      "if phil removes something that isn't bigotry you will be warned/banned",
-    cost: 120,
-    background_color: "#052DA5",
-    is_user_input_required: true,
-  },
   {
     id: "8ad56fc6-f597-433c-b388-8e47ba23bc56",
     title: "pog",
@@ -120,6 +112,7 @@ class Redemptions {
       bigData: BigDataRedemption,
       runescape: RunescapeRedemption,
       barry: BarryRedemption,
+      ally: AllyPhilRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -348,11 +341,6 @@ class Redemptions {
         resolve();
       }, timeout);
     });
-  }
-
-  allyPhil({ message }) {
-    logger.log("🥊 Phil Punch triggered...");
-    this.alerts.send({ type: "philpunch", message });
   }
 
   get broomyJagRace() {

@@ -221,10 +221,6 @@ async function handleChannelPointRedemptions({
         await redemptions.pog();
       }
 
-      if (title === "ally phil") {
-        await redemptions.allyPhil({ message });
-      }
-
       if (title === "BroomyJagRace") {
         await redemptions.broomyJagRace.stop();
       }

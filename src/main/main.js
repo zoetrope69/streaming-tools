@@ -212,10 +212,6 @@ async function handleChannelPointRedemptions({
         await redemptions.goosebumps.start({ message, music });
       }
 
-      if (title === "norty devil") {
-        await redemptions.nortyDevil();
-      }
-
       if (title === "TTP (text-to-print)") {
         await redemptions.textToPrint.stop();
       }
@@ -254,8 +250,8 @@ async function handleChatMessages({
     }
 
     const firstTimeTalkingCallbacks = {
-      EggEllie: () => redemptions.nortyDevil(),
-      Broomyjag: () => redemptions.nortyDevil(),
+      EggEllie: () => redemptions.nortyDevil.start(),
+      Broomyjag: () => redemptions.nortyDevil.start(),
       Bexchat: () => commands.bex(),
       BLGSTEVE: () => commands.octopussy(),
     };

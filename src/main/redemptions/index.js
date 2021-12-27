@@ -18,6 +18,7 @@ import BarryRedemption from "./barry.js";
 import AllyPhilRedemption from "./ally-phil.js";
 import PogRedemption from "./pog.js";
 import BrendanTakeoverRedemption from "./brendan-takeover.js";
+import NortyDevilRedemption from "./norty-devil.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -38,15 +39,6 @@ const REDEMPTIONS = [
     background_color: "#00C7AC",
     should_redemptions_skip_request_queue: false,
     is_user_input_required: true,
-  },
-  {
-    id: "4de612a1-1fea-40cd-a105-b40d4f8fcb00",
-    title: "norty devil",
-    prompt: "show one of EggEllie's norty devil artworks",
-    cost: 666,
-    background_color: "#000000",
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 1, // 1 minutes
   },
   {
     id: "910b17fe-7a87-4a2a-860e-54cdf56b73e4",
@@ -97,6 +89,7 @@ class Redemptions {
       ally: AllyPhilRedemption,
       pog: PogRedemption,
       brendanTakeover: BrendanTakeoverRedemption,
+      nortyDevil: NortyDevilRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -362,20 +355,6 @@ class Redemptions {
         await obs.switchToScene("Main Bigger Zac");
       },
     };
-  }
-
-  async nortyDevil() {
-    return new Promise((resolve) => {
-      logger.log("👿 Norty Devil triggered...");
-      const timeout = 20 * 1000;
-      obs.turnOnOverlay("Stop Look At My Giant Ass", timeout);
-      setTimeout(() => {
-        this.streamingService.chat.sendMessage(
-          `shout-out to twitch.tv/EggEllie the creator of the norty devils and twitch.tv/Broomyjag for the voice of the devil`
-        );
-        resolve();
-      }, timeout);
-    });
   }
 
   get textToPrint() {

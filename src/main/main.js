@@ -160,12 +160,6 @@ async function handleChannelPointRedemptions({
 
       const { title } = reward;
 
-      if (title === "BroomyJagRace") {
-        const isSpotifyPlaying = await music.isSpotifyPlaying();
-        if (isSpotifyPlaying) await music.spotify.pauseTrack();
-        await redemptions.broomyJagRace.start();
-      }
-
       if (title === "TTP (text-to-print)") {
         await redemptions.textToPrint.start({
           raspberryPi,
@@ -185,10 +179,6 @@ async function handleChannelPointRedemptions({
 
       const { title } = reward;
 
-      if (title === "BroomyJagRace") {
-        await redemptions.broomyJagRace.stop();
-      }
-
       if (title === "TTP (text-to-print)") {
         await redemptions.textToPrint.stop();
       }
@@ -203,10 +193,6 @@ async function handleChannelPointRedemptions({
       }
 
       const { title } = reward;
-
-      if (title === "BroomyJagRace") {
-        await redemptions.broomyJagRace.stop();
-      }
 
       if (title === "goosebumpz book") {
         await redemptions.goosebumps.start({ message, music });
@@ -296,11 +282,6 @@ async function handleChatMessages({
 
     if (command === "delete") {
       await commands.deletePopUpMessage();
-    }
-
-    if (command === "stop") {
-      await redemptions.goosebumps.stop();
-      await redemptions.broomyJagRace.stop();
     }
 
     if (command === "say") {

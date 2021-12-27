@@ -19,6 +19,7 @@ import AllyPhilRedemption from "./ally-phil.js";
 import PogRedemption from "./pog.js";
 import BrendanTakeoverRedemption from "./brendan-takeover.js";
 import NortyDevilRedemption from "./norty-devil.js";
+import BroomyJagRaceRedemption from "./broomy-jag-race.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -39,16 +40,6 @@ const REDEMPTIONS = [
     background_color: "#00C7AC",
     should_redemptions_skip_request_queue: false,
     is_user_input_required: true,
-  },
-  {
-    id: "910b17fe-7a87-4a2a-860e-54cdf56b73e4",
-    title: "BroomyJagRace",
-    prompt: "start your broomers",
-    cost: 800,
-    background_color: "#FFFFFF",
-    should_redemptions_skip_request_queue: false,
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 5, // 5 minutes
   },
   {
     id: "f0ed621b-c66a-482b-9a5d-3af0aa9be656",
@@ -90,6 +81,7 @@ class Redemptions {
       pog: PogRedemption,
       brendanTakeover: BrendanTakeoverRedemption,
       nortyDevil: NortyDevilRedemption,
+      broomyJagRace: BroomyJagRaceRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -304,24 +296,6 @@ class Redemptions {
         }
       }
     );
-  }
-
-  get broomyJagRace() {
-    return {
-      start: async () => {
-        logger.log("🚗 BroomyJagRace triggered...");
-        await obs.showSource({
-          scene: "Overlays",
-          source: "BroomyJagRace",
-        });
-      },
-      stop: async () => {
-        await obs.hideSource({
-          scene: "Overlays",
-          source: "BroomyJagRace",
-        });
-      },
-    };
   }
 
   get goosebumps() {

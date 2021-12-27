@@ -1,5 +1,4 @@
 import obs from "../../obs/index.js";
-import createGoosebumpsBookImage from "../../goosebumps/index.js";
 
 import Logger from "../../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
@@ -20,6 +19,7 @@ import PogRedemption from "./pog.js";
 import BrendanTakeoverRedemption from "./brendan-takeover.js";
 import NortyDevilRedemption from "./norty-devil.js";
 import BroomyJagRaceRedemption from "./broomy-jag-race.js";
+import GoosebumpsRedemption from "./goosebumps/index.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -32,15 +32,6 @@ const DEFAULT_REDEMPTION = {
 };
 
 const REDEMPTIONS = [
-  {
-    id: "6b8cc18a-f927-41fd-9dbf-aca27fd1f0ec",
-    title: "goosebumpz book",
-    prompt: "only put in one or two words. e.g carrot cake",
-    cost: 100,
-    background_color: "#00C7AC",
-    should_redemptions_skip_request_queue: false,
-    is_user_input_required: true,
-  },
   {
     id: "f0ed621b-c66a-482b-9a5d-3af0aa9be656",
     title: "TTP (text-to-print)",
@@ -63,8 +54,6 @@ class Redemptions {
     this.alerts = alerts;
     this.music = music;
 
-    this.goosebumpBook = null;
-
     const redemptions = {
       bubblewrapTime: BubblewrapTimeRedemption,
       showYourPride: ShowYourPrideRedemption,
@@ -82,6 +71,7 @@ class Redemptions {
       brendanTakeover: BrendanTakeoverRedemption,
       nortyDevil: NortyDevilRedemption,
       broomyJagRace: BroomyJagRaceRedemption,
+      goosebumps: GoosebumpsRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -266,39 +256,6 @@ class Redemptions {
     );
   }
 
-  get goosebumps() {
-    return {
-      start: async ({ message, music }) => {
-        logger.log("📚 Goosebumps Book triggered...");
-        try {
-          const { bookTitle } = await createGoosebumpsBookImage(
-            message
-          );
-
-          const isSpotifyPlaying = await music.isSpotifyPlaying();
-          if (isSpotifyPlaying) await music.spotify.pauseTrack();
-
-          this.io.emit("data", { goosebumpsBookTitle: bookTitle });
-          this.goosebumpBook = bookTitle;
-          await obs.switchToScene("Goosebumps");
-        } catch (e) {
-          logger.error(`📚 Goosebumps Book ${e.message || e}`);
-          this.streamingService.chat.sendMessage(
-            `Couldn't generate a book for ${message}`
-          );
-          this.goosebumpBook = null;
-          await obs.switchToScene("Main Bigger Zac");
-        }
-      },
-
-      stop: async () => {
-        this.io.emit("data", { goosebumpsBookTitle: null });
-        this.goosebumpBook = null;
-        await obs.switchToScene("Main Bigger Zac");
-      },
-    };
-  }
-
   get textToPrint() {
     return {
       start: async ({ messageWithNoEmotes, redemption }) => {
@@ -319,7 +276,7 @@ class Redemptions {
 
           try {
             // try and fulfill
-            this.streamingService.updateRedemptionReward(redemption);
+            this.streamingService.fulfilRedemptionReward(redemption);
           } catch (e) {
             // do nuthin
           }

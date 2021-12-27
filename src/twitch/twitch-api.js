@@ -409,10 +409,7 @@ async function deleteRedemption(id) {
   });
 }
 
-async function updateRedemptionReward(
-  redemption,
-  fulfilledOrCancelled = true
-) {
+async function updateRedemptionReward(redemption, status) {
   const { id, reward } = redemption;
   return await callTwitchAPI({
     endpoint: "channel_points/custom_rewards/redemptions",
@@ -423,9 +420,7 @@ async function updateRedemptionReward(
     },
     fetchOptions: {
       method: "PATCH",
-      body: JSON.stringify({
-        status: fulfilledOrCancelled ? "FULFILLED" : "CANCELED",
-      }),
+      body: JSON.stringify({ status }),
     },
   });
 }
@@ -523,6 +518,14 @@ async function TwitchAPI({ ngrokUrl }) {
     },
 
     updateRedemptionReward,
+
+    fulfilRedemptionReward: async (redemption) => {
+      return updateRedemptionReward(redemption, "FULFILLED");
+    },
+
+    cancelRedemptionReward: async (redemption) => {
+      return updateRedemptionReward(redemption, "CANCELED");
+    },
 
     getStream,
 

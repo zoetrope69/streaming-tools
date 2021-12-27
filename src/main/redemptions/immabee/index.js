@@ -34,13 +34,13 @@ class ImmaBeeRedemption extends BaseRedemption {
       const image = await obs.getWebcamImage();
       await createBeeImage(image);
       this.alerts.send({ type: "immabee" });
-      this.streamingService.updateRedemptionReward(redemption); // fulfill redemption
+      this.streamingService.fulfilRedemptionReward(redemption);
     } catch (e) {
       logger.error(JSON.stringify(e));
       this.streamingService.chat.sendMessage(
         `Couldn't find Zac's face...`
       );
-      this.streamingService.updateRedemptionReward(redemption, false); // cancel redemption
+      this.streamingService.cancelRedemptionReward(redemption);
     }
   }
 }

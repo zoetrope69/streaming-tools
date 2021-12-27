@@ -139,7 +139,6 @@ async function handleRaid({ streamingService }) {
 async function handleChannelPointRedemptions({
   streamingService,
   redemptions,
-  music,
   raspberryPi,
 }) {
   function isValidReward(reward) {
@@ -187,16 +186,12 @@ async function handleChannelPointRedemptions({
 
   streamingService.on(
     "channelPointRewardFulfilled",
-    async ({ reward, message }) => {
+    async ({ reward }) => {
       if (!isValidReward(reward)) {
         return;
       }
 
       const { title } = reward;
-
-      if (title === "goosebumpz book") {
-        await redemptions.goosebumps.start({ message, music });
-      }
 
       if (title === "TTP (text-to-print)") {
         await redemptions.textToPrint.stop();
@@ -317,7 +312,7 @@ async function handleClientConnections({
     socket.emit("data", {
       track: currentTrack,
       popUpMessage: commands.popUpMessage,
-      goosebumpsBookTitle: redemptions.goosebumpBook,
+      goosebumpsBookTitle: redemptions.goosebumps.bookTitle,
       prideFlagName: redemptions.showYourPride.prideFlagName,
       dancers: redemptions.danceWithZac.dancers,
     });

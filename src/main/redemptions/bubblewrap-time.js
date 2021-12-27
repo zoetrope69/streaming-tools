@@ -112,7 +112,7 @@ class BubblewrapTimeRedemption extends BaseRedemption {
     if (!hasAnyUnpoppedBubbles) {
       try {
         // try and fulfill
-        this.streamingService.updateRedemptionReward(
+        this.streamingService.fulfilRedemptionReward(
           this.bubblewrap.redemption
         );
       } catch (e) {

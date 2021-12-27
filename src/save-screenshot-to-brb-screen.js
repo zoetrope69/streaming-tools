@@ -1,5 +1,5 @@
 import fs from "fs";
-import bufferFromBase64 from "../helpers/buffer-from-base64.js";
+import bufferFromBase64 from "./helpers/buffer-from-base64.js";
 
 async function saveScreenshot(dataUri) {
   const { buffer: imageBuffer, contentType } =

@@ -3,51 +3,6 @@ import { v4 as randomID } from "uuid";
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 
-const ALERT_TYPES = {
-  "shout-out": {
-    duration: 10000,
-    delayAudio: 3100,
-  },
-  bits: {
-    duration: 5000,
-  },
-  subscribe: {
-    duration: 5000,
-  },
-  say: {
-    duration: 5000,
-  },
-  bigdata: {
-    audioUrl: "/assets/alerts/bigdata.mp3",
-    duration: 6000,
-  },
-  immabee: {
-    audioUrl: "/assets/alerts/immabee.mp3",
-    duration: 4000,
-  },
-  philpunch: {
-    audioUrl: "/assets/alerts/phil-punch.mp3",
-    duration: 5000,
-    delayAudio: 1000,
-  },
-  "penguin-throw": {
-    audioUrl: "/assets/alerts/penguin-throw-snowball-impact.mp3",
-    duration: 2000,
-    delayAudio: 500,
-  },
-  bexchat: {
-    audioUrl: "/assets/alerts/bexchat.mp3",
-    duration: 10000,
-  },
-  "zac-you-stink": {
-    audioUrl: "/assets/alerts/zac-you-stink.mp3",
-    duration: 10000,
-  },
-  runescape: {
-    duration: 10000,
-  },
-};
-
 function addToAlertQueue(alert) {
   const newAlertQueue = ALERT_QUEUE.concat([alert]);
   ALERT_QUEUE = newAlertQueue;
@@ -93,18 +48,12 @@ class Alerts {
   }
 
   send(options) {
-    const alertType = ALERT_TYPES[options.type];
     const alert = {
       id: randomID(),
-      ...alertType,
       ...options,
     };
     addToAlertQueue(alert);
     processAlert(this.io);
-  }
-
-  get alertTypes() {
-    return ALERT_TYPES;
   }
 }
 

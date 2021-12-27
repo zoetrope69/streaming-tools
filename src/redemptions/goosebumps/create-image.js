@@ -152,7 +152,7 @@ async function createImage(keyword, text) {
   await textOnImage.writeAsync(
     path.join(
       __dirname,
-      "/../../client/build/assets/goosebumps/book.jpg"
+      "/../../../client/build/assets/goosebumps/book.jpg"
     )
   );
 }

@@ -14,7 +14,8 @@ function truncate(text, amount = 100) {
   return `${text.substring(0, amount)}...`;
 }
 
-const FILE_PATH_BASE = "../client/build/assets/alerts/runescape-text";
+const FILE_PATH_BASE =
+  "../../../../client/build/assets/alerts/runescape-text";
 
 function deleteFileIfExists(filePath) {
   const exists = fs.existsSync(new URL(filePath, import.meta.url));

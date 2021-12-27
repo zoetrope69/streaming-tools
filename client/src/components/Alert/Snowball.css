@@ -1,13 +1,13 @@
-.PenguinThrow {
+.Snowball {
   opacity: 1;
   transition: opacity 1s;
 }
 
-.PenguinThrow--hidden {
+.Snowball--hidden {
   opacity: 0;
 }
 
-.PenguinThrow__penguin {
+.Snowball__penguin {
   z-index: 10;
   position: absolute;
   left: 0;
@@ -25,7 +25,7 @@
   }
 }
 
-.PenguinThrow__target {
+.Snowball__target {
   z-index: 9;
   position: absolute;
   left: 0;
@@ -35,7 +35,7 @@
   background-size: 100%;
 }
 
-.PenguinThrow__snowball {
+.Snowball__snowball {
   z-index: 7;
   position: absolute;
   left: 0;

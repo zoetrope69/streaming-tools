@@ -168,13 +168,17 @@ async function TwitchBot({ eventEmitter }) {
         logger.error(error);
       }
     },
-    timeout: ({ username, lengthSeconds, reason }) => {
-      return botClient.timeout(
-        TWITCH_BROADCASTER_NAME,
-        username,
-        lengthSeconds,
-        reason
-      );
+    timeout: async ({ username, lengthSeconds, reason }) => {
+      try {
+        await botClient.timeout(
+          TWITCH_BROADCASTER_NAME,
+          username,
+          lengthSeconds,
+          reason
+        );
+      } catch (error) {
+        logger.error(error);
+      }
     },
   });
 }

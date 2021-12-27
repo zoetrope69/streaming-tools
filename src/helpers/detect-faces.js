@@ -17,20 +17,15 @@ async function detectFaces(dataUri) {
   }
 
   const results = objects
-    .map((object, i) => {
+    .map((position, i) => {
       const confidence = confidences[i];
-      return { rect: object, confidence };
+      return { position, confidence };
     })
     .sort((a, b) => b.confidence - a.confidence);
 
   const [bestResult] = results;
 
-  const { rect, confidence } = bestResult;
-
-  return {
-    position: rect,
-    confidence,
-  };
+  return bestResult;
 }
 
 export default detectFaces;

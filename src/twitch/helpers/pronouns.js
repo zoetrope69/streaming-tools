@@ -40,7 +40,7 @@ async function getAvailablePronouns() {
   try {
     pronouns = await callAPI("/pronouns");
   } catch (e) {
-    logger.warn("Couldn't get pronouns trying again...");
+    logger.error("Couldn't get pronouns trying again...");
     return getAvailablePronouns();
   }
 
@@ -92,7 +92,6 @@ async function getCachedUserPronounsData(username) {
 async function getUserPronouns(username) {
   const availablePronouns = await getCachedAvailablePronouns();
   const [userPronounData] = await getCachedUserPronounsData(username);
-
   const pronoun = availablePronouns.find((pronoun) => {
     return pronoun.name === userPronounData?.pronoun_id;
   });

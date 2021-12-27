@@ -8,10 +8,10 @@ export function createSourceVisibilityTriggers({
   createDanceSourceVisibilityTriggers();
 
   obs.sourceVisibilityTriggers({
-    "Scene change: BRB": async () => {
+    "MIDI: Scene change - BRB": async () => {
       await commands.switchToBRBScene();
     },
-    "Stop Goosebumps": async () => {
+    "MIDI: Stop": async () => {
       await redemptions.goosebumps.stop();
     },
   });

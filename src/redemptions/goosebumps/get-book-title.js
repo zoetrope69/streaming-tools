@@ -1,4 +1,4 @@
-import importJSON from "../helpers/import-json.js";
+import importJSON from "../../helpers/import-json.js";
 
 const { insertionString, titles } = await importJSON(
   new URL("./assets/book-titles.json", import.meta.url)

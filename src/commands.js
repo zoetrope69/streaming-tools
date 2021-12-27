@@ -1,26 +1,25 @@
-import obs from "../obs/index.js";
-import textToSpeech from "../text-to-speech.js";
+import obs from "./obs/index.js";
+import textToSpeech from "./text-to-speech.js";
 import {
   getCachedCommands as getCommands,
   getScheduledCommands,
-} from "../google-sheet.js";
+} from "./google-sheet.js";
 
 import sendFaceDataToClient from "./send-face-data-to-client.js";
 import saveScreenshotToBrbScreen from "./save-screenshot-to-brb-screen.js";
-import Alerts from "./alerts.js";
 
-import { schedule } from "../helpers/schedule.js";
-import Logger from "../helpers/logger.js";
+import { schedule } from "./helpers/schedule.js";
+import Logger from "./helpers/logger.js";
 const logger = new Logger("🚀 Commands");
 
 class Commands {
-  constructor({ io, music, streamingService, channelInfo }) {
+  constructor({ io, music, streamingService, channelInfo, alerts }) {
     this.io = io;
     this.music = music;
     this.streamingService = streamingService;
     this.channelInfo = channelInfo;
+    this.alerts = alerts;
 
-    this.alerts = new Alerts({ io });
     this.googleSheetCommands = [];
 
     this.handleRecurringGoogleSheetCommands({ streamingService });
@@ -86,7 +85,11 @@ class Commands {
 
   async bex() {
     await sendFaceDataToClient({ io: this.io });
-    this.alerts.send({ type: "bexchat" });
+    this.alerts.send({
+      type: "bexchat",
+      audioUrl: "/assets/alerts/bexchat.mp3",
+      duration: 10000,
+    });
   }
 
   async octopussy() {
@@ -200,6 +203,8 @@ class Commands {
 
     this.alerts.send({
       type: "shout-out",
+      duration: 10000,
+      delayAudio: 3100,
       user,
       loadImage: user.image,
       customShoutOut,
@@ -251,6 +256,7 @@ class Commands {
 
     this.alerts.send({
       type: "say",
+      duration: 5000,
       message: commandArguments,
       messageWithEmotes: messageWithEmotes.replace("!say", "").trim(),
     });

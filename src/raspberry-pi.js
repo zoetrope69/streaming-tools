@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-import Logger from "../helpers/logger.js";
+import Logger from "./helpers/logger.js";
 const logger = new Logger("🍓 Raspberry PI");
 
 const FLIPPED = false;

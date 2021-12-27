@@ -14,6 +14,7 @@ import BigDrinkRedemption from "./big-drink.js";
 import ZacYouStinkRedemption from "./zac-you-stink.js";
 import BigDataRedemption from "./big-data.js";
 import RunescapeRedemption from "./runescape/index.js";
+import BarryRedemption from "./barry.js";
 
 // TODO move this to base-redemption.js
 const DEFAULT_REDEMPTION = {
@@ -84,15 +85,6 @@ const REDEMPTIONS = [
     global_cooldown_seconds: 60 * 5, // 5 minutes
   },
   {
-    id: "51411177-c629-48da-90da-1ecf9046e760",
-    title: "barry",
-    cost: 1111,
-    background_color: "#05B33E",
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 5, // 5 minutes
-    is_enabled: false,
-  },
-  {
     id: "f0ed621b-c66a-482b-9a5d-3af0aa9be656",
     title: "TTP (text-to-print)",
     prompt: "send something to the printer ennet",
@@ -127,6 +119,7 @@ class Redemptions {
       zacYouStink: ZacYouStinkRedemption,
       bigData: BigDataRedemption,
       runescape: RunescapeRedemption,
+      barry: BarryRedemption,
     };
 
     const allRedemptionsData = [...REDEMPTIONS];
@@ -360,17 +353,6 @@ class Redemptions {
   allyPhil({ message }) {
     logger.log("🥊 Phil Punch triggered...");
     this.alerts.send({ type: "philpunch", message });
-  }
-
-  barry() {
-    return new Promise((resolve) => {
-      logger.log(" Barry triggered...");
-      const timeout = 104 * 1000;
-      obs.turnOnOverlay("Barry Singing", timeout);
-      setTimeout(() => {
-        resolve();
-      }, timeout);
-    });
   }
 
   get broomyJagRace() {

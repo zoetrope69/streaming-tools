@@ -147,6 +147,7 @@ export async function switchToScene(sceneName) {
   });
 }
 
+// TODO what is this?
 export async function resetTriggers() {
   return await request("TriggerHotkeyBySequence", {
     keyId: "OBS_KEY_NUM5",

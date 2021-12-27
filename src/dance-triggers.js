@@ -1,4 +1,4 @@
-import obs from "./index.js";
+import obs from "./obs/index.js";
 import { setTimeout } from "timers/promises"; // eslint-disable-line node/no-missing-import
 
 const DANCE_TRANSITION_DURATION_MS = 600;
@@ -82,77 +82,94 @@ async function findDanceScenes() {
   });
 }
 
-async function createDanceSourceVisibilityTriggers() {
+async function changeToRandomDanceScene() {
+  const currentDanceScene = await getCurrentDanceScene();
+
+  /*
+        if we're on a dance scene already but not the 1st
+        we need to move back to the first to transition to the new one
+      */
+  if (currentDanceScene?.position > 1) {
+    await obs.switchToScene(
+      `${BASE_DANCE_STRING} | ${currentDanceScene.type} | 1`
+    );
+    await setTimeout(DANCE_TRANSITION_DURATION_MS);
+  }
+
+  const allDanceSceneTypes = Object.keys(DANCE_SCENES);
+
+  // remove the current dance scene from selection
+  const danceSceneTypes = allDanceSceneTypes.filter(
+    (danceSceneType) => {
+      return danceSceneType !== currentDanceScene?.type;
+    }
+  );
+
+  const randomDanceSceneType =
+    danceSceneTypes[
+      Math.floor(Math.random() * danceSceneTypes.length)
+    ];
+
+  await obs.switchToScene(
+    `${BASE_DANCE_STRING} | ${randomDanceSceneType} | 1`
+  );
+}
+
+async function handleDanceTriggers({ joycons }) {
   await findDanceScenes();
 
-  obs.sourceVisibilityTriggers({
-    "Joycon: A": async () => {
-      return obs.toggleFilter({
+  joycons.on("rightPress", async (event) => {
+    if (event === "A") {
+      await obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Recursion Effect",
       });
-    },
-    "Joycon: B": async () => {
-      return obs.toggleFilter({
+      return;
+    }
+
+    if (event === "B") {
+      await obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Time Warp Scan",
       });
-    },
-    "Joycon: Y": async () => {
-      return obs.toggleFilter({
+      return;
+    }
+
+    if (event === "Y") {
+      await obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Trail",
       });
-    },
-    "Joycon: X": async () => {
+      return;
+    }
+
+    if (event === "X") {
       obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Fill Colour",
       });
-      return obs.toggleFilter({
+      await obs.toggleFilter({
         source: "Raw Webcam",
         filter: "Webcam: Rainbow",
       });
-    },
-    "Joycon: R": async () => {
-      return changeDanceScene({ forward: false });
-    },
-    "Joycon: RZ": async () => {
-      return changeDanceScene({ forward: true });
-    },
-    "Joycon: Right Analog In": async () => {
-      const currentDanceScene = await getCurrentDanceScene();
+      return;
+    }
 
-      /*
-        if we're on a dance scene already but not the 1st
-        we need to move back to the first to transition to the new one
-      */
-      if (currentDanceScene?.position > 1) {
-        await obs.switchToScene(
-          `${BASE_DANCE_STRING} | ${currentDanceScene.type} | 1`
-        );
-        await setTimeout(DANCE_TRANSITION_DURATION_MS);
-      }
+    if (event === "R") {
+      await changeDanceScene({ forward: false });
+      return;
+    }
 
-      const allDanceSceneTypes = Object.keys(DANCE_SCENES);
+    if (event === "ZR") {
+      await changeDanceScene({ forward: true });
+      return;
+    }
 
-      // remove the current dance scene from selection
-      const danceSceneTypes = allDanceSceneTypes.filter(
-        (danceSceneType) => {
-          return danceSceneType !== currentDanceScene?.type;
-        }
-      );
-
-      const randomDanceSceneType =
-        danceSceneTypes[
-          Math.floor(Math.random() * danceSceneTypes.length)
-        ];
-
-      await obs.switchToScene(
-        `${BASE_DANCE_STRING} | ${randomDanceSceneType} | 1`
-      );
-    },
+    if (event === "joystick-in") {
+      await changeToRandomDanceScene();
+      return;
+    }
   });
 }
 
-export default createDanceSourceVisibilityTriggers;
+export default handleDanceTriggers;

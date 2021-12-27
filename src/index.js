@@ -6,25 +6,24 @@ import path from "path";
 import http from "http";
 
 import express from "express";
-import ExpressRateLimit from "express-rate-limit";
 import { Server } from "socket.io";
 
 import Music from "./music/index.js";
 import Twitch from "./twitch/twitch.js";
 import textToSpeech from "./text-to-speech.js";
 import obs from "./obs/index.js";
-import {
-  createFilterVisibilityTriggers,
-  createSourceVisibilityTriggers,
-} from "./obs/helpers.js";
+
 import ChannelInfo from "./channel-info.js";
 import Alerts from "./alerts.js";
 import Redemptions from "./redemptions/index.js";
+import Logger from "./helpers/logger.js";
+import Joycons from "./joycons.js";
+import Launchpad from "./launchpad.js";
 import RaspberryPi from "./raspberry-pi.js";
 import Commands from "./commands.js";
+import handleDanceTriggers from "./dance-triggers.js";
 import { firstTimeTalking } from "./users-who-have-talked.js";
 
-import Logger from "./helpers/logger.js";
 const { NGROK_URL, PORT } = process.env;
 const CLIENT_FILE_PATH = "client/build";
 
@@ -37,17 +36,8 @@ const io = new Server(server);
 
 const alerts = new Alerts({ io });
 
-// set up rate limiter: maximum of five requests per minute
-const limiter = new ExpressRateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 50,
-});
-
 // allow json
 app.use(express.json());
-
-// apply rate limiter to all requests
-app.use(limiter);
 
 // serve client files
 app.use(express.static(CLIENT_FILE_PATH));
@@ -318,6 +308,22 @@ async function handleNewMusicTracks({ music }) {
   });
 }
 
+async function handleLaunchpadPresses({ commands, launchpad }) {
+  launchpad.on("press", async ({ circle, position }) => {
+    if (circle) {
+      if (position === "D") {
+        // STOP BUTTON
+        return;
+      }
+
+      if (position === "8") {
+        await commands.switchToBRBScene();
+        return;
+      }
+    }
+  });
+}
+
 async function main() {
   server.listen(PORT, () => {
     logger.info(`Listening on http://localhost:${PORT}`);
@@ -326,6 +332,8 @@ async function main() {
   // initialise various things
   await obs.initialise();
 
+  const joycons = new Joycons({ app });
+  const launchpad = new Launchpad({ app });
   const raspberryPi = new RaspberryPi({ app });
   const music = Music();
   const streamingService = await Twitch({
@@ -348,10 +356,10 @@ async function main() {
     alerts,
   });
 
+  handleDanceTriggers({ joycons });
+  handleLaunchpadPresses({ launchpad, commands });
   handleNewMusicTracks({ music });
   setTwitchTags({ streamingService });
-  createSourceVisibilityTriggers({ commands, redemptions });
-  createFilterVisibilityTriggers();
   handleChannelInfo({ channelInfo, streamingService });
   handleSubscription({ streamingService });
   handleBits({ streamingService });

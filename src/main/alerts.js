@@ -3,31 +3,6 @@ import { v4 as randomID } from "uuid";
 let ALERT_QUEUE = [];
 let ALERT_IS_RUNNING = false;
 
-// TODO move these to their corresponding redemptions/commands
-const ALERT_TYPES = {
-  "shout-out": {
-    duration: 10000,
-    delayAudio: 3100,
-  },
-  bits: {
-    duration: 5000,
-  },
-  subscribe: {
-    duration: 5000,
-  },
-  say: {
-    duration: 5000,
-  },
-  immabee: {
-    audioUrl: "/assets/alerts/immabee.mp3",
-    duration: 4000,
-  },
-  bexchat: {
-    audioUrl: "/assets/alerts/bexchat.mp3",
-    duration: 10000,
-  },
-};
-
 function addToAlertQueue(alert) {
   const newAlertQueue = ALERT_QUEUE.concat([alert]);
   ALERT_QUEUE = newAlertQueue;
@@ -73,18 +48,12 @@ class Alerts {
   }
 
   send(options) {
-    const alertType = ALERT_TYPES[options.type];
     const alert = {
       id: randomID(),
-      ...alertType,
       ...options,
     };
     addToAlertQueue(alert);
     processAlert(this.io);
-  }
-
-  get alertTypes() {
-    return ALERT_TYPES;
   }
 }
 

@@ -4,13 +4,11 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("🥊 Redemption: Ally Phil");
 
 class AllyPhilRedemption extends BaseRedemption {
-  constructor({ io, streamingService, alerts }) {
+  constructor({ streamingService, alerts }) {
     const title = "ally phil";
 
     super({ streamingService, title });
 
-    this.io = io;
-    this.streamingService = streamingService;
     this.alerts = alerts;
     this.data = {
       id: "1d8c3308-035b-4466-adae-8cc5726bac26",

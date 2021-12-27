@@ -6,14 +6,12 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("❄️ Redemption: Snowball");
 
 class SnowballRedemption extends BaseRedemption {
-  constructor({ io, streamingService, alerts }) {
+  constructor({ streamingService, alerts }) {
     const title = "snowball";
 
     super({ streamingService, title });
 
     this.alerts = alerts;
-    this.io = io;
-    this.streamingService = streamingService;
     this.data = {
       id: "7de7d543-cf2f-434f-a319-eba5fd4e1496",
       title,

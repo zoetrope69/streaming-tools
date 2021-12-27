@@ -6,12 +6,11 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("🥛 Redemption: Big Drink");
 
 class BigDrinkRedemption extends BaseRedemption {
-  constructor({ io, streamingService, music }) {
+  constructor({ streamingService, music }) {
     const title = "big drink";
 
     super({ streamingService, title });
 
-    this.io = io;
     this.streamingService = streamingService;
     this.music = music;
     this.data = {

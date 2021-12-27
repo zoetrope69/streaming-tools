@@ -85,7 +85,11 @@ class Commands {
 
   async bex() {
     await sendFaceDataToClient({ io: this.io });
-    this.alerts.send({ type: "bexchat" });
+    this.alerts.send({
+      type: "bexchat",
+      audioUrl: "/assets/alerts/bexchat.mp3",
+      duration: 10000,
+    });
   }
 
   async octopussy() {
@@ -199,6 +203,8 @@ class Commands {
 
     this.alerts.send({
       type: "shout-out",
+      duration: 10000,
+      delayAudio: 3100,
       user,
       loadImage: user.image,
       customShoutOut,
@@ -250,6 +256,7 @@ class Commands {
 
     this.alerts.send({
       type: "say",
+      duration: 5000,
       message: commandArguments,
       messageWithEmotes: messageWithEmotes.replace("!say", "").trim(),
     });

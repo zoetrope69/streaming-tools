@@ -7,12 +7,11 @@ import Logger from "../../../helpers/logger.js";
 const logger = new Logger("🐝 Redemption: Imma Bee");
 
 class ImmaBeeRedemption extends BaseRedemption {
-  constructor({ io, streamingService, alerts }) {
+  constructor({ streamingService, alerts }) {
     const title = "imma bee";
 
     super({ streamingService, title });
 
-    this.io = io;
     this.streamingService = streamingService;
     this.alerts = alerts;
     this.data = {
@@ -33,7 +32,11 @@ class ImmaBeeRedemption extends BaseRedemption {
     try {
       const image = await obs.getWebcamImage();
       await createBeeImage(image);
-      this.alerts.send({ type: "immabee" });
+      this.alerts.send({
+        type: "immabee",
+        audioUrl: "/assets/alerts/immabee.mp3",
+        duration: 4000,
+      });
       this.streamingService.fulfilRedemptionReward(redemption);
     } catch (e) {
       logger.error(JSON.stringify(e));

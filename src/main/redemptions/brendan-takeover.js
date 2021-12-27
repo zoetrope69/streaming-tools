@@ -6,13 +6,11 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("🎮 Redemption: Brendan Takeover");
 
 class BrendanTakeoverRedemption extends BaseRedemption {
-  constructor({ io, streamingService }) {
+  constructor({ streamingService }) {
     const title = "brendan takeover";
 
     super({ streamingService, title });
 
-    this.io = io;
-    this.streamingService = streamingService;
     this.data = {
       id: "824b91da-d234-441f-bc55-0b1a148463b5",
       title,

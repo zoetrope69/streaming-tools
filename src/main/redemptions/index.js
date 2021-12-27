@@ -20,63 +20,36 @@ import BrendanTakeoverRedemption from "./brendan-takeover.js";
 import NortyDevilRedemption from "./norty-devil.js";
 import BroomyJagRaceRedemption from "./broomy-jag-race.js";
 import GoosebumpsRedemption from "./goosebumps/index.js";
+import TextToPrintRedemption from "./text-to-print.js";
 
-// TODO move this to base-redemption.js
-const DEFAULT_REDEMPTION = {
-  is_enabled: true,
-  is_user_input_required: false,
-  is_global_cooldown_enabled: false,
-  global_cooldown_seconds: 0,
-  is_paused: false,
-  should_redemptions_skip_request_queue: true,
+const REDEMPTIONS = {
+  bubblewrapTime: BubblewrapTimeRedemption,
+  showYourPride: ShowYourPrideRedemption,
+  snowball: SnowballRedemption,
+  danceWithZac: DanceWithZacRedemption,
+  danceToASong: DanceToASongRedemption,
+  immaBee: ImmaBeeRedemption,
+  bigDrink: BigDrinkRedemption,
+  zacYouStink: ZacYouStinkRedemption,
+  bigData: BigDataRedemption,
+  runescape: RunescapeRedemption,
+  barry: BarryRedemption,
+  ally: AllyPhilRedemption,
+  pog: PogRedemption,
+  brendanTakeover: BrendanTakeoverRedemption,
+  nortyDevil: NortyDevilRedemption,
+  broomyJagRace: BroomyJagRaceRedemption,
+  goosebumps: GoosebumpsRedemption,
+  textToPrint: TextToPrintRedemption,
 };
-
-const REDEMPTIONS = [
-  {
-    id: "f0ed621b-c66a-482b-9a5d-3af0aa9be656",
-    title: "TTP (text-to-print)",
-    prompt: "send something to the printer ennet",
-    cost: 100,
-    background_color: "#FFFFFF",
-    should_redemptions_skip_request_queue: false,
-    is_global_cooldown_enabled: true,
-    global_cooldown_seconds: 60 * 1, // 1 minutes
-    is_user_input_required: true,
-  },
-];
 
 class Redemptions {
   constructor({ io, streamingService, raspberryPi, alerts, music }) {
-    // TODO these might not be neccessary once refactored
-    this.io = io;
     this.streamingService = streamingService;
-    this.raspberryPi = raspberryPi;
-    this.alerts = alerts;
-    this.music = music;
 
-    const redemptions = {
-      bubblewrapTime: BubblewrapTimeRedemption,
-      showYourPride: ShowYourPrideRedemption,
-      snowball: SnowballRedemption,
-      danceWithZac: DanceWithZacRedemption,
-      danceToASong: DanceToASongRedemption,
-      immaBee: ImmaBeeRedemption,
-      bigDrink: BigDrinkRedemption,
-      zacYouStink: ZacYouStinkRedemption,
-      bigData: BigDataRedemption,
-      runescape: RunescapeRedemption,
-      barry: BarryRedemption,
-      ally: AllyPhilRedemption,
-      pog: PogRedemption,
-      brendanTakeover: BrendanTakeoverRedemption,
-      nortyDevil: NortyDevilRedemption,
-      broomyJagRace: BroomyJagRaceRedemption,
-      goosebumps: GoosebumpsRedemption,
-    };
+    this.redemptions = Object.keys(REDEMPTIONS).map((key) => {
+      const Redemption = REDEMPTIONS[key];
 
-    const allRedemptionsData = [...REDEMPTIONS];
-    Object.keys(redemptions).forEach((key) => {
-      const Redemption = redemptions[key];
       const redemption = new Redemption({
         io,
         streamingService,
@@ -84,34 +57,22 @@ class Redemptions {
         alerts,
         music,
       });
-      allRedemptionsData.push(redemption.data);
-      this[key] = redemption;
-    });
 
-    this.redemptions = allRedemptionsData.map((redemption) => {
+      this[key] = redemption;
+
+      const { data } = redemption;
+
       // in development mode remove all cooldowns
       if (process.env.NODE_ENV === "development") {
-        redemption.is_global_cooldown_enabled = false;
-        redemption.global_cooldown_seconds = 0;
+        data.is_global_cooldown_enabled = false;
+        data.global_cooldown_seconds = 0;
       }
 
-      return {
-        ...DEFAULT_REDEMPTION,
-        ...redemption,
-      };
+      return data;
     });
 
     this.syncRedemptions();
     this.handleDancingRedemptions();
-    this.handleChannelPointRedemptionChatMessage();
-  }
-
-  isRedemptionByIdTitle({ id, title }) {
-    return this.redemptions.find((redemption) => {
-      const isCorrectId = redemption.id === id;
-      const isCorrectTitle = redemption.title === title;
-      return isCorrectId && isCorrectTitle;
-    });
   }
 
   hasRedemptionChanged(existingRedemption, redemption) {
@@ -172,17 +133,14 @@ class Redemptions {
       // found a reward, update
       if (matchedExistingRedemption) {
         if (
-          this.hasRedemptionChanged(matchedExistingRedemption, {
-            ...DEFAULT_REDEMPTION,
-            ...redemption,
-          })
+          this.hasRedemptionChanged(
+            matchedExistingRedemption,
+            redemption
+          )
         ) {
           logger.debug(`Updating redemption "${redemption.title}"`);
           redemptionUpdatesAndCreations.push(
-            this.streamingService.updateRedemption({
-              ...DEFAULT_REDEMPTION,
-              ...redemption,
-            })
+            this.streamingService.updateRedemption(redemption)
           );
         }
 
@@ -192,10 +150,7 @@ class Redemptions {
       // no reward, create it
       logger.debug(`Creating redemption "${redemption.title}"`);
       redemptionUpdatesAndCreations.push(
-        this.streamingService.createRedemption({
-          ...DEFAULT_REDEMPTION,
-          ...redemption,
-        })
+        this.streamingService.createRedemption(redemption)
       );
     });
     await Promise.all(redemptionUpdatesAndCreations);
@@ -237,58 +192,6 @@ class Redemptions {
     handleScene(name);
 
     await obs.handleSceneChange(handleScene);
-  }
-
-  async handleChannelPointRedemptionChatMessage() {
-    this.streamingService.chat.on(
-      "message",
-      ({ id, redemptionId }) => {
-        if (
-          this.isRedemptionByIdTitle({
-            id: redemptionId,
-            title: "TTP (text-to-print)",
-          })
-        ) {
-          this.streamingService.chat.deleteMessage(id);
-          return;
-        }
-      }
-    );
-  }
-
-  get textToPrint() {
-    return {
-      start: async ({ messageWithNoEmotes, redemption }) => {
-        await obs.showSource({
-          scene: "Overlays",
-          source: "Printer Cam",
-        });
-
-        await this.raspberryPi.printText(messageWithNoEmotes, {
-          isBig: true,
-        });
-
-        setTimeout(async () => {
-          await obs.hideSource({
-            scene: "Overlays",
-            source: "Printer Cam",
-          });
-
-          try {
-            // try and fulfill
-            this.streamingService.fulfilRedemptionReward(redemption);
-          } catch (e) {
-            // do nuthin
-          }
-        }, 60 * 1000); // 1 minute later hide
-      },
-      stop: async () => {
-        await obs.hideSource({
-          scene: "Overlays",
-          source: "Printer Cam",
-        });
-      },
-    };
   }
 }
 

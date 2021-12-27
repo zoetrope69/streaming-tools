@@ -1,3 +1,4 @@
+import { setTimeout } from "timers/promises"; // eslint-disable-line node/no-missing-import
 import { v4 as randomID } from "uuid";
 
 import BaseRedemption from "./base-redemption.js";
@@ -29,6 +30,7 @@ class DanceWithZacRedemption extends BaseRedemption {
 
   async start(data) {
     logger.log("Triggered...");
+
     const newDancer = await this.streamingService.getUser(
       data?.user?.username
     );
@@ -42,14 +44,15 @@ class DanceWithZacRedemption extends BaseRedemption {
     this.dancers.push(newDancer);
     this.io.emit("data", { dancers: this.dancers });
 
-    setTimeout(() => {
-      // remove from array
-      this.dancers = this.dancers.filter((dancer) => {
-        return dancer.id !== newDancer.id;
-      });
+    // 3 minutes (+ wait for it to fade out on client)
+    await setTimeout(1000 * 60 * 3 + 5000);
 
-      this.io.emit("data", { dancers: this.dancers });
-    }, 1000 * 60 * 3 + 5000); // 3 minutes (+ wait for it to fade out on client)
+    // remove from array
+    this.dancers = this.dancers.filter((dancer) => {
+      return dancer.id !== newDancer.id;
+    });
+
+    this.io.emit("data", { dancers: this.dancers });
   }
 }
 

@@ -7,12 +7,11 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("👿 Redemption: Norty Devil");
 
 class NortyDevilRedemption extends BaseRedemption {
-  constructor({ io, streamingService }) {
+  constructor({ streamingService }) {
     const title = "norty devil";
 
     super({ streamingService, title });
 
-    this.io = io;
     this.streamingService = streamingService;
     this.data = {
       id: "4de612a1-1fea-40cd-a105-b40d4f8fcb00",

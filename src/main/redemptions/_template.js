@@ -8,12 +8,11 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("🤓 Redemption: Template");
 
 class TemplateRedemption extends BaseRedemption {
-  constructor({ io, streamingService }) {
+  constructor({ streamingService }) {
     const title = "";
 
     super({ streamingService, title });
 
-    this.io = io;
     this.streamingService = streamingService;
     this.data = {};
 

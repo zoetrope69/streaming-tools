@@ -1,13 +1,11 @@
 import BaseRedemption from "./base-redemption.js";
 
 class DanceToASongRedemption extends BaseRedemption {
-  constructor({ io, streamingService }) {
+  constructor({ streamingService }) {
     const title = "dance to a song";
 
     super({ streamingService, title });
 
-    this.io = io;
-    this.streamingService = streamingService;
     this.data = {
       id: "f75ae948-4d4d-41a1-94c5-76315bc2bcb7",
       title,

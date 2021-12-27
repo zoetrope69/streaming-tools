@@ -6,13 +6,11 @@ import Logger from "../../helpers/logger.js";
 const logger = new Logger("🚗 Redemption: BroomyJagRace");
 
 class BroomyJagRaceRedemption extends BaseRedemption {
-  constructor({ io, streamingService, music }) {
+  constructor({ streamingService, music }) {
     const title = "BroomyJagRace";
 
     super({ streamingService, title });
 
-    this.io = io;
-    this.streamingService = streamingService;
     this.music = music;
     this.data = {
       id: "999fdbde-e8a6-4a1f-913f-62e29751b5e0",

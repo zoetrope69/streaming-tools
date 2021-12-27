@@ -91,7 +91,11 @@ async function handleChannelInfo({ channelInfo, streamingService }) {
 
 async function handleSubscription({ streamingService }) {
   streamingService.on("subscribe", (data) => {
-    alerts.send({ type: "subscribe", ...data });
+    alerts.send({
+      type: "subscribe",
+      duration: 5000,
+      ...data,
+    });
 
     if (data.isGift) {
       streamingService.chat.sendMessage(
@@ -108,7 +112,11 @@ async function handleSubscription({ streamingService }) {
 
 async function handleBits({ streamingService }) {
   streamingService.on("bits", (data) => {
-    alerts.send({ type: "bits", ...data });
+    alerts.send({
+      type: "bits",
+      duration: 5000,
+      ...data,
+    });
     const userName = data.isAnonymous
       ? "bill gates"
       : `@${data.user.username}`;
@@ -134,70 +142,6 @@ async function handleRaid({ streamingService }) {
       `hi @${user.username}, thanks for the raid! hi to the ${user.viewers} raiders.`
     );
   });
-}
-
-async function handleChannelPointRedemptions({
-  streamingService,
-  redemptions,
-  raspberryPi,
-}) {
-  function isValidReward(reward) {
-    if (!reward || !reward.title) {
-      return false;
-    }
-
-    return true;
-  }
-
-  streamingService.on(
-    "channelPointRewardUnfulfilled",
-    async (data) => {
-      const { reward, messageWithNoEmotes } = data;
-      if (!isValidReward(reward)) {
-        return;
-      }
-
-      const { title } = reward;
-
-      if (title === "TTP (text-to-print)") {
-        await redemptions.textToPrint.start({
-          raspberryPi,
-          messageWithNoEmotes,
-          redemption: data,
-        });
-      }
-    }
-  );
-
-  streamingService.on(
-    "channelPointRewardCancelled",
-    async ({ reward }) => {
-      if (!isValidReward(reward)) {
-        return;
-      }
-
-      const { title } = reward;
-
-      if (title === "TTP (text-to-print)") {
-        await redemptions.textToPrint.stop();
-      }
-    }
-  );
-
-  streamingService.on(
-    "channelPointRewardFulfilled",
-    async ({ reward }) => {
-      if (!isValidReward(reward)) {
-        return;
-      }
-
-      const { title } = reward;
-
-      if (title === "TTP (text-to-print)") {
-        await redemptions.textToPrint.stop();
-      }
-    }
-  );
 }
 
 async function handleChatMessages({
@@ -409,12 +353,6 @@ async function main() {
     handleSubscription({ streamingService });
     handleBits({ streamingService });
     handleRaid({ streamingService });
-    handleChannelPointRedemptions({
-      streamingService,
-      redemptions,
-      music,
-      raspberryPi,
-    });
     handleChatMessages({
       streamingService,
       commands,

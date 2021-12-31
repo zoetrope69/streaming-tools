@@ -65,12 +65,7 @@ class TextToPrintRedemption extends BaseRedemption {
       source: "Printer Cam",
     });
 
-    try {
-      // try and fulfill
-      this.streamingService.fulfilRedemptionReward(redemption);
-    } catch (e) {
-      // do nuthin
-    }
+    await this.streamingService.fulfilRedemptionReward(redemption);
   }
 
   async stop() {

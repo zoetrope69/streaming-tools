@@ -520,11 +520,19 @@ async function TwitchAPI({ ngrokUrl }) {
     updateRedemptionReward,
 
     fulfilRedemptionReward: async (redemption) => {
-      return updateRedemptionReward(redemption, "FULFILLED");
+      try {
+        await updateRedemptionReward(redemption, "FULFILLED");
+      } catch (e) {
+        logger.debug(e.message);
+      }
     },
 
     cancelRedemptionReward: async (redemption) => {
-      return updateRedemptionReward(redemption, "CANCELED");
+      try {
+        await updateRedemptionReward(redemption, "CANCELED");
+      } catch (e) {
+        logger.debug(e.message);
+      }
     },
 
     getStream,

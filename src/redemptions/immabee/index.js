@@ -37,13 +37,13 @@ class ImmaBeeRedemption extends BaseRedemption {
         audioUrl: "/assets/alerts/immabee.mp3",
         duration: 4000,
       });
-      this.streamingService.fulfilRedemptionReward(redemption);
+      await this.streamingService.fulfilRedemptionReward(redemption);
     } catch (e) {
       logger.error(JSON.stringify(e));
       this.streamingService.chat.sendMessage(
         `Couldn't find Zac's face...`
       );
-      this.streamingService.cancelRedemptionReward(redemption);
+      await this.streamingService.cancelRedemptionReward(redemption);
     }
   }
 }

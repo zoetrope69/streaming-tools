@@ -195,6 +195,21 @@ export async function toggleFilter({ source, filter }) {
   });
 }
 
+export async function updateSourceSettings({ source, settings }) {
+  const result = await request("GetSourceSettings", {
+    sourceName: source,
+  });
+  const newSettings = { ...result.sourceSettings, ...settings };
+  return await request("SetSourceSettings", {
+    sourceName: source,
+    sourceSettings: newSettings,
+  });
+}
+
+export async function updateSourceURL({ source, url }) {
+  return await updateSourceSettings({ source, settings: { url } });
+}
+
 export async function handleTriggers({
   triggers,
   itemVisible,

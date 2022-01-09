@@ -14,7 +14,12 @@ class TemplateRedemption extends BaseRedemption {
     super({ streamingService, title });
 
     this.streamingService = streamingService;
-    this.data = {};
+    this.data = {
+      title,
+      prompt: "",
+      cost: 100,
+      background_color: "#FFF",
+    };
 
     this.unfufilledRedemption((data) => this.start(data));
     this.fufilledRedemption((data) => this.stop(data));

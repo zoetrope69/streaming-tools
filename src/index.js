@@ -308,11 +308,16 @@ async function handleNewMusicTracks({ music }) {
   });
 }
 
-async function handleLaunchpadPresses({ commands, launchpad }) {
+async function handleLaunchpadPresses({
+  redemptions,
+  commands,
+  launchpad,
+}) {
   launchpad.on("press", async ({ circle, position }) => {
     if (circle) {
       if (position === "D") {
         // STOP BUTTON
+        await redemptions.scuffedKaraoke.stop();
         return;
       }
 
@@ -357,7 +362,7 @@ async function main() {
   });
 
   handleDanceTriggers({ joycons });
-  handleLaunchpadPresses({ launchpad, commands });
+  handleLaunchpadPresses({ launchpad, redemptions, commands });
   handleNewMusicTracks({ music });
   setTwitchTags({ streamingService });
   handleChannelInfo({ channelInfo, streamingService });

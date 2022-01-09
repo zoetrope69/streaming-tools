@@ -21,6 +21,7 @@ import NortyDevilRedemption from "./norty-devil.js";
 import BroomyJagRaceRedemption from "./broomy-jag-race.js";
 import GoosebumpsRedemption from "./goosebumps/index.js";
 import TextToPrintRedemption from "./text-to-print.js";
+import ScuffedKaraokeRedemption from "./scuffed-karaoke.js";
 
 const REDEMPTIONS = {
   bubblewrapTime: BubblewrapTimeRedemption,
@@ -41,6 +42,7 @@ const REDEMPTIONS = {
   broomyJagRace: BroomyJagRaceRedemption,
   goosebumps: GoosebumpsRedemption,
   textToPrint: TextToPrintRedemption,
+  scuffedKaraoke: ScuffedKaraokeRedemption,
 };
 
 class Redemptions {

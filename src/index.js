@@ -22,6 +22,7 @@ import Launchpad from "./launchpad.js";
 import RaspberryPi from "./raspberry-pi.js";
 import Commands from "./commands.js";
 import handleDanceTriggers from "./dance-triggers.js";
+import handleMGSScene from "./mgs-scene.js";
 import { firstTimeTalking } from "./users-who-have-talked.js";
 
 const { NGROK_URL, PORT } = process.env;
@@ -362,6 +363,7 @@ async function main() {
   });
 
   handleDanceTriggers({ joycons });
+  handleMGSScene({ music });
   handleLaunchpadPresses({ launchpad, redemptions, commands });
   handleNewMusicTracks({ music });
   setTwitchTags({ streamingService });

@@ -170,7 +170,7 @@ class Redemptions {
       }
     );
 
-    const handleScene = (sceneName) => {
+    await obs.handleSceneChange((sceneName) => {
       if (sceneName.includes("Dance")) {
         redemptionsForDancing.forEach((redemption) => {
           this.streamingService.enableRedemption(redemption.id);
@@ -187,13 +187,7 @@ class Redemptions {
       redemptionsNotForDancing.forEach((redemption) => {
         this.streamingService.enableRedemption(redemption.id);
       });
-    };
-
-    // on load of the scripts
-    const { name } = await obs.getCurrentScene();
-    handleScene(name);
-
-    await obs.handleSceneChange(handleScene);
+    });
   }
 }
 

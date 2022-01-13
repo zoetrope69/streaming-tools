@@ -19,6 +19,7 @@ import Redemptions from "./redemptions/index.js";
 import Logger from "./helpers/logger.js";
 import Joycons from "./joycons.js";
 import Launchpad from "./launchpad.js";
+import ComputerMouseKeyboard from "./computer-mouse-keyboard.js";
 import RaspberryPi from "./raspberry-pi.js";
 import Commands from "./commands.js";
 import handleDanceTriggers from "./dance-triggers.js";
@@ -313,8 +314,9 @@ async function handleLaunchpadPresses({
   redemptions,
   commands,
   launchpad,
+  computer,
 }) {
-  launchpad.on("press", async ({ circle, position }) => {
+  launchpad.on("press", async ({ grid, circle, position }) => {
     if (circle) {
       if (position === "D") {
         // STOP BUTTON
@@ -326,6 +328,48 @@ async function handleLaunchpadPresses({
         await commands.switchToBRBScene();
         return;
       }
+
+      return;
+    }
+
+    if (grid) {
+      if (position.x === 2 && position.y === 3) {
+        // Alt + Num + 5
+        await computer.keyboard.shortcut("numpad_5", ["alt"]);
+        return;
+      }
+
+      if (position.x === 3 && position.y === 3) {
+        // Alt + Num + 0
+        await computer.keyboard.shortcut("numpad_0", ["alt"]);
+        return;
+      }
+
+      if (position.x === 4 && position.y === 3) {
+        // Alt + Num + 1
+        await computer.keyboard.shortcut("numpad_1", ["alt"]);
+        return;
+      }
+
+      if (position.x === 5 && position.y === 3) {
+        // Alt + Num + 2
+        await computer.keyboard.shortcut("numpad_2", ["alt"]);
+        return;
+      }
+
+      if (position.x === 6 && position.y === 3) {
+        // Alt + Num + 3
+        await computer.keyboard.shortcut("numpad_3", ["alt"]);
+        return;
+      }
+
+      if (position.x === 7 && position.y === 3) {
+        // Alt + Num + 4
+        await computer.keyboard.shortcut("numpad_4", ["alt"]);
+        return;
+      }
+
+      return;
     }
   });
 }
@@ -340,6 +384,7 @@ async function main() {
 
   const joycons = new Joycons({ app });
   const launchpad = new Launchpad({ app });
+  const computer = new ComputerMouseKeyboard({ app });
   const raspberryPi = new RaspberryPi({ app });
   const music = Music();
   const streamingService = await Twitch({
@@ -364,7 +409,12 @@ async function main() {
 
   handleDanceTriggers({ joycons });
   handleMGSScene({ music });
-  handleLaunchpadPresses({ launchpad, redemptions, commands });
+  handleLaunchpadPresses({
+    launchpad,
+    computer,
+    redemptions,
+    commands,
+  });
   handleNewMusicTracks({ music });
   setTwitchTags({ streamingService });
   handleChannelInfo({ channelInfo, streamingService });

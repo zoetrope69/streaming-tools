@@ -23,7 +23,6 @@ class RaspberryPi {
   listenForPings({ app }) {
     logger.info("Listening for pings...");
     app.post("/ping", (request, response) => {
-      logger.debug("Ping endpoint called...");
       const { source, host } = request.body;
 
       if (source === "raspberry-pi" && host) {

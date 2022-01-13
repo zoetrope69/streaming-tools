@@ -57,15 +57,6 @@ async function getCurrentTrack() {
   return track;
 }
 
-async function emitCurrentTrack(eventEmitter) {
-  const track = await getCurrentTrack();
-  eventEmitter.emit("track", track);
-}
-
-async function clearCurrentTrack(eventEmitter) {
-  eventEmitter.emit("track", {});
-}
-
 async function isSpotifyPlaying() {
   const track = await getRecentSpotifyTrack();
   return track && track.isNowPlaying;
@@ -73,6 +64,15 @@ async function isSpotifyPlaying() {
 
 function Music() {
   const eventEmitter = new EventEmitter();
+
+  async function emitCurrentTrack() {
+    const track = await getCurrentTrack();
+    eventEmitter.emit("track", track);
+  }
+
+  async function clearCurrentTrack() {
+    eventEmitter.emit("track", {});
+  }
 
   if (!areMusicAPIEnvironmentVariablesAvailable()) {
     eventEmitter.getCurrentTrack = () => null;
@@ -82,19 +82,26 @@ function Music() {
   logger.info("Checking for new now playing song...");
   // run as soon as we launch script
   // run every 3 seconds after that
-  emitCurrentTrack(eventEmitter);
-  setInterval(() => {
-    emitCurrentTrack(eventEmitter);
-  }, 1000 * 3);
+  emitCurrentTrack();
+  setInterval(emitCurrentTrack, 1000 * 3);
 
   return Object.assign(eventEmitter, {
-    clearCurrentTrack: () => clearCurrentTrack(eventEmitter),
+    clearCurrentTrack,
     isSpotifyPlaying,
     spotify: {
       getRecentTrack: getRecentSpotifyTrack,
-      pauseTrack,
-      playTrack,
-      skipTrack,
+      pauseTrack: async () => {
+        await pauseTrack();
+        await clearCurrentTrack();
+      },
+      playTrack: async () => {
+        await playTrack();
+        await emitCurrentTrack();
+      },
+      skipTrack: async () => {
+        await skipTrack();
+        await emitCurrentTrack();
+      },
     },
     lastFm: {
       getRecentTrack: getRecentLastFmTrack,

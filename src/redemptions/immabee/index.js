@@ -37,6 +37,9 @@ class ImmaBeeRedemption extends BaseRedemption {
         audioUrl: "/assets/alerts/immabee.mp3",
         duration: 4000,
       });
+      this.streamingService.chat.sendMessage(
+        `shoutout darren dobson for the bee images https://linktr.ee/DarrenDobson`
+      );
       await this.streamingService.fulfilRedemptionReward(redemption);
     } catch (e) {
       logger.error(JSON.stringify(e));

@@ -182,7 +182,16 @@ class Commands {
       return;
     }
 
-    const user = await this.streamingService.getUser(username);
+    let user;
+    try {
+      user = await this.streamingService.getUser(username);
+    } catch (e) {
+      logger.error(e.message);
+      this.streamingService.chat.sendMessage(
+        `couldnt find a user for "${username}"`
+      );
+      return;
+    }
 
     if (!user) {
       return;
@@ -223,7 +232,7 @@ class Commands {
     const urlString = `twitch.tv/${user.username.toLowerCase()}`;
 
     this.streamingService.chat.sendMessage(
-      `shout out to ${nameString} doing something cool over at ${urlString} Squid1 Squid2 zactopUs Squid2 Squid4`
+      `shout out to ${nameString} - ${urlString}`
     );
   }
 

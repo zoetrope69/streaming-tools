@@ -131,8 +131,12 @@ async function handleRaid({ streamingService }) {
 
     alerts.send({ type: "raid", user, audioUrl: raidAudioUrl });
     streamingService.chat.sendMessage(
-      `hi @${user.username}, thanks for the raid! hi to the ${user.viewers} raiders.`
+      `thanks for the raid, @${user.username}. hi raiders`
     );
+
+    setTimeout(() => {
+      streamingService.chat.sendMessage(`!so @${user.username}`);
+    }, 10 * 1000); // 10 seconds
   });
 }
 

@@ -34,10 +34,7 @@ class RaspberryPi extends EventEmitter {
         logger.debug(`Raspberry PI at: ${host}`);
         this.raspberryPiHost = host;
 
-        if (!this.isAvailable) {
-          this.isAvailable = true;
-          this.emit("available", true);
-        }
+        this.emit("available", true);
       }
 
       response.json({ success: true });
@@ -68,16 +65,26 @@ class RaspberryPi extends EventEmitter {
     return;
   }
 
-  async printImage(base64ImageString) {
+  async printImage({ base64ImageString, ...options }) {
     return this.print("image", {
       base64ImageString,
       isFlipped: FLIPPED,
+      ...options,
     });
   }
 
-  async printEmote({ emoteImage }) {
-    const base64Text = await getBase64StringFromURL(emoteImage);
-    return this.printImage(base64Text);
+  async printEmote({ emoteImage, ...options }) {
+    const base64ImageString = await getBase64StringFromURL(
+      emoteImage
+    );
+
+    return this.printImage({
+      base64ImageString,
+      ...options,
+      lineFeed: {
+        after: 5,
+      },
+    });
   }
 
   async printText(text, options = {}) {

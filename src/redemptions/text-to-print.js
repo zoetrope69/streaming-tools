@@ -1,4 +1,3 @@
-import { setTimeout } from "timers/promises"; // eslint-disable-line node/no-missing-import
 import obs from "../obs/index.js";
 
 import BaseRedemption from "./base-redemption.js";
@@ -17,7 +16,8 @@ class TextToPrintRedemption extends BaseRedemption {
     this.data = {
       id: "f0ed621b-c66a-482b-9a5d-3af0aa9be656",
       title,
-      prompt: "send something to the printer ennet",
+      prompt:
+        "send something to the printer ennet. send just an emote and it'll print that",
       cost: 100,
       background_color: "#FFFFFF",
       should_redemptions_skip_request_queue: false,
@@ -26,6 +26,9 @@ class TextToPrintRedemption extends BaseRedemption {
       is_user_input_required: true,
       is_enabled: false, // only enable when raspberry pi is available
     };
+
+    this.printTimeout = null;
+    this.raspberryPiAvailable = false;
 
     this.enableWhenRaspberryPiAvailable();
     this.handleChannelPointRedemptionChatMessage();
@@ -36,53 +39,97 @@ class TextToPrintRedemption extends BaseRedemption {
   }
 
   async enableWhenRaspberryPiAvailable() {
-    if (this.raspberryPi.isAvailable) {
-      this.streamingService.enableRedemption(this.data.id);
-      return;
-    }
-
     this.raspberryPi.on("available", () => {
-      this.streamingService.enableRedemption(this.data.id);
+      if (!this.raspberryPiAvailable) {
+        this.raspberryPiAvailable = true;
+        this.streamingService.enableRedemption(this.data.id);
+      }
     });
   }
 
   async handleChannelPointRedemptionChatMessage() {
     this.streamingService.chat.on(
       "message",
-      ({ id, redemptionId }) => {
+      ({ id, redemptionId, messageWithNoEmotes, emoteImages }) => {
         if (redemptionId === this.data.id) {
-          this.streamingService.chat.deleteMessage(id);
+          this.handleMessage({
+            id,
+            messageWithNoEmotes,
+            emoteImages,
+          });
+
           return;
         }
       }
     );
   }
 
+  async handleMessage({ id, messageWithNoEmotes, emoteImages }) {
+    await obs.showSource({
+      scene: "Overlays",
+      source: "Printer Cam",
+    });
+
+    const isEmoteMode =
+      messageWithNoEmotes.length === 0 && emoteImages.length > 0;
+    if (isEmoteMode) {
+      let [emoteImage] = emoteImages;
+
+      /*
+        get static version of animated emotes
+        always get light mode emotes
+      */
+      emoteImage = emoteImage
+        .replace("/default/", "/static/")
+        .replace("/dark/", "/light/");
+
+      await this.raspberryPi.printEmote({ emoteImage });
+    } else {
+      await this.raspberryPi.printText(messageWithNoEmotes, {
+        isBig: true,
+        lineFeed: {
+          after: 10,
+        },
+      });
+    }
+
+    this.streamingService.chat.deleteMessage(id);
+  }
+
   async start(redemption) {
-    const { messageWithNoEmotes } = redemption;
     logger.log("Triggered...");
+
+    if (this.printTimeout) {
+      clearTimeout(this.printTimeout);
+    }
 
     await obs.showSource({
       scene: "Overlays",
       source: "Printer Cam",
     });
 
-    await this.raspberryPi.printText(messageWithNoEmotes, {
-      isBig: true,
-    });
+    const timeout = 60 * 1000; // 1 minute later hide
 
-    await setTimeout(60 * 1000); // 1 minute later hide
+    setTimeout(async () => {
+      await this.streamingService.fulfilRedemptionReward(redemption);
+    }, timeout);
 
-    await obs.hideSource({
-      scene: "Overlays",
-      source: "Printer Cam",
-    });
-
-    await this.streamingService.fulfilRedemptionReward(redemption);
+    this.printTimeout = setTimeout(async () => {
+      await obs.hideSource({
+        scene: "Overlays",
+        source: "Printer Cam",
+      });
+      this.printTimeout = null;
+    }, timeout);
   }
 
   async stop() {
     logger.log("Stopped");
+
+    if (this.printTimeout) {
+      clearTimeout(this.printTimeout);
+      this.printTimeout = null;
+    }
 
     await obs.hideSource({
       scene: "Overlays",

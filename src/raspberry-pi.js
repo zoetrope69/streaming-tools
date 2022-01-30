@@ -1,3 +1,5 @@
+import { EventEmitter } from "events";
+
 import fetch from "node-fetch";
 
 import Logger from "./helpers/logger.js";
@@ -13,8 +15,11 @@ async function getBase64StringFromURL(url) {
   return `data:${contentType};base64,${data}`;
 }
 
-class RaspberryPi {
+class RaspberryPi extends EventEmitter {
   constructor({ app }) {
+    super();
+
+    this.isAvailable = false;
     this.raspberryPiHost = null;
 
     this.listenForPings({ app });
@@ -28,6 +33,11 @@ class RaspberryPi {
       if (source === "raspberry-pi" && host) {
         logger.debug(`Raspberry PI at: ${host}`);
         this.raspberryPiHost = host;
+
+        if (!this.isAvailable) {
+          this.isAvailable = true;
+          this.emit("available", true);
+        }
       }
 
       response.json({ success: true });

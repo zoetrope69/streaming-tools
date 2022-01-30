@@ -24,13 +24,26 @@ class TextToPrintRedemption extends BaseRedemption {
       is_global_cooldown_enabled: true,
       global_cooldown_seconds: 60 * 1, // 1 minutes
       is_user_input_required: true,
+      is_enabled: false, // only enable when raspberry pi is available
     };
 
+    this.enableWhenRaspberryPiAvailable();
     this.handleChannelPointRedemptionChatMessage();
 
     this.unfufilledRedemption((data) => this.start(data));
     this.fufilledRedemption((data) => this.stop(data));
     this.cancelledRedemption((data) => this.stop(data));
+  }
+
+  async enableWhenRaspberryPiAvailable() {
+    if (this.raspberryPi.isAvailable) {
+      this.streamingService.enableRedemption(this.data.id);
+      return;
+    }
+
+    this.raspberryPi.on("available", () => {
+      this.streamingService.enableRedemption(this.data.id);
+    });
   }
 
   async handleChannelPointRedemptionChatMessage() {

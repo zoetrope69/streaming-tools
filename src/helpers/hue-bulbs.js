@@ -5,6 +5,7 @@ import { colorNameToXY, hexToXY } from "./color-converting.js";
 import Logger from "./logger.js";
 const logger = new Logger("💡 Hue Bulbs");
 
+// https://discovery.meethue.com/
 const { HUE_BULB_USERNAME, HUE_BULB_HUB_IP_ADDRESS } = process.env;
 
 const BASE_URI = `http://${HUE_BULB_HUB_IP_ADDRESS}/api/${HUE_BULB_USERNAME}/`;

@@ -19,7 +19,6 @@ class RaspberryPi extends EventEmitter {
   constructor({ app }) {
     super();
 
-    this.isAvailable = false;
     this.raspberryPiHost = null;
 
     this.listenForPings({ app });

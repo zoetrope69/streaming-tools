@@ -10,3 +10,4 @@ links to:
 
 - [streaming-tools-windows](https://github.com/zactopus/streaming-tools-windows)
 - [streaming-tools-raspberry-pi](https://github.com/zactopus/streaming-tools-raspberry-pi)
+- [streaming-tools-macbook](https://github.com/zactopus/streaming-tools-macbook)

@@ -12,102 +12,115 @@ import { getCachedAlbumArtColors as getAlbumArtColors } from "./helpers.js";
 
 const logger = new Logger("🎸 Music");
 
-const {
-  SPOTIFY_AUTH_REDIRECT_URI,
-  SPOTIFY_CLIENT_ID,
-  SPOTIFY_CLIENT_SECRET,
-  LAST_FM_API_KEY,
-  LAST_FM_USERNAME,
-} = process.env;
+class Music extends EventEmitter {
+  constructor({ ableton }) {
+    super();
 
-function areMusicAPIEnvironmentVariablesAvailable() {
-  return (
-    SPOTIFY_AUTH_REDIRECT_URI &&
-    SPOTIFY_CLIENT_ID &&
-    SPOTIFY_CLIENT_SECRET &&
-    LAST_FM_API_KEY &&
-    LAST_FM_USERNAME
-  );
-}
+    this.ableton = ableton;
 
-async function getCurrentTrack() {
-  let track = {};
+    this.emitCurrentTrackOverTime();
+  }
 
-  try {
-    track = await getRecentSpotifyTrack();
+  async getRecentAbletonTrack() {
+    const { isConnected, isPlaying, tempo } = this.ableton;
 
-    // fallback to lastfm if we cant find spotify
-    if (!track || !track.isNowPlaying) {
-      track = await getRecentLastFmTrack();
-    }
-
-    if (!track) {
+    if (!isConnected || !isPlaying) {
       return;
     }
 
-    if (track.albumArtURL) {
-      track.albumArtColors = await getAlbumArtColors(
-        track.albumArtURL
-      );
+    return {
+      isNowPlaying: true,
+      id: "ableton",
+      artistName: "zactopus",
+      trackName: "Ableton",
+      albumArtURL: "/assets/ableton-logo.svg",
+      albumArtColors: {
+        darkestColor: "white",
+        brightestColor: "black",
+      },
+      beatsPerMillisecond: 60000 / tempo,
+    };
+  }
+
+  async getCurrentTrackNoAlbumArtColors() {
+    const abletonTrack = await this.getRecentAbletonTrack();
+    if (abletonTrack) {
+      return abletonTrack;
     }
-  } catch (e) {
-    logger.error(e.message);
+
+    const spotifyTrack = await getRecentSpotifyTrack();
+    if (spotifyTrack && spotifyTrack.isNowPlaying) {
+      return spotifyTrack;
+    }
+
+    const lastFmTrack = await getRecentLastFmTrack();
+    if (lastFmTrack) {
+      return lastFmTrack;
+    }
   }
 
-  return track;
-}
+  async getCurrentTrack() {
+    try {
+      const track = await this.getCurrentTrackNoAlbumArtColors();
 
-async function isSpotifyPlaying() {
-  const track = await getRecentSpotifyTrack();
-  return track && track.isNowPlaying;
-}
+      if (track.albumArtURL && !track.albumArtColors) {
+        track.albumArtColors = await getAlbumArtColors(
+          track.albumArtURL
+        );
+      }
 
-function Music() {
-  const eventEmitter = new EventEmitter();
-
-  async function emitCurrentTrack() {
-    const track = await getCurrentTrack();
-    eventEmitter.emit("track", track);
+      return track;
+    } catch (e) {
+      logger.error(e.message);
+      return {};
+    }
   }
 
-  async function clearCurrentTrack() {
-    eventEmitter.emit("track", {});
+  async isSpotifyPlaying() {
+    const track = await getRecentSpotifyTrack();
+    return track && track.isNowPlaying;
   }
 
-  if (!areMusicAPIEnvironmentVariablesAvailable()) {
-    eventEmitter.getCurrentTrack = () => null;
-    return eventEmitter;
+  async emitCurrentTrack() {
+    const track = await this.getCurrentTrack();
+    this.emit("track", track);
   }
 
-  logger.info("Checking for new now playing song...");
-  // run as soon as we launch script
-  // run every 3 seconds after that
-  emitCurrentTrack();
-  setInterval(emitCurrentTrack, 1000 * 3);
+  async emitCurrentTrackOverTime() {
+    logger.info("Checking for new now playing song...");
+    // run as soon as we launch script
+    // run every 3 seconds after that
+    this.emitCurrentTrack();
+    setInterval(() => this.emitCurrentTrack(), 1000 * 3);
+  }
 
-  return Object.assign(eventEmitter, {
-    clearCurrentTrack,
-    isSpotifyPlaying,
-    spotify: {
+  async clearCurrentTrack() {
+    this.emit("track", {});
+  }
+
+  get spotify() {
+    return {
       getRecentTrack: getRecentSpotifyTrack,
       pauseTrack: async () => {
         await pauseTrack();
-        await clearCurrentTrack();
+        await this.clearCurrentTrack();
       },
       playTrack: async () => {
         await playTrack();
-        await emitCurrentTrack();
+        await this.emitCurrentTrack();
       },
       skipTrack: async () => {
         await skipTrack();
-        await emitCurrentTrack();
+        await this.emitCurrentTrack();
       },
-    },
-    lastFm: {
+    };
+  }
+
+  get lastFm() {
+    return {
       getRecentTrack: getRecentLastFmTrack,
-    },
-    getCurrentTrack,
-  });
+    };
+  }
 }
 
 export default Music;

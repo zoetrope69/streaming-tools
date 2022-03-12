@@ -21,6 +21,8 @@ import Joycons from "./joycons.js";
 import Launchpad from "./launchpad.js";
 import ComputerMouseKeyboard from "./computer-mouse-keyboard.js";
 import RaspberryPi from "./raspberry-pi.js";
+import Macbook from "./macbook/macbook.js";
+import Ableton from "./macbook/ableton.js";
 import Commands from "./commands.js";
 import handleDanceTriggers from "./dance-triggers.js";
 import handleMGSScene from "./mgs-scene.js";
@@ -238,6 +240,7 @@ async function handleChatMessages({
 }
 
 async function handleClientConnections({
+  ableton,
   music,
   redemptions,
   commands,
@@ -247,6 +250,7 @@ async function handleClientConnections({
   io.on("connection", async (socket) => {
     clientLogger.info("Connected");
 
+    await ableton.syncData();
     const currentTrack = await music.getCurrentTrack();
 
     socket.emit("data", {
@@ -390,7 +394,9 @@ async function main() {
   const launchpad = new Launchpad({ app });
   const computer = new ComputerMouseKeyboard({ app });
   const raspberryPi = new RaspberryPi({ app });
-  const music = Music();
+  const macbook = new Macbook({ app });
+  const ableton = new Ableton({ macbook });
+  const music = new Music({ ableton });
   const streamingService = await Twitch({
     ngrokUrl: NGROK_URL,
     app,
@@ -432,6 +438,7 @@ async function main() {
     raspberryPi,
   });
   handleClientConnections({
+    ableton,
     music,
     redemptions,
     commands,

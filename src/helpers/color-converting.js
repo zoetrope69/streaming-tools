@@ -16,7 +16,7 @@ const namedColors = await importJSON(
 );
 
 const LIGHT_XY_COLOR_MAP = {
-  red: [0.4575, 0.4099],
+  red: [0.6744, 0.3],
   orange: [0.5855, 0.3879],
   yellow: [0.4953, 0.4556],
   green: [0.1938, 0.6821],

@@ -33,7 +33,7 @@ class Macbook extends EventEmitter {
         "Content-Type": "application/json",
         "X-Secret": MACBOOK_SECRET,
       },
-      body: JSON.stringify(data),
+      body: data ? JSON.stringify({ data }) : null,
     });
     const json = await response.json();
 

@@ -250,6 +250,7 @@ async function handleClientConnections({
   io.on("connection", async (socket) => {
     clientLogger.info("Connected");
 
+    await ableton.getIsConnected();
     await ableton.syncData();
     const currentTrack = await music.getCurrentTrack();
 
@@ -408,6 +409,7 @@ async function main() {
     raspberryPi,
     alerts,
     music,
+    ableton,
   });
   const commands = new Commands({
     io,

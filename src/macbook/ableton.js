@@ -17,7 +17,8 @@ class Ableton extends EventEmitter {
     }
     this.macbook.on("isAvailable", async (isAvailable) => {
       if (isAvailable) {
-        this.syncData();
+        await this.getIsConnected();
+        await this.syncData();
       } else {
         this.isConnected = false;
         this.isPlaying = false;
@@ -27,6 +28,7 @@ class Ableton extends EventEmitter {
 
     this.on("isConnected", (isConnected) => {
       if (isConnected) {
+        this.isConnected = true;
         this.syncData();
       } else {
         this.isConnected = false;
@@ -37,15 +39,16 @@ class Ableton extends EventEmitter {
   }
 
   async syncData() {
-    await this.getIsConnected();
-    await this.getIsPlaying();
-    await this.getTempo();
+    if (this.isConnected) {
+      await this.getIsPlaying();
+      await this.getTempo();
+    }
   }
 
   handleAbletonData() {
     this.macbook.on("ableton", (data) => {
       Object.entries(data).forEach(([type, value]) => {
-        if (typeof value !== undefined && this[type] !== value) {
+        if (typeof value !== undefined) {
           this[type] = value;
           this.emit(type, value);
         }
@@ -58,10 +61,7 @@ class Ableton extends EventEmitter {
       "ableton/isConnected"
     );
 
-    if (
-      typeof isConnected !== undefined &&
-      this.isConnected !== isConnected
-    ) {
+    if (typeof isConnected !== undefined) {
       this.isConnected = isConnected;
       this.emit("isConnected", this.isConnected);
     }
@@ -70,10 +70,7 @@ class Ableton extends EventEmitter {
   async getIsPlaying() {
     const isPlaying = await this.macbook.send("ableton/isPlaying");
 
-    if (
-      typeof isPlaying !== undefined &&
-      this.isPlaying !== isPlaying
-    ) {
+    if (typeof isPlaying !== undefined) {
       this.isPlaying = isPlaying;
       this.emit("isPlaying", this.isPlaying);
     }
@@ -82,15 +79,31 @@ class Ableton extends EventEmitter {
   async getTempo() {
     const tempo = await this.macbook.send("ableton/tempo");
 
-    if (typeof tempo !== undefined && this.tempo !== tempo) {
+    if (typeof tempo !== undefined) {
       this.tempo = tempo;
       this.emit("tempo", this.tempo);
     }
   }
 
-  setTempo(tempo) {
-    // TODO: handle non-tempo values
-    this.macbook.send("ableton/tempo", tempo);
+  setTempo(value) {
+    const MAX_NUMBER = 999;
+    const MIN_NUMBER = 20;
+
+    const tempo = parseFloat(value.trim(), 10);
+
+    if (isNaN(tempo)) {
+      throw new Error(`"${value.trim()}" isn't a valid number`);
+    }
+
+    if (tempo > MAX_NUMBER) {
+      throw new Error(`${tempo} is too big. max is ${MAX_NUMBER}`);
+    }
+
+    if (tempo < MIN_NUMBER) {
+      throw new Error(`${tempo} is too small. min is ${MIN_NUMBER}`);
+    }
+
+    this.macbook.send("ableton/tempo", { tempo });
   }
 }
 

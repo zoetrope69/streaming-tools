@@ -22,6 +22,7 @@ import BroomyJagRaceRedemption from "./broomy-jag-race.js";
 import GoosebumpsRedemption from "./goosebumps/index.js";
 import TextToPrintRedemption from "./text-to-print.js";
 import ScuffedKaraokeRedemption from "./scuffed-karaoke.js";
+import ChangeAbletonTempoRedemption from "./change-ableton-tempo.js";
 
 const REDEMPTIONS = {
   bubblewrapTime: BubblewrapTimeRedemption,
@@ -43,10 +44,18 @@ const REDEMPTIONS = {
   goosebumps: GoosebumpsRedemption,
   textToPrint: TextToPrintRedemption,
   scuffedKaraoke: ScuffedKaraokeRedemption,
+  changeAbletonTempo: ChangeAbletonTempoRedemption,
 };
 
 class Redemptions {
-  constructor({ io, streamingService, raspberryPi, alerts, music }) {
+  constructor({
+    io,
+    streamingService,
+    raspberryPi,
+    alerts,
+    music,
+    ableton,
+  }) {
     this.streamingService = streamingService;
 
     this.redemptions = Object.keys(REDEMPTIONS).map((key) => {
@@ -58,6 +67,7 @@ class Redemptions {
         raspberryPi,
         alerts,
         music,
+        ableton,
       });
 
       this[key] = redemption;

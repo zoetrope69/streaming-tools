@@ -3,48 +3,50 @@ import obs from "../obs/index.js";
 import Logger from "../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
 
+import AllyPhilRedemption from "./ally-phil.js";
+import BarryRedemption from "./barry.js";
+import BigDataRedemption from "./big-data.js";
+import BigDrinkRedemption from "./big-drink.js";
+import BrendanTakeoverRedemption from "./brendan-takeover.js";
+import BroomyJagRaceRedemption from "./broomy-jag-race.js";
 import BubblewrapTimeRedemption from "./bubblewrap-time.js";
+import ChangeAbletonTempoRedemption from "./change-ableton-tempo.js";
+import DanceToASongRedemption from "./dance-to-a-song.js";
+import DanceWithZacRedemption from "./dance-with-zac.js";
+import GoosebumpsRedemption from "./goosebumps/index.js";
+import ImmaBeeRedemption from "./immabee/index.js";
+import NortyDevilRedemption from "./norty-devil.js";
+import PogRedemption from "./pog.js";
+import RunescapeRedemption from "./runescape/index.js";
+import ScuffedKaraokeRedemption from "./scuffed-karaoke.js";
 import ShowYourPrideRedemption from "./show-your-pride/index.js";
 import SnowballRedemption from "./snowball.js";
-import DanceWithZacRedemption from "./dance-with-zac.js";
-import DanceToASongRedemption from "./dance-to-a-song.js";
-import ImmaBeeRedemption from "./immabee/index.js";
-import BigDrinkRedemption from "./big-drink.js";
-import ZacYouStinkRedemption from "./zac-you-stink.js";
-import BigDataRedemption from "./big-data.js";
-import RunescapeRedemption from "./runescape/index.js";
-import BarryRedemption from "./barry.js";
-import AllyPhilRedemption from "./ally-phil.js";
-import PogRedemption from "./pog.js";
-import BrendanTakeoverRedemption from "./brendan-takeover.js";
-import NortyDevilRedemption from "./norty-devil.js";
-import BroomyJagRaceRedemption from "./broomy-jag-race.js";
-import GoosebumpsRedemption from "./goosebumps/index.js";
 import TextToPrintRedemption from "./text-to-print.js";
-import ScuffedKaraokeRedemption from "./scuffed-karaoke.js";
-import ChangeAbletonTempoRedemption from "./change-ableton-tempo.js";
+import JohnMarTTSonRedemption from "./tts-john-marston.js";
+import ZacYouStinkRedemption from "./zac-you-stink.js";
 
 const REDEMPTIONS = {
+  ally: AllyPhilRedemption,
+  barry: BarryRedemption,
+  bigData: BigDataRedemption,
+  bigDrink: BigDrinkRedemption,
+  brendanTakeover: BrendanTakeoverRedemption,
+  broomyJagRace: BroomyJagRaceRedemption,
   bubblewrapTime: BubblewrapTimeRedemption,
+  changeAbletonTempo: ChangeAbletonTempoRedemption,
+  danceToASong: DanceToASongRedemption,
+  danceWithZac: DanceWithZacRedemption,
+  goosebumps: GoosebumpsRedemption,
+  immaBee: ImmaBeeRedemption,
+  nortyDevil: NortyDevilRedemption,
+  pog: PogRedemption,
+  runescape: RunescapeRedemption,
+  scuffedKaraoke: ScuffedKaraokeRedemption,
   showYourPride: ShowYourPrideRedemption,
   snowball: SnowballRedemption,
-  danceWithZac: DanceWithZacRedemption,
-  danceToASong: DanceToASongRedemption,
-  immaBee: ImmaBeeRedemption,
-  bigDrink: BigDrinkRedemption,
-  zacYouStink: ZacYouStinkRedemption,
-  bigData: BigDataRedemption,
-  runescape: RunescapeRedemption,
-  barry: BarryRedemption,
-  ally: AllyPhilRedemption,
-  pog: PogRedemption,
-  brendanTakeover: BrendanTakeoverRedemption,
-  nortyDevil: NortyDevilRedemption,
-  broomyJagRace: BroomyJagRaceRedemption,
-  goosebumps: GoosebumpsRedemption,
   textToPrint: TextToPrintRedemption,
-  scuffedKaraoke: ScuffedKaraokeRedemption,
-  changeAbletonTempo: ChangeAbletonTempoRedemption,
+  zacYouStink: ZacYouStinkRedemption,
+  johnMarTTSon: JohnMarTTSonRedemption,
 };
 
 class Redemptions {

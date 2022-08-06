@@ -83,6 +83,7 @@ class Music extends EventEmitter {
 
   async emitCurrentTrack() {
     const track = await this.getCurrentTrack();
+
     this.emit("track", track);
   }
 

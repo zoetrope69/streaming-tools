@@ -31,13 +31,17 @@ class Commands {
   async handleRecurringGoogleSheetCommands({ streamingService }) {
     this.googleSheetCommands = await getCommands();
     const scheduledCommands = await getScheduledCommands();
-    scheduledCommands.forEach((scheduledCommand) => {
-      logger.info(
-        `Running !${scheduledCommand.name} ${scheduledCommand.schedule}`
-      );
-      schedule(scheduledCommand.schedule, () => {
-        streamingService.chat.sendMessage(scheduledCommand.value);
-      });
+
+    let currentCommands = 0;
+    schedule("every 15 minutes", () => {
+      const scheduledCommand = scheduledCommands[currentCommands];
+      logger.info(`Running !${scheduledCommand.name}`);
+      streamingService.chat.sendMessage(scheduledCommand.value);
+
+      currentCommands += 1;
+      if (currentCommands === scheduledCommands.length) {
+        currentCommands = 0;
+      }
     });
   }
 

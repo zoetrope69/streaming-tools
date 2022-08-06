@@ -80,6 +80,13 @@ async function TwitchEventSub({ app, twitchApi, eventEmitter }) {
   };
 
   Promise.allSettled([
+    // online/offline
+    await subscribeToTopic("stream.online", () => {
+      eventEmitter.emit("streamOnline");
+    }),
+    await subscribeToTopic("stream.offline", () => {
+      eventEmitter.emit("streamOffline");
+    }),
     // subbies
     await subscribeToTopic("channel.subscribe", (data) => {
       const { user_id, user_name, is_gift } = data;

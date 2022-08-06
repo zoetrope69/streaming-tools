@@ -383,6 +383,21 @@ async function handleLaunchpadPresses({
   });
 }
 
+function handleStreamOnlineOffline({ streamingService }) {
+  /*
+    toggle emote only and subscribers only
+    to stop people chatting when im not online
+  */
+  streamingService.on("streamOnline", () => {
+    streamingService.sendMessage("/emoteonlyoff");
+    streamingService.sendMessage("/subscribersoff");
+  });
+  streamingService.on("streamOffline", () => {
+    streamingService.sendMessage("/emoteonly");
+    streamingService.sendMessage("/subscribers");
+  });
+}
+
 async function main() {
   server.listen(PORT, () => {
     logger.info(`Listening on http://localhost:${PORT}`);
@@ -445,6 +460,7 @@ async function main() {
     redemptions,
     commands,
   });
+  handleStreamOnlineOffline({ streamingService });
 }
 
 try {

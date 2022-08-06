@@ -7,8 +7,8 @@ const logger = new Logger("🏷 Twitch Pronouns");
 const BASE_API_ENDPOINT = "https://pronouns.alejo.io/api";
 
 const CACHE_KEY = "PRONOUNS";
-const CACHE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
-const CACHE_AVAILABLE_PRONOUNS_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
+const CACHE_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_AVAILABLE_PRONOUNS_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 1 day
 
 async function callAPI(endpoint) {
   const response = await fetch(`${BASE_API_ENDPOINT}${endpoint}`, {

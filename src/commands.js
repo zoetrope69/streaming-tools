@@ -208,26 +208,17 @@ class Commands {
       // couldnt get name audio
     }
 
-    const customShoutOuts =
-      await this.streamingService.getCustomShoutOuts();
-    const customShoutOut = customShoutOuts.find(
-      (shoutOut) => shoutOut.username === user.username.toLowerCase()
-    );
-
     this.alerts.send({
       type: "shout-out",
       duration: 10000,
       delayAudio: 3100,
       user,
       loadImage: user.image,
-      customShoutOut,
       audioUrl: nameAudioUrl,
     });
 
     let nameString;
-    if (customShoutOut) {
-      nameString = customShoutOut.message;
-    } else if (user.pronouns) {
+    if (user.pronouns) {
       nameString = `${user.username} (${user.pronouns})`;
     } else {
       nameString = user.username;
@@ -236,7 +227,7 @@ class Commands {
     const urlString = `twitch.tv/${user.username.toLowerCase()}`;
 
     this.streamingService.chat.sendMessage(
-      `shout out to ${nameString} - ${urlString}`
+      `/announce shout out to ${nameString} - ${urlString}`
     );
   }
 

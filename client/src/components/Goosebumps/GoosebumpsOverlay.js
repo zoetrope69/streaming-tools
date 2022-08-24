@@ -4,7 +4,7 @@ const GoosebumpsOverlay = ({ bookTitle }) => (
   <div className={styles["GoosebumpsOverlay"]}>
     <div className={styles["GoosebumpsOverlay-column"]}>
       <span className={styles["GoosebumpsOverlay-column__title"]}>
-        ZAC direct
+        direct
       </span>
       <span
         className={styles["GoosebumpsOverlay-column__small-text"]}
@@ -53,11 +53,11 @@ const GoosebumpsOverlay = ({ bookTitle }) => (
           styles["GoosebumpsOverlay-bottom-row__phone-number"]
         }
       >
-        twitch.tv/zactopus
+        twitch.tv/ninja
       </span>
 
       <span className={styles["GoosebumpsOverlay-bottom-row__logo"]}>
-        ZACD
+        FART
       </span>
     </div>
   </div>

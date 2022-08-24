@@ -4,11 +4,11 @@ import { v4 as randomID } from "uuid";
 import BaseRedemption from "./base-redemption.js";
 
 import Logger from "../helpers/logger.js";
-const logger = new Logger("💃 Redemption: Dance With Zac");
+const logger = new Logger("💃 Redemption: Dance With Me");
 
 class DanceWithZacRedemption extends BaseRedemption {
   constructor({ io, streamingService }) {
-    const title = "dance with zac";
+    const title = "dance with me";
 
     super({ streamingService, title });
 

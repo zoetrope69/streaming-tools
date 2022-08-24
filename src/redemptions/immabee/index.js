@@ -44,7 +44,7 @@ class ImmaBeeRedemption extends BaseRedemption {
     } catch (e) {
       logger.error(JSON.stringify(e));
       this.streamingService.chat.sendMessage(
-        `Couldn't find Zac's face...`
+        `Couldn't find their face...`
       );
       await this.streamingService.cancelRedemptionReward(redemption);
     }

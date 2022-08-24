@@ -127,22 +127,22 @@ class Commands {
 
     if (!this.channelInfo.category) {
       this.streamingService.chat.sendMessage(
-        `zac isn't doing anything... fuck all`
+        `they're isn't doing anything... fuck all`
       );
       return;
     }
 
     if (this.channelInfo.category === "Just Chatting") {
       this.streamingService.chat.sendMessage(
-        `zac's farting about chatting`
+        `they're farting about chatting`
       );
     } else if (this.channelInfo.category === "Makers & Crafting") {
       this.streamingService.chat.sendMessage(
-        `zac's making something`
+        `they're making something`
       );
     } else {
       this.streamingService.chat.sendMessage(
-        `zac's playing ${this.channelInfo.category}`
+        `they're playing ${this.channelInfo.category}`
       );
     }
   }

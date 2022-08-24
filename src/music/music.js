@@ -31,7 +31,7 @@ class Music extends EventEmitter {
     return {
       isNowPlaying: true,
       id: "ableton",
-      artistName: "zactopus",
+      artistName: "me",
       trackName: "Ableton",
       albumArtURL: "/assets/ableton-logo.svg",
       albumArtColors: {

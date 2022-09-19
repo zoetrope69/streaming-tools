@@ -73,6 +73,8 @@ export async function initialise() {
     );
 
     obsWebSocket.on("ConnectionOpened", async () => {
+      logger.debug("OBS connection opened...");
+
       obsWebSocket.on("AuthenticationSuccess", async () => {
         let versionInfo;
         try {

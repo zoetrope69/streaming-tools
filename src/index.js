@@ -418,12 +418,12 @@ function handleStreamOnlineOffline({ streamingService }) {
     to stop people chatting when im not online
   */
   streamingService.on("streamOnline", () => {
-    streamingService.sendMessage("/emoteonlyoff");
-    streamingService.sendMessage("/subscribersoff");
+    streamingService.chat.sendMessage("/emoteonlyoff");
+    streamingService.chat.sendMessage("/subscribersoff");
   });
   streamingService.on("streamOffline", () => {
-    streamingService.sendMessage("/emoteonly");
-    streamingService.sendMessage("/subscribers");
+    streamingService.chat.sendMessage("/emoteonly");
+    streamingService.chat.sendMessage("/subscribers");
   });
 }
 

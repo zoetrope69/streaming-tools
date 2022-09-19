@@ -73,12 +73,12 @@ class ComputerMouseKeyboard extends EventEmitter {
   get keyboard() {
     // https://robotjs.io/docs/syntax#keys
     return {
-      shortcut: (key, modifiers) => {
+      shortcut: (data) => {
         if (!this.host) {
           logger.error("Host not available");
         }
 
-        return this.send("/keyboard/shortcut", { key, modifiers });
+        return this.send("/keyboard/shortcut", data);
       },
     };
   }

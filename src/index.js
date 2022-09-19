@@ -342,39 +342,68 @@ async function handleLaunchpadPresses({
     }
 
     if (grid) {
+      if (position.x === 2 && position.y === 6) {
+        // Ctrl + Alt + Num + 0
+        await computer.keyboard.shortcut({
+          key: "numpad_0",
+          modifiers: ["control", "alt"],
+          toggleDelayMs: 500,
+        });
+
+        return;
+      }
+
       if (position.x === 2 && position.y === 3) {
         // Alt + Num + 5
-        await computer.keyboard.shortcut("numpad_5", ["alt"]);
+        await computer.keyboard.shortcut({
+          key: "numpad_5",
+          modifiers: ["alt"],
+        });
         return;
       }
 
       if (position.x === 3 && position.y === 3) {
         // Alt + Num + 0
-        await computer.keyboard.shortcut("numpad_0", ["alt"]);
+        await computer.keyboard.shortcut({
+          key: "numpad_0",
+          modifiers: ["alt"],
+        });
         return;
       }
 
       if (position.x === 4 && position.y === 3) {
         // Alt + Num + 1
-        await computer.keyboard.shortcut("numpad_1", ["alt"]);
+        await computer.keyboard.shortcut({
+          key: "numpad_1",
+          modifiers: ["alt"],
+        });
         return;
       }
 
       if (position.x === 5 && position.y === 3) {
         // Alt + Num + 2
-        await computer.keyboard.shortcut("numpad_2", ["alt"]);
+        await computer.keyboard.shortcut({
+          key: "numpad_2",
+          modifiers: ["alt"],
+        });
         return;
       }
 
       if (position.x === 6 && position.y === 3) {
         // Alt + Num + 3
-        await computer.keyboard.shortcut("numpad_3", ["alt"]);
+        await computer.keyboard.shortcut({
+          key: "numpad_3",
+          modifiers: ["alt"],
+        });
         return;
       }
 
       if (position.x === 7 && position.y === 3) {
         // Alt + Num + 4
-        await computer.keyboard.shortcut("numpad_4", ["alt"]);
+        await computer.keyboard.shortcut({
+          key: "numpad_4",
+          modifiers: ["alt"],
+        });
         return;
       }
 

@@ -33,7 +33,7 @@ class Commands {
     const scheduledCommands = await getScheduledCommands();
 
     let currentCommands = 0;
-    schedule("every 15 minutes", () => {
+    schedule(15, () => {
       const scheduledCommand = scheduledCommands[currentCommands];
       logger.info(`Running !${scheduledCommand.name}`);
       streamingService.chat.sendMessage(scheduledCommand.value);

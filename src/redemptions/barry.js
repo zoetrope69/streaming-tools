@@ -21,7 +21,6 @@ class BarryRedemption extends BaseRedemption {
       background_color: "#05B33E",
       is_global_cooldown_enabled: true,
       global_cooldown_seconds: 60 * 5, // 5 minutes
-      is_enabled: false, // temporarily disabled
     };
 
     this.wasSpotifyPlayingMusic = false;

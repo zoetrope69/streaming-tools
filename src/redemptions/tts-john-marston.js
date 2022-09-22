@@ -15,6 +15,7 @@ class JohnMarTTSonRedemption extends BaseRedemption {
       cost: 100,
       background_color: "#e90617",
       is_user_input_required: true,
+      is_enabled: false, // temporarily disabled
     };
   }
 }

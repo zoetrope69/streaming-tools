@@ -213,7 +213,7 @@ class Commands {
       duration: 10000,
       delayAudio: 3100,
       user,
-      loadImage: user.image,
+      imageUrl: user.image,
       audioUrl: nameAudioUrl,
     });
 

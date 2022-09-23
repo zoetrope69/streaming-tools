@@ -24,6 +24,7 @@ import SnowballRedemption from "./snowball.js";
 import TextToPrintRedemption from "./text-to-print.js";
 import JohnMarTTSonRedemption from "./tts-john-marston.js";
 import ZacYouStinkRedemption from "./zac-you-stink.js";
+import WordArtRedemption from "./word-art/index.js";
 
 const REDEMPTIONS = {
   ally: AllyPhilRedemption,
@@ -47,6 +48,7 @@ const REDEMPTIONS = {
   textToPrint: TextToPrintRedemption,
   zacYouStink: ZacYouStinkRedemption,
   johnMarTTSon: JohnMarTTSonRedemption,
+  wordArt: WordArtRedemption,
 };
 
 class Redemptions {

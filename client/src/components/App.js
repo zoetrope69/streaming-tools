@@ -24,13 +24,13 @@ import styles from "./App.css";
 
 const socket = io("/");
 
-async function loadImage(image) {
+async function loadImage(imageUrl) {
   return new Promise((resolve) => {
     const alertImage = new Image();
     alertImage.addEventListener("load", () => {
       resolve();
     });
-    alertImage.src = image;
+    alertImage.src = imageUrl;
   });
 }
 
@@ -71,8 +71,8 @@ function App() {
       } = data;
 
       if (alert) {
-        if (alert.loadImage) {
-          await loadImage(alert.loadImage);
+        if (alert.imageUrl) {
+          await loadImage(alert.imageUrl);
         }
 
         setCurrentAlert(alert);
@@ -166,6 +166,13 @@ function App() {
           motionTrackedPointables={motionTrackedPointables}
         />
       )}
+
+      {/* <WordArt
+        duration={1000}
+        imageUrl={
+          "https://p81.cooltext.com/Rendered/Cool Text - hello 419928146808883.png"
+        }
+      /> */}
 
       {currentAlert && (
         <Alert

@@ -9,13 +9,15 @@ import PhilPunch from "./PhilPunch";
 import Runescape from "./Runescape";
 import Snowball from "./Snowball";
 import ZacYouStink from "./ZacYouStink";
+import WordArt from "./WordArt";
 
 import axolotlStyles from "./Axolotl.css";
 
 const DEFAULT_DURATION = 5000;
 
 const Alert = ({ alert, currentFaceDetection }) => {
-  const { id, type, user, audioUrl, delayAudio, duration } = alert;
+  const { id, type, user, audioUrl, delayAudio, duration, imageUrl } =
+    alert;
 
   useEffect(() => {
     if (!id && !type) {
@@ -154,6 +156,10 @@ const Alert = ({ alert, currentFaceDetection }) => {
 
   if (type === "runescape") {
     return <Runescape duration={duration} />;
+  }
+
+  if (type === "word-art") {
+    return <WordArt duration={duration} imageUrl={imageUrl} />;
   }
 
   return null;

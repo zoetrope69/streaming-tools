@@ -1,10 +1,10 @@
 import BaseRedemption from "../base-redemption.js";
 
-import createRunescapeTextImage from "./create-runescape-text-image.js";
+import createWordArtImage from "./create-word-art-image.js";
 import textToSpeech from "../../text-to-speech.js";
 
 import Logger from "../../helpers/logger.js";
-const logger = new Logger("⚔️ Redemption: Runescape");
+const logger = new Logger("🔠 Redemption: Word Art");
 
 const MINIMUM_ALERT_DURATION = 5000; // 5 secs
 
@@ -27,22 +27,23 @@ function getDuration(text) {
   return wordsTime + DELAY_TIME + BONUS_TIME;
 }
 
-class RunescapeRedemption extends BaseRedemption {
+class WordArtRedemption extends BaseRedemption {
   constructor({ streamingService, alerts }) {
-    const title = "runescape TTS";
+    const title = "word art TTS";
 
     super({ streamingService, title });
 
     this.alerts = alerts;
     this.streamingService = streamingService;
     this.data = {
-      id: "e7159fe0-237e-4271-ae3a-680dd3abe928",
+      id: "130650d3-b88e-4b47-9128-c18fc40f5eb5",
       title,
-      prompt:
-        "show runescape text on the screen - !runescape of how to customise text",
+      prompt: "use emojis to change wordart. e.g 🔥 gives fire text",
       cost: 300,
-      background_color: "#8B4BA8",
+      background_color: "#F2FFD7",
       is_user_input_required: true,
+      is_global_cooldown_enabled: true,
+      global_cooldown_seconds: 60 * 1, // 1 minutes
     };
 
     this.fufilledRedemption((data) => this.start(data));
@@ -54,10 +55,12 @@ class RunescapeRedemption extends BaseRedemption {
     }
 
     logger.log("Triggered...");
-    const runescapeTextImage = await createRunescapeTextImage(
-      messageWithNoEmotes
-    );
-    if (!runescapeTextImage) {
+
+    let wordArtImage;
+    try {
+      wordArtImage = await createWordArtImage(messageWithNoEmotes);
+    } catch (e) {
+      logger.error(e.message);
       this.streamingService.chat.sendMessage(
         `couldn't send that text sorry @${user?.username}`
       );
@@ -66,24 +69,23 @@ class RunescapeRedemption extends BaseRedemption {
 
     const duration = Math.max(
       MINIMUM_ALERT_DURATION,
-      getDuration(messageWithNoEmotes)
+      getDuration(wordArtImage.text)
     );
 
     let audioUrl;
     try {
-      audioUrl = await textToSpeech(
-        runescapeTextImage.messageWithoutOptions
-      );
+      audioUrl = await textToSpeech(wordArtImage.text);
     } catch (e) {
       // couldnt get name audio
     }
 
     this.alerts.send({
-      type: "runescape",
+      type: "word-art",
       duration,
       audioUrl,
+      imageUrl: wordArtImage.imageUrl,
     });
   }
 }
 
-export default RunescapeRedemption;
+export default WordArtRedemption;

@@ -18,7 +18,7 @@ class TextToPrintRedemption extends BaseRedemption {
       title,
       prompt:
         "send something to the printer ennet. send just an emote and it'll print that",
-      cost: 100,
+      cost: 300,
       background_color: "#FFFFFF",
       should_redemptions_skip_request_queue: false,
       is_global_cooldown_enabled: true,

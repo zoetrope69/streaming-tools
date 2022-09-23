@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import emojiStrip from "emoji-strip";
 
-const FONT_SIZE = 200;
+const FONT_SIZE = 70;
 const URL = "https://cooltext.com/PostChange";
 
 const TEXT_STYLES = [
@@ -102,7 +102,7 @@ const TEXT_STYLES = [
   },
 ];
 
-async function getTextImageUrl({ textStyleId, text }) {
+async function getImageUrl({ textStyleId, text }) {
   try {
     const headers = {
       "Content-Type":
@@ -123,43 +123,46 @@ async function getTextImageUrl({ textStyleId, text }) {
 
     return json?.renderLocation || null;
   } catch (e) {
-    console.error(e);
-    return null;
+    console.error(e); // eslint-disable-line no-console
+    throw new Error("Something went wrong getting Word Art");
   }
 }
 
-async function textWithEmojiToLogo(inputString) {
+function randomTextStyle() {
+  return TEXT_STYLES[Math.floor(Math.random() * TEXT_STYLES.length)];
+}
+
+async function createWordArtImageUrl(inputString) {
   const emojiRegexString = /\p{Emoji}+/g;
   const regex = new RegExp(emojiRegexString, "u");
 
   const results = regex.exec(inputString);
 
-  if (!results) {
-    console.error(new Error("No emoji in input"));
-    return null;
-  }
-
-  const [emoji] = results;
+  let textStyle = null;
   const text = emojiStrip(inputString).trim();
 
-  const textStyle = TEXT_STYLES.find((textStyle) => {
-    return textStyle.emoji.includes(emoji);
-  });
-
-  if (!textStyle) {
-    return null;
+  if (text.trim().length == 0) {
+    throw new Error("No text for word art");
   }
 
-  const textImageUrl = await getTextImageUrl({
+  if (results) {
+    const [emoji] = results;
+
+    textStyle = TEXT_STYLES.find((textStyle) => {
+      return textStyle.emoji.includes(emoji);
+    });
+  }
+
+  if (!textStyle) {
+    textStyle = randomTextStyle();
+  }
+
+  const imageUrl = await getImageUrl({
     textStyleId: textStyle.id,
     text,
   });
 
-  return textImageUrl;
+  return { imageUrl, text };
 }
 
-async function main() {
-  const a = await textWithEmojiToLogo("nicey 🎃 nice 🏳️‍🌈");
-  console.log(a);
-}
-main();
+export default createWordArtImageUrl;

@@ -114,6 +114,8 @@ async function TwitchBot({ eventEmitter }) {
       messageWithNoEmotes,
       command,
       commandArguments,
+      commandArgumentsWithEmotes: commandArguments,
+      commandArgumentsWithNoEmotes: commandArguments,
       user: {
         username,
         color,

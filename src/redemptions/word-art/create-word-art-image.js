@@ -36,9 +36,14 @@ const TEXT_STYLES = [
     emoji: ["👽", "👾"],
   },
   {
-    id: "4",
+    id: "13",
     name: "Fire",
-    emoji: ["❤️‍🔥", "🔥", "🚒", "🧯", "🧑‍🚒", "👨‍🚒", "👩‍🚒"],
+    emoji: ["❤️‍🔥", "🔥"],
+  },
+  {
+    id: "4",
+    name: "Animated Fire",
+    emoji: ["🚒", "🧯", "🧑‍🚒", "👨‍🚒", "👩‍🚒"],
   },
   {
     id: "21",
@@ -100,6 +105,16 @@ const TEXT_STYLES = [
     name: "Halloween",
     emoji: ["🎃", "🦇"],
   },
+  {
+    id: "10",
+    name: "Bridge",
+    emoji: ["🌉"],
+  },
+  {
+    id: "38",
+    name: "Fuck Terfs",
+    emoji: ["🧙", "🧙‍♂️", "🧙‍♀️", "⚡"],
+  },
 ];
 
 async function getImageUrl({ textStyleId, text }) {
@@ -112,6 +127,18 @@ async function getImageUrl({ textStyleId, text }) {
       `LogoID=${textStyleId}`,
       `Text=${encodeURIComponent(text)}`,
       `FontSize=${FONT_SIZE}`,
+      /*
+        just ignore these abritary things here,
+        it just works you know
+      */
+      `FileFormat=6`,
+      `Integer5=0`,
+      `Integer7=0`,
+      `Integer8=0`,
+      `Integer6=0`,
+      `Integer9=0`,
+      `Integer13=on`,
+      `Integer12=on`,
     ].join("&");
     const response = await fetch(URL, {
       method: "POST",
@@ -131,7 +158,6 @@ async function getImageUrl({ textStyleId, text }) {
 function randomTextStyle() {
   return TEXT_STYLES[Math.floor(Math.random() * TEXT_STYLES.length)];
 }
-
 async function createWordArtImageUrl(inputString) {
   const emojiRegexString = /\p{Emoji}+/g;
   const regex = new RegExp(emojiRegexString, "u");
@@ -139,7 +165,7 @@ async function createWordArtImageUrl(inputString) {
   const results = regex.exec(inputString);
 
   let textStyle = null;
-  const text = emojiStrip(inputString).trim();
+  let text = emojiStrip(inputString).trim();
 
   if (text.trim().length == 0) {
     throw new Error("No text for word art");
@@ -155,6 +181,10 @@ async function createWordArtImageUrl(inputString) {
 
   if (!textStyle) {
     textStyle = randomTextStyle();
+  }
+
+  if (textStyle.name === "Fuck Terfs") {
+    text = "Fuck TERFs";
   }
 
   const imageUrl = await getImageUrl({

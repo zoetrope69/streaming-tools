@@ -5,7 +5,6 @@ import {
   getScheduledCommands,
 } from "./google-sheet.js";
 
-import sendFaceDataToClient from "./send-face-data-to-client.js";
 import saveScreenshotToBrbScreen from "./save-screenshot-to-brb-screen.js";
 
 import { schedule } from "./helpers/schedule.js";
@@ -85,19 +84,6 @@ class Commands {
     this.streamingService.chat.sendMessage(
       `SingsNote ${trackName} — ${artistName} — ${albumName} ${trackUrl}`.trim()
     );
-  }
-
-  async bex() {
-    await sendFaceDataToClient({ io: this.io });
-    this.alerts.send({
-      type: "bexchat",
-      audioUrl: "/assets/alerts/bexchat.mp3",
-      duration: 10000,
-    });
-  }
-
-  async octopussy() {
-    obs.turnOnOverlay("octopussy", 12 * 1000);
   }
 
   async switchToBRBScene() {

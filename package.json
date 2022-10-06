@@ -13,8 +13,8 @@
     "build": "npm run build:client",
     "build:client": "cd client && npm run build",
     "prestart": "npm run build",
-    "start": "NODE_ENV=production node entry.js --unhandled-rejections=strict --trace-warnings",
-    "dev": "NODE_ENV=development node entry.js --unhandled-rejections=strict --trace-warnings",
+    "start": "STREAMING_SERVICE_TYPE=twitch NODE_ENV=production node entry.js --unhandled-rejections=strict --trace-warnings",
+    "dev": "STREAMING_SERVICE_TYPE=twitch NODE_ENV=development node entry.js --unhandled-rejections=strict --trace-warnings",
     "dev:client": "cd client && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/ --config .eslintrc.json"
@@ -41,6 +41,7 @@
     "jimp": "0.16.1",
     "leapjs-plugins": "0.1.12",
     "lodash.throttle": "4.1.1",
+    "masterchat": "^1.1.0",
     "memory-cache": "0.2.0",
     "ngrok": "4.3.1",
     "node-cron": "3.0.1",

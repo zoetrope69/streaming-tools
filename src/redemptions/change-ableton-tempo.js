@@ -20,7 +20,7 @@ class ChangeAbletonTempoRedemption extends BaseRedemption {
       background_color: "#ffffff",
       should_redemptions_skip_request_queue: false,
       is_user_input_required: true,
-      is_enabled: false,
+      is_enabled: false, // disabled on boot
     };
 
     if (this.ableton.isConnected) {

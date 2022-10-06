@@ -3,16 +3,15 @@ import obs from "../obs/index.js";
 import Logger from "../helpers/logger.js";
 const logger = new Logger("👾 Redemptions");
 
-import AllyPhilRedemption from "./ally-phil.js";
+const { NODE_ENV, STREAMING_SERVICE_TYPE } = process.env;
+
 import BarryRedemption from "./barry.js";
-import BigDataRedemption from "./big-data.js";
 import BigDrinkRedemption from "./big-drink.js";
-import BrendanTakeoverRedemption from "./brendan-takeover.js";
 import BroomyJagRaceRedemption from "./broomy-jag-race.js";
 import BubblewrapTimeRedemption from "./bubblewrap-time.js";
 import ChangeAbletonTempoRedemption from "./change-ableton-tempo.js";
 import DanceToASongRedemption from "./dance-to-a-song.js";
-import DanceWithZacRedemption from "./dance-with-zac.js";
+import DanceWithMeRedemption from "./dance-with-me.js";
 import GoosebumpsRedemption from "./goosebumps/index.js";
 import ImmaBeeRedemption from "./immabee/index.js";
 import NortyDevilRedemption from "./norty-devil.js";
@@ -22,21 +21,16 @@ import ScuffedKaraokeRedemption from "./scuffed-karaoke.js";
 import ShowYourPrideRedemption from "./show-your-pride/index.js";
 import SnowballRedemption from "./snowball.js";
 import TextToPrintRedemption from "./text-to-print.js";
-import JohnMarTTSonRedemption from "./tts-john-marston.js";
-import ZacYouStinkRedemption from "./zac-you-stink.js";
 import WordArtRedemption from "./word-art/index.js";
 
 const REDEMPTIONS = {
-  ally: AllyPhilRedemption,
   barry: BarryRedemption,
-  bigData: BigDataRedemption,
   bigDrink: BigDrinkRedemption,
-  brendanTakeover: BrendanTakeoverRedemption,
   broomyJagRace: BroomyJagRaceRedemption,
   bubblewrapTime: BubblewrapTimeRedemption,
   changeAbletonTempo: ChangeAbletonTempoRedemption,
   danceToASong: DanceToASongRedemption,
-  danceWithZac: DanceWithZacRedemption,
+  danceWithMe: DanceWithMeRedemption,
   goosebumps: GoosebumpsRedemption,
   immaBee: ImmaBeeRedemption,
   nortyDevil: NortyDevilRedemption,
@@ -46,8 +40,6 @@ const REDEMPTIONS = {
   showYourPride: ShowYourPrideRedemption,
   snowball: SnowballRedemption,
   textToPrint: TextToPrintRedemption,
-  zacYouStink: ZacYouStinkRedemption,
-  johnMarTTSon: JohnMarTTSonRedemption,
   wordArt: WordArtRedemption,
 };
 
@@ -79,7 +71,7 @@ class Redemptions {
       const { data } = redemption;
 
       // in development mode remove all cooldowns
-      if (process.env.NODE_ENV === "development") {
+      if (NODE_ENV === "development") {
         data.is_global_cooldown_enabled = false;
         data.global_cooldown_seconds = 0;
       }
@@ -87,7 +79,9 @@ class Redemptions {
       return data;
     });
 
-    this.syncRedemptions();
+    if (STREAMING_SERVICE_TYPE === "twitch") {
+      this.syncRedemptions();
+    }
     this.handleDancingRedemptions();
   }
 

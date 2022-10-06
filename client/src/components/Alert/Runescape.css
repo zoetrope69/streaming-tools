@@ -14,7 +14,7 @@
   min-width: 20%;
   max-width: 30%;
   opacity: 0;
-  animation: fadeInRunescape ease-out infinite;
+  animation: fadeInRunescape ease-out forwards;
 }
 
 @keyframes fadeInRunescape {

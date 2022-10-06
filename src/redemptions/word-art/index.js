@@ -43,14 +43,20 @@ class WordArtRedemption extends BaseRedemption {
       background_color: "#F2FFD7",
       is_user_input_required: true,
       is_global_cooldown_enabled: true,
-      global_cooldown_seconds: 60 * 1, // 1 minutes
+      global_cooldown_seconds: 15, // 15 secs
     };
 
-    this.fufilledRedemption((data) => this.start(data));
+    this.fufilledRedemption((data) => {
+      const { messageWithNoEmotes, user } = data;
+      return this.start({ wordArtText: messageWithNoEmotes, user });
+    });
   }
 
-  async start({ messageWithNoEmotes, user }) {
-    if (!messageWithNoEmotes || messageWithNoEmotes.length === 0) {
+  async start({ wordArtText, user }) {
+    if (!wordArtText || wordArtText.length === 0) {
+      this.streamingService.chat.sendMessage(
+        `@${user?.username}, please send some text for word art`
+      );
       return;
     }
 
@@ -58,11 +64,11 @@ class WordArtRedemption extends BaseRedemption {
 
     let wordArtImage;
     try {
-      wordArtImage = await createWordArtImage(messageWithNoEmotes);
+      wordArtImage = await createWordArtImage(wordArtText);
     } catch (e) {
       logger.error(e.message);
       this.streamingService.chat.sendMessage(
-        `couldn't send that text sorry @${user?.username}`
+        `@${user?.username}, couldn't send that text for word art sorry`
       );
       return;
     }
@@ -78,6 +84,8 @@ class WordArtRedemption extends BaseRedemption {
     } catch (e) {
       // couldnt get name audio
     }
+
+    logger.debug(wordArtImage.imageUrl);
 
     this.alerts.send({
       type: "word-art",

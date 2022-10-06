@@ -10,8 +10,13 @@ import Logger from "./src/helpers/logger.js";
 const ngrokLogger = new Logger("👽 ngrok");
 const nodemonLogger = new Logger("😈 Nodemon");
 
-const { NODE_ENV, NGROK_AUTH_TOKEN, NGROK_SUBDOMAIN, PORT } =
-  process.env;
+const {
+  NODE_ENV,
+  NGROK_AUTH_TOKEN,
+  NGROK_SUBDOMAIN,
+  PORT,
+  STREAMING_SERVICE_TYPE,
+} = process.env;
 
 async function createNgrokUrl() {
   let ngrokUrl;
@@ -47,7 +52,7 @@ async function main() {
 
   const nodemonProcess = nodemon({
     script: "./src",
-    exec: `NODE_ENV=${NODE_ENV} NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
+    exec: `STREAMING_SERVICE_TYPE=${STREAMING_SERVICE_TYPE} NODE_ENV=${NODE_ENV} NGROK_URL=${ngrokUrl} GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json node --unhandled-rejections=strict --trace-warnings`,
     // disable watch mode in production
     watch: NODE_ENV === "production" ? [".env"] : [".env", "src/"],
   });

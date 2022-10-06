@@ -6,7 +6,7 @@ import BaseRedemption from "./base-redemption.js";
 import Logger from "../helpers/logger.js";
 const logger = new Logger("💃 Redemption: Dance With Me");
 
-class DanceWithZacRedemption extends BaseRedemption {
+class DanceWithMeRedemption extends BaseRedemption {
   constructor({ io, streamingService }) {
     const title = "dance with me";
 
@@ -21,6 +21,7 @@ class DanceWithZacRedemption extends BaseRedemption {
       cost: 5,
       background_color: "#002224",
       isForDancing: true,
+      is_enabled: false, // disabled on boot
     };
 
     this.dancers = [];
@@ -56,4 +57,4 @@ class DanceWithZacRedemption extends BaseRedemption {
   }
 }
 
-export default DanceWithZacRedemption;
+export default DanceWithMeRedemption;

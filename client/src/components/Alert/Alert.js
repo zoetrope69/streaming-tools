@@ -2,13 +2,9 @@ import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
 import Axolotl from "./Axolotl";
-import BexcHat from "./BexcHat";
-import BigData from "./BigData";
 import ImmaBee from "./ImmaBee";
-import PhilPunch from "./PhilPunch";
 import Runescape from "./Runescape";
 import Snowball from "./Snowball";
-import ZacYouStink from "./ZacYouStink";
 import WordArt from "./WordArt";
 
 import axolotlStyles from "./Axolotl.css";
@@ -119,14 +115,6 @@ const Alert = ({ alert, currentFaceDetection }) => {
     );
   }
 
-  if (type === "bexchat") {
-    return <BexcHat currentFaceDetection={currentFaceDetection} />;
-  }
-
-  if (type === "bigdata") {
-    return <BigData duration={duration} />;
-  }
-
   if (type === "immabee") {
     return <ImmaBee duration={duration} />;
   }
@@ -135,19 +123,6 @@ const Alert = ({ alert, currentFaceDetection }) => {
     return (
       <Snowball
         id={id}
-        duration={duration}
-        currentFaceDetection={currentFaceDetection}
-      />
-    );
-  }
-
-  if (type === "philpunch") {
-    return <PhilPunch>{alert.message}</PhilPunch>;
-  }
-
-  if (type === "zac-you-stink") {
-    return (
-      <ZacYouStink
         duration={duration}
         currentFaceDetection={currentFaceDetection}
       />

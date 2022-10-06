@@ -1,3 +1,7 @@
+// get process.env from .env
+import dotenv from "dotenv";
+dotenv.config();
+
 import fs from "fs";
 
 import cache from "memory-cache";
@@ -19,7 +23,7 @@ let refreshTokens = await importJSON(REFRESH_TOKEN_PATH);
 const BASE_CACHE_KEY = "OAUTH";
 
 const {
-  SPOTIFY_AUTH_REDIRECT_URI,
+  SPOTIFY_OAUTH_REDIRECT_URI,
   SPOTIFY_CLIENT_ID,
   SPOTIFY_CLIENT_SECRET,
 
@@ -27,16 +31,40 @@ const {
   TWITCH_CLIENT_SECRET,
   TWITCH_OAUTH_SECRET,
 
+  YOUTUBE_CLIENT_ID,
+  YOUTUBE_CLIENT_SECRET,
+  YOUTUBE_OAUTH_REDIRECT_URI,
+  YOUTUBE_OAUTH_SECRET,
+
   NGROK_URL,
 } = process.env;
 
 const TYPES = {
+  youtube: {
+    clientId: YOUTUBE_CLIENT_ID,
+    clientSecret: YOUTUBE_CLIENT_SECRET,
+    apiTokenEndpoint: "https://accounts.google.com/o/oauth2/token",
+    authoriseEndpoint: "https://accounts.google.com/o/oauth2/auth",
+    redirectURI: YOUTUBE_OAUTH_REDIRECT_URI,
+    state: YOUTUBE_OAUTH_SECRET,
+    access_type: "offline",
+    approval_prompt: "force",
+    scopes: [
+      "https://www.googleapis.com/auth/youtube.readonly",
+      "https://www.googleapis.com/auth/youtube",
+      "https://www.googleapis.com/auth/youtube.force-ssl",
+    ],
+    headers: {
+      Host: "accounts.google.com",
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  },
   spotify: {
     clientId: SPOTIFY_CLIENT_ID,
     clientSecret: SPOTIFY_CLIENT_SECRET,
     apiTokenEndpoint: "https://accounts.spotify.com/api/token",
     authoriseEndpoint: "https://accounts.spotify.com/authorize",
-    redirectURI: SPOTIFY_AUTH_REDIRECT_URI,
+    redirectURI: SPOTIFY_OAUTH_REDIRECT_URI,
     scopes: [
       "user-read-currently-playing",
       "user-read-playback-state",
@@ -106,8 +134,15 @@ function updateRefreshToken(key, refreshToken) {
 }
 
 function createAuthURL({ type }) {
-  const { clientId, redirectURI, scopes, authoriseEndpoint, state } =
-    TYPES[type];
+  const {
+    clientId,
+    redirectURI,
+    scopes,
+    authoriseEndpoint,
+    state,
+    access_type,
+    approval_prompt,
+  } = TYPES[type];
 
   const queryString = queryStringStringify({
     client_id: clientId,
@@ -115,6 +150,8 @@ function createAuthURL({ type }) {
     redirect_uri: redirectURI,
     scope: scopes.join(" ").trim(),
     state,
+    access_type,
+    approval_prompt,
   });
 
   return `${authoriseEndpoint}?${queryString}`;
@@ -147,7 +184,7 @@ async function getAuthCodeFromCommandLineUrl({ type }) {
 
   const state = url.searchParams.get("state");
   if (state !== existingState) {
-    throw new Error("Invalid state");
+    throw new Error(`Invalid state: "${state}"`);
   }
 
   return code;

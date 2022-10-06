@@ -10,6 +10,7 @@ import { Server } from "socket.io";
 
 import Music from "./music/index.js";
 import Twitch from "./twitch/twitch.js";
+import YouTube from "./youtube/index.js";
 import textToSpeech from "./text-to-speech.js";
 import obs from "./obs/index.js";
 
@@ -28,7 +29,7 @@ import handleDanceTriggers from "./dance-triggers.js";
 import handleMGSScene from "./mgs-scene.js";
 import { firstTimeTalking } from "./users-who-have-talked.js";
 
-const { NGROK_URL, PORT } = process.env;
+const { STREAMING_SERVICE_TYPE, NGROK_URL, PORT } = process.env;
 const CLIENT_FILE_PATH = "client/build";
 
 const logger = new Logger("🛸 Streaming Tools Server");
@@ -142,11 +143,15 @@ async function handleRaid({ streamingService }) {
   });
 }
 
+import NewCommands from "./commands/index.js";
+
 async function handleChatMessages({
   streamingService,
   commands,
   redemptions,
 }) {
+  const newCommands = new NewCommands({ redemptions });
+
   streamingService.chat.on("message", async (data) => {
     const {
       isMod,
@@ -163,6 +168,8 @@ async function handleChatMessages({
       messageWithEmotes,
     });
 
+    await newCommands.handleMessage(data);
+
     // this is a promise but don't wait for it
     redemptions.bubblewrapTime.popBubbles();
 
@@ -172,12 +179,7 @@ async function handleChatMessages({
       await commands.song();
     }
 
-    const firstTimeTalkingCallbacks = {
-      EggEllie: () => redemptions.nortyDevil.start(),
-      Broomyjag: () => redemptions.nortyDevil.start(),
-      Bexchat: () => commands.bex(),
-      BLGSTEVE: () => commands.octopussy(),
-    };
+    const firstTimeTalkingCallbacks = {};
     Object.keys(firstTimeTalkingCallbacks).forEach((username) => {
       const callback = firstTimeTalkingCallbacks[username];
       firstTimeTalking(user, username, callback);
@@ -259,7 +261,7 @@ async function handleClientConnections({
       popUpMessage: commands.popUpMessage,
       goosebumpsBookTitle: redemptions.goosebumps.bookTitle,
       prideFlagName: redemptions.showYourPride.prideFlagName,
-      dancers: redemptions.danceWithZac.dancers,
+      dancers: redemptions.danceWithMe.dancers,
     });
 
     socket.on("leap-motion", ({ event, data }) => {
@@ -442,19 +444,26 @@ async function main() {
   const macbook = new Macbook({ app });
   const ableton = new Ableton({ macbook });
   const music = new Music({ ableton });
-  const streamingService = await Twitch({
-    ngrokUrl: NGROK_URL,
-    app,
-  });
+
+  handleDanceTriggers({ joycons });
+  handleMGSScene({ music });
+  handleNewMusicTracks({ music });
+
+  let streamingService = null;
+
+  if (STREAMING_SERVICE_TYPE === "youtube") {
+    streamingService = new YouTube();
+    await streamingService.initialise();
+  } else {
+    streamingService = await Twitch({
+      ngrokUrl: NGROK_URL,
+      app,
+    });
+  }
+
   const channelInfo = new ChannelInfo();
-  const redemptions = new Redemptions({
-    io,
-    streamingService,
-    raspberryPi,
-    alerts,
-    music,
-    ableton,
-  });
+  handleChannelInfo({ channelInfo, streamingService });
+
   const commands = new Commands({
     io,
     streamingService,
@@ -463,33 +472,43 @@ async function main() {
     alerts,
   });
 
-  handleDanceTriggers({ joycons });
-  handleMGSScene({ music });
-  handleLaunchpadPresses({
-    launchpad,
-    computer,
-    redemptions,
-    commands,
-  });
-  handleNewMusicTracks({ music });
-  setTwitchTags({ streamingService });
-  handleChannelInfo({ channelInfo, streamingService });
-  handleSubscription({ streamingService });
-  handleBits({ streamingService });
-  handleRaid({ streamingService });
-  handleChatMessages({
+  const redemptions = new Redemptions({
+    io,
     streamingService,
-    commands,
-    redemptions,
     raspberryPi,
+    alerts,
+    music,
+    ableton,
   });
+
   handleClientConnections({
     ableton,
     music,
     redemptions,
     commands,
   });
-  handleStreamOnlineOffline({ streamingService });
+
+  handleChatMessages({
+    streamingService,
+    commands,
+    redemptions,
+    raspberryPi,
+  });
+
+  handleLaunchpadPresses({
+    launchpad,
+    computer,
+    redemptions,
+    commands,
+  });
+
+  if (STREAMING_SERVICE_TYPE === "twitch") {
+    setTwitchTags({ streamingService });
+    handleSubscription({ streamingService });
+    handleBits({ streamingService });
+    handleRaid({ streamingService });
+    handleStreamOnlineOffline({ streamingService });
+  }
 }
 
 try {

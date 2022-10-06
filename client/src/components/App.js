@@ -167,13 +167,6 @@ function App() {
         />
       )}
 
-      {/* <WordArt
-        duration={1000}
-        imageUrl={
-          "https://p81.cooltext.com/Rendered/Cool Text - hello 419928146808883.png"
-        }
-      /> */}
-
       {currentAlert && (
         <Alert
           alert={currentAlert}

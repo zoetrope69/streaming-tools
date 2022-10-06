@@ -76,9 +76,7 @@ class GoosebumpsRedemption extends BaseRedemption {
 
     this.io.emit("data", { goosebumpsBookTitle: null });
 
-    await obs.switchToScene(
-      this.previousSceneName || "Main Bigger Zac"
-    );
+    await obs.switchToScene(this.previousSceneName || "Main Bigger");
 
     if (this.wasSpotifyPlayingMusic) {
       await this.music.spotify.playTrack();

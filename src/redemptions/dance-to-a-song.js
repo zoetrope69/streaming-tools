@@ -16,6 +16,7 @@ class DanceToASongRedemption extends BaseRedemption {
       should_redemptions_skip_request_queue: false,
       is_user_input_required: true,
       isForDancing: true,
+      is_enabled: false, // disabled on boot
     };
   }
 }

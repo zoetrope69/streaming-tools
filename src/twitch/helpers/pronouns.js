@@ -1,29 +1,37 @@
-import fetch from "node-fetch";
 import cache from "memory-cache";
 
 import Logger from "../../helpers/logger.js";
 const logger = new Logger("🏷 Twitch Pronouns");
 
+import fetchWithTimeout from "../../helpers/fetch-with-timeout.js";
+
 const BASE_API_ENDPOINT = "https://pronouns.alejo.io/api";
+const PRONOUNS_API_TIMEOUT = 30 * 1000; // 30 seconds
 
 const CACHE_KEY = "PRONOUNS";
 const CACHE_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 const CACHE_AVAILABLE_PRONOUNS_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 1 day
 
 async function callAPI(endpoint) {
-  const response = await fetch(`${BASE_API_ENDPOINT}${endpoint}`, {
-    method: "GET",
-    headers: {
-      Accept: "*/*",
-      "Accept-Encoding": "gzip, deflate, br",
-      "Accept-Language": "en-GB,en;q=0.5",
-      Connection: "keep-alive",
-      DNT: 1,
-      Host: "pronouns.alejo.io",
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+  setTimeout(() => {});
+
+  const response = await fetchWithTimeout(
+    `${BASE_API_ENDPOINT}${endpoint}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-GB,en;q=0.5",
+        Connection: "keep-alive",
+        DNT: 1,
+        Host: "pronouns.alejo.io",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+      },
     },
-  });
+    PRONOUNS_API_TIMEOUT
+  );
   const json = await response.json();
   return json;
 }

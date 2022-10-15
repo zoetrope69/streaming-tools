@@ -53,6 +53,10 @@ const PRIDE_FLAGS = [
     lightColors: ["purple", "white", "green"],
   },
   {
+    name: "grey-asexual",
+    lightColors: ["purple", "grey", "white", "grey", "purple"],
+  },
+  {
     name: "intersex",
     twitchEmote: "IntersexPride",
     lightColors: ["yellow", "purple", "yellow", "purple", "yellow"],
@@ -103,6 +107,11 @@ const PRIDE_FLAGS_ALIAS_MAP = {
   rainbow: "gay",
   homosexual: "gay",
   snail: "snailgender",
+  "gray-asexual": "grey-asexual",
+  grayasexual: "grey-asexual",
+  greyasexual: "grey-asexual",
+  greysexual: "grey-asexual",
+  graysexual: "grey-asexual",
 };
 
 export function getPrideFlag(name) {

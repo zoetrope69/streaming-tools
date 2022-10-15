@@ -98,6 +98,17 @@
   );
 }
 
+.PrideFlag--grey-asexual {
+  background-image: linear-gradient(
+    to bottom,
+    #810081,
+    #a4a5a4,
+    #fff,
+    #a4a5a4,
+    #810081
+  );
+}
+
 .PrideFlag--intersex {
   background-image: linear-gradient(
     to bottom,

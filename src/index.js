@@ -335,7 +335,7 @@ async function handleLaunchpadPresses({
         return;
       }
 
-      if (position === "8") {
+      if (position === "E") {
         await commands.switchToBRBScene();
         return;
       }

@@ -26,6 +26,7 @@ class ScuffedKaraokeRedemption extends BaseRedemption {
       is_global_cooldown_enabled: true,
       global_cooldown_seconds: 60 * 10, // 10 minutes
       is_user_input_required: true,
+      is_enabled: false,
     };
 
     this.redemption = null;

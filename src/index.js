@@ -344,17 +344,6 @@ async function handleLaunchpadPresses({
     }
 
     if (grid) {
-      if (position.x === 2 && position.y === 6) {
-        // Ctrl + Alt + Num + 0
-        await computer.keyboard.shortcut({
-          key: "numpad_0",
-          modifiers: ["control", "alt"],
-          toggleDelayMs: 500,
-        });
-
-        return;
-      }
-
       if (position.x === 2 && position.y === 3) {
         // Alt + Num + 5
         await computer.keyboard.shortcut({

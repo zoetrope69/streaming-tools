@@ -13,7 +13,7 @@
     "preact-cli": "3.3.5"
   },
   "dependencies": {
-    "classnames": "2.3.1",
+    "classnames": "2.3.2",
     "leapjs": "1.1.1",
     "nth-check": "2.1.1",
     "preact": "10.7.2",

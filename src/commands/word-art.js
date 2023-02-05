@@ -26,7 +26,11 @@ function hasCommandCooledDown({ redemptions }) {
   return true;
 }
 
-function WordArtCommand(redemptions, streamingService, messageData) {
+function WordArtCommand({
+  redemptions,
+  streamingService,
+  messageData,
+}) {
   const { commandArgumentsWithNoEmotes, user } = messageData;
 
   logger.log(

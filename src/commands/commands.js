@@ -3,6 +3,8 @@ import showYourPrideCommand from "./show-your-pride.js";
 import cokeCommand from "./coke.js";
 import pepsiCommand from "./pepsi.js";
 import pizzaCommand from "./pizza.js";
+import pngCommand from "./png.js";
+import irnBruCommand from "./irn-bru.js";
 
 const COMMANDS = {
   word: wordArtCommand,
@@ -13,6 +15,8 @@ const WORDS = {
   coke: cokeCommand,
   pepsi: pepsiCommand,
   pizza: pizzaCommand,
+  png: pngCommand,
+  "irn bru": irnBruCommand,
 };
 
 class NewCommands {
@@ -41,20 +45,20 @@ class NewCommands {
     const validWords = this.getValidWordsInMessage(message);
 
     if (validCommand) {
-      return validCommand(
-        this.redemptions,
-        this.streamingService,
-        messageData
-      );
+      return validCommand({
+        redemptions: this.redemptions,
+        streamingService: this.streamingService,
+        messageData,
+      });
     }
 
     if (validWords && validWords.length !== 0) {
       validWords.forEach((validWord) => {
-        validWord(
-          this.redemptions,
-          this.streamingService,
-          messageData
-        );
+        validWord({
+          redemptions: this.redemptions,
+          streamingService: this.streamingService,
+          messageData,
+        });
       });
       return;
     }

@@ -1,11 +1,7 @@
 import Logger from "../helpers/logger.js";
 const logger = new Logger("🏳️‍🌈 Command: Show Your Pride");
 
-function showYourPrideCommand(
-  redemptions,
-  streamingService,
-  messageData
-) {
+function showYourPrideCommand({ redemptions, messageData }) {
   const { commandArgumentsWithNoEmotes, user } = messageData;
 
   logger.log(

@@ -154,17 +154,12 @@ class Commands {
     }
   }
 
-  async shoutOut({ commandArguments }) {
-    if (!commandArguments) {
+  async shoutOut({ username }) {
+    if (!username || username.length === 0) {
       return;
     }
 
-    let [username] = commandArguments.split(" ");
-    if (!username) {
-      return;
-    }
-
-    if (username.startsWith("@")) {
+    if (username.trim().startsWith("@")) {
       username = username.substring(1);
     }
 
@@ -203,17 +198,17 @@ class Commands {
       audioUrl: nameAudioUrl,
     });
 
+    this.streamingService.sendChatShoutout(user);
+
     let nameString;
     if (user.pronouns) {
       nameString = `${user.username} (${user.pronouns})`;
     } else {
       nameString = user.username;
     }
-
     const urlString = `twitch.tv/${user.username.toLowerCase()}`;
-
-    this.streamingService.chat.sendMessage(
-      `/announce shout out to ${nameString} - ${urlString}`
+    this.streamingService.sendChatAnnouncement(
+      `shout out to ${nameString} - ${urlString}`
     );
   }
 

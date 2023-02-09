@@ -84,9 +84,10 @@ async function getUser(username) {
   }
 
   const [userData] = response.data;
-  const { display_name, profile_image_url } = userData;
+  const { id, display_name, profile_image_url } = userData;
 
   return {
+    id,
     username: display_name,
     image: profile_image_url,
   };
@@ -425,6 +426,66 @@ async function updateRedemptionReward(redemption, status) {
   });
 }
 
+async function sendChatAnnouncement(message, color = "primary") {
+  try {
+    return await callTwitchAPI({
+      endpoint: "chat/announcements",
+      options: {
+        broadcaster_id: TWITCH_BROADCASTER_ID,
+        moderator_id: TWITCH_BROADCASTER_ID,
+      },
+      fetchOptions: {
+        method: "POST",
+        body: JSON.stringify({
+          message,
+          color,
+        }),
+      },
+    });
+  } catch (e) {
+    logger.error(`Failed to do announcement`);
+    console.error(e); // eslint-disable-line no-console
+  }
+}
+
+async function sendChatShoutout(user) {
+  try {
+    return await callTwitchAPI({
+      endpoint: "chat/shoutouts",
+      options: {
+        from_broadcaster_id: TWITCH_BROADCASTER_ID,
+        to_broadcaster_id: user.id,
+        moderator_id: TWITCH_BROADCASTER_ID,
+      },
+      fetchOptions: {
+        method: "POST",
+      },
+    });
+  } catch (e) {
+    logger.error(`Failed to shoutout ${user}`);
+    console.error(e); // eslint-disable-line no-console
+  }
+}
+
+async function updateChatSettings(settings) {
+  try {
+    return await callTwitchAPI({
+      endpoint: "chat/settings",
+      options: {
+        broadcaster_id: TWITCH_BROADCASTER_ID,
+        moderator_id: TWITCH_BROADCASTER_ID,
+      },
+      fetchOptions: {
+        method: "PATCH",
+        body: JSON.stringify(settings),
+      },
+    });
+  } catch (e) {
+    logger.error(`Failed to update chat settings`);
+    console.error(e); // eslint-disable-line no-console
+  }
+}
+
 async function TwitchAPI({ ngrokUrl }) {
   return {
     getUser: async (username) => {
@@ -538,6 +599,12 @@ async function TwitchAPI({ ngrokUrl }) {
     getStream,
 
     getViewerCount,
+
+    sendChatAnnouncement,
+
+    sendChatShoutout,
+
+    updateChatSettings,
   };
 }
 

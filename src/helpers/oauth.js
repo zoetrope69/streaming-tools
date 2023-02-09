@@ -67,6 +67,9 @@ const TYPES = {
       "channel:read:redemptions", // 	view Channel Points custom rewards and their redemptions on a channel
       "channel:manage:redemptions", // 	manage channel redemptions
       "channel:manage:broadcast", // modifies channel information for users
+      "moderator:manage:announcements", // send chat announcement
+      "moderator:manage:shoutouts", // send a chat shoutout
+      "moderator:manage:chat_settings", // update chat settings
     ],
     headers: {
       Accept: "application/vnd.twitchtv.v5+json",

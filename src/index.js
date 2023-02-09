@@ -120,24 +120,24 @@ async function handleBits({ streamingService }) {
   });
 }
 
-async function handleRaid({ streamingService }) {
+async function handleRaid({ streamingService, commands }) {
   streamingService.on("raid", async (user) => {
+    const { username } = user;
+
     let raidAudioUrl;
     try {
-      raidAudioUrl = await textToSpeech(
-        `oh shit here's ${user.username}`
-      );
+      raidAudioUrl = await textToSpeech(`oh shit here's ${username}`);
     } catch (e) {
       // couldnt get name audio
     }
 
     alerts.send({ type: "raid", user, audioUrl: raidAudioUrl });
     streamingService.chat.sendMessage(
-      `thanks for the raid, @${user.username}. hi raiders`
+      `thanks for the raid, @${username}. hi raiders`
     );
 
     setTimeout(() => {
-      streamingService.chat.sendMessage(`!so @${user.username}`);
+      commands.shoutOut({ username });
     }, 10 * 1000); // 10 seconds
   });
 }
@@ -235,7 +235,16 @@ async function handleChatMessages({
       command === "shoutout" ||
       command === "shout-out"
     ) {
-      await commands.shoutOut({ commandArguments });
+      if (!commandArguments) {
+        return;
+      }
+
+      let [username] = commandArguments.split(" ");
+      if (!username) {
+        return;
+      }
+
+      await commands.shoutOut({ username });
     }
   });
 }
@@ -407,13 +416,18 @@ function handleStreamOnlineOffline({ streamingService }) {
     toggle emote only and subscribers only
     to stop people chatting when im not online
   */
+
   streamingService.on("streamOnline", () => {
-    streamingService.chat.sendMessage("/emoteonlyoff");
-    streamingService.chat.sendMessage("/subscribersoff");
+    streamingService.updateChatSettings({
+      emote_mode: false,
+      subscriber_mode: false,
+    });
   });
   streamingService.on("streamOffline", () => {
-    streamingService.chat.sendMessage("/emoteonly");
-    streamingService.chat.sendMessage("/subscribers");
+    streamingService.updateChatSettings({
+      emote_mode: true,
+      subscriber_mode: true,
+    });
   });
 }
 
@@ -487,7 +501,7 @@ async function main() {
     setTwitchTags({ streamingService });
     handleSubscription({ streamingService });
     handleBits({ streamingService });
-    handleRaid({ streamingService });
+    handleRaid({ streamingService, commands });
     handleStreamOnlineOffline({ streamingService });
   }
 }

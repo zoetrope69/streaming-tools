@@ -41,7 +41,6 @@
     "jimp": "0.16.1",
     "leapjs-plugins": "0.1.12",
     "lodash.throttle": "4.1.1",
-    "masterchat": "^1.1.0",
     "memory-cache": "0.2.0",
     "ngrok": "4.3.1",
     "node-cron": "3.0.1",

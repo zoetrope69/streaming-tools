@@ -31,34 +31,10 @@ const {
   TWITCH_CLIENT_SECRET,
   TWITCH_OAUTH_SECRET,
 
-  YOUTUBE_CLIENT_ID,
-  YOUTUBE_CLIENT_SECRET,
-  YOUTUBE_OAUTH_REDIRECT_URI,
-  YOUTUBE_OAUTH_SECRET,
-
   NGROK_URL,
 } = process.env;
 
 const TYPES = {
-  youtube: {
-    clientId: YOUTUBE_CLIENT_ID,
-    clientSecret: YOUTUBE_CLIENT_SECRET,
-    apiTokenEndpoint: "https://accounts.google.com/o/oauth2/token",
-    authoriseEndpoint: "https://accounts.google.com/o/oauth2/auth",
-    redirectURI: YOUTUBE_OAUTH_REDIRECT_URI,
-    state: YOUTUBE_OAUTH_SECRET,
-    access_type: "offline",
-    approval_prompt: "force",
-    scopes: [
-      "https://www.googleapis.com/auth/youtube.readonly",
-      "https://www.googleapis.com/auth/youtube",
-      "https://www.googleapis.com/auth/youtube.force-ssl",
-    ],
-    headers: {
-      Host: "accounts.google.com",
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  },
   spotify: {
     clientId: SPOTIFY_CLIENT_ID,
     clientSecret: SPOTIFY_CLIENT_SECRET,

@@ -10,7 +10,6 @@ import { Server } from "socket.io";
 
 import Music from "./music/index.js";
 import Twitch from "./twitch/twitch.js";
-import YouTube from "./youtube/index.js";
 import textToSpeech from "./text-to-speech.js";
 import obs from "./obs/index.js";
 
@@ -438,17 +437,10 @@ async function main() {
   handleMGSScene({ music });
   handleNewMusicTracks({ music });
 
-  let streamingService = null;
-
-  if (STREAMING_SERVICE_TYPE === "youtube") {
-    streamingService = new YouTube();
-    await streamingService.initialise();
-  } else {
-    streamingService = await Twitch({
-      ngrokUrl: NGROK_URL,
-      app,
-    });
-  }
+  const streamingService = await Twitch({
+    ngrokUrl: NGROK_URL,
+    app,
+  });
 
   const channelInfo = new ChannelInfo();
   handleChannelInfo({ channelInfo, streamingService });

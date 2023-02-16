@@ -5,6 +5,8 @@ import pepsiCommand from "./pepsi.js";
 import pizzaCommand from "./pizza.js";
 import pngCommand from "./png.js";
 import irnBruCommand from "./irn-bru.js";
+import poopiesCommand from "./poopies.js";
+import mashPotatoWithTheSocksCommand from "./mash-potato-with-the-socks.js";
 
 const COMMANDS = {
   word: wordArtCommand,
@@ -16,7 +18,9 @@ const WORDS = {
   pepsi: pepsiCommand,
   pizza: pizzaCommand,
   png: pngCommand,
+  poopies: poopiesCommand,
   "irn bru": irnBruCommand,
+  "mash potato": mashPotatoWithTheSocksCommand,
 };
 
 class NewCommands {

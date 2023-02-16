@@ -1,26 +1,28 @@
-import wordArtCommand from "./word-art.js";
-import showYourPrideCommand from "./show-your-pride.js";
+import charmanderCommand from "./charmander.js";
 import cokeCommand from "./coke.js";
+import irnBruCommand from "./irn-bru.js";
+import mashPotatoWithTheSocksCommand from "./mash-potato-with-the-socks.js";
 import pepsiCommand from "./pepsi.js";
 import pizzaCommand from "./pizza.js";
 import pngCommand from "./png.js";
-import irnBruCommand from "./irn-bru.js";
 import poopiesCommand from "./poopies.js";
-import mashPotatoWithTheSocksCommand from "./mash-potato-with-the-socks.js";
+import showYourPrideCommand from "./show-your-pride.js";
+import wordArtCommand from "./word-art.js";
 
 const COMMANDS = {
-  word: wordArtCommand,
   pride: showYourPrideCommand,
+  word: wordArtCommand,
 };
 
 const WORDS = {
+  "irn bru": irnBruCommand,
+  "mash potato": mashPotatoWithTheSocksCommand,
+  charmander: charmanderCommand,
   coke: cokeCommand,
   pepsi: pepsiCommand,
   pizza: pizzaCommand,
   png: pngCommand,
   poopies: poopiesCommand,
-  "irn bru": irnBruCommand,
-  "mash potato": mashPotatoWithTheSocksCommand,
 };
 
 class NewCommands {

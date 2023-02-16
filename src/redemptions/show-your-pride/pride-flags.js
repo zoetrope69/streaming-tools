@@ -94,7 +94,7 @@ const PRIDE_FLAGS = [
   {
     name: "snailgender",
     twitchEmote: "🐌",
-    twitchMessage: "https://lgbta.wikia.org/wiki/Snailgender",
+    twitchMessage: "https://www.lgbtqia.wiki/wiki/Snailgender",
     lightColors: ["green", "white", "brown"],
   },
 ];

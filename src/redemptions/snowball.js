@@ -18,6 +18,7 @@ class SnowballRedemption extends BaseRedemption {
       prompt: "throw a club penguin snowball at me face",
       cost: 20,
       background_color: "#D5E4E7",
+      isNotForPNGTuber: true,
     };
 
     this.fufilledRedemption((data) => this.start(data));

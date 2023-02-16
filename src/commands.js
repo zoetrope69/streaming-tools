@@ -1,3 +1,4 @@
+import { setTimeout } from "timers/promises"; // eslint-disable-line node/no-missing-import
 import obs from "./obs/index.js";
 import textToSpeech from "./text-to-speech.js";
 import {
@@ -12,12 +13,20 @@ import Logger from "./helpers/logger.js";
 const logger = new Logger("🚀 Commands");
 
 class Commands {
-  constructor({ io, music, streamingService, channelInfo, alerts }) {
+  constructor({
+    io,
+    music,
+    streamingService,
+    channelInfo,
+    alerts,
+    redemptions,
+  }) {
     this.io = io;
     this.music = music;
     this.streamingService = streamingService;
     this.channelInfo = channelInfo;
     this.alerts = alerts;
+    this.redemptions = redemptions.redemptions;
 
     this.googleSheetCommands = [];
 
@@ -25,6 +34,53 @@ class Commands {
 
     this.popUpMessage = "";
     this.isThanosDancing = false;
+    this.form = "pngtuber";
+  }
+
+  async setForm(newForm) {
+    this.form = newForm;
+
+    const timeout = 2000;
+    obs.turnOnOverlay("Minecraft splash potion", timeout);
+
+    const splashHitTimeout = 1500;
+    await setTimeout(splashHitTimeout);
+
+    const redemptionsNotForPNGTuber = this.redemptions.filter(
+      (redemption) => {
+        return redemption.isNotForPNGTuber === true;
+      }
+    );
+
+    if (newForm === "pngtuber") {
+      redemptionsNotForPNGTuber.forEach((redemption) => {
+        this.streamingService.disableRedemption(redemption.id);
+      });
+
+      obs.showSource({
+        scene: "Raw Webcam",
+        source: "veadotube mini (Spout)",
+      });
+      obs.hideSource({
+        scene: "Raw Webcam",
+        source: "Snap Camera (Greenscreen)",
+      });
+
+      return;
+    }
+
+    redemptionsNotForPNGTuber.forEach((redemption) => {
+      this.streamingService.enableRedemption(redemption.id);
+    });
+
+    obs.hideSource({
+      scene: "Raw Webcam",
+      source: "veadotube mini (Spout)",
+    });
+    obs.showSource({
+      scene: "Raw Webcam",
+      source: "Snap Camera (Greenscreen)",
+    });
   }
 
   async handleRecurringGoogleSheetCommands({ streamingService }) {

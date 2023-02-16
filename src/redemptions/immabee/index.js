@@ -21,6 +21,7 @@ class ImmaBeeRedemption extends BaseRedemption {
       cost: 300,
       background_color: "#FFF400",
       should_redemptions_skip_request_queue: false,
+      isNotForPNGTuber: true,
     };
 
     this.unfufilledRedemption((data) => this.start(data));

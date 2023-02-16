@@ -337,6 +337,14 @@ async function handleLaunchpadPresses({
 }) {
   launchpad.on("press", async ({ grid, circle, position }) => {
     if (circle) {
+      if (position === "7") {
+        await commands.setForm("pngtuber");
+      }
+
+      if (position === "8") {
+        await commands.setForm("irl");
+      }
+
       if (position === "D") {
         // STOP BUTTON
         await redemptions.scuffedKaraoke.stop();
@@ -459,14 +467,6 @@ async function main() {
   const channelInfo = new ChannelInfo();
   handleChannelInfo({ channelInfo, streamingService });
 
-  const commands = new Commands({
-    io,
-    streamingService,
-    music,
-    channelInfo,
-    alerts,
-  });
-
   const redemptions = new Redemptions({
     io,
     streamingService,
@@ -474,6 +474,15 @@ async function main() {
     alerts,
     music,
     ableton,
+  });
+
+  const commands = new Commands({
+    io,
+    streamingService,
+    music,
+    channelInfo,
+    alerts,
+    redemptions,
   });
 
   handleClientConnections({

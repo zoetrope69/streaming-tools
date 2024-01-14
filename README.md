@@ -8,6 +8,6 @@ credits/shout outs
 
 links to:
 
-- [streaming-tools-windows](https://github.com/zactopus/streaming-tools-windows)
-- [streaming-tools-raspberry-pi](https://github.com/zactopus/streaming-tools-raspberry-pi)
-- [streaming-tools-macbook](https://github.com/zactopus/streaming-tools-macbook)
+- [streaming-tools-windows](https://github.com/zoetrope69/streaming-tools-windows)
+- [streaming-tools-raspberry-pi](https://github.com/zoetrope69/streaming-tools-raspberry-pi)
+- [streaming-tools-macbook](https://github.com/zoetrope69/streaming-tools-macbook)
